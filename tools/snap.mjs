@@ -18,7 +18,7 @@ const browser = await puppeteer.launch({
   headless: true,
   executablePath: chrome || undefined,
   protocolTimeout: 0,
-  args: ['--no-sandbox', '--ignore-gpu-blocklist', '--enable-gpu-rasterization', ...(has('swiftshader') || process.env.SWIFTSHADER ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : [])],
+  args: ['--no-sandbox', '--ignore-gpu-blocklist', '--enable-gpu-rasterization', '--disable-features=CanvasNoise', ...(has('swiftshader') || process.env.SWIFTSHADER ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : [])],
 });
 const page = await browser.newPage();
 page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') console.log('[page]', m.type(), m.text()); });

@@ -95,9 +95,10 @@ export class StraitSet extends BaseSet {
     const stab = new THREE.Mesh(new THREE.BoxGeometry(4, 0.4, 16), jm); stab.position.set(-18, 1, 0); this.jet.add(stab);
     for (const z of [-10, 10]) { const eng = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, 5, 12), new THREE.MeshStandardMaterial({ color: 0x9aa4ae, metalness: 0.7, roughness: 0.3 })); eng.rotation.z = Math.PI / 2; eng.position.set(0, -2, z); this.jet.add(eng); }
     this.jet.visible = false;
+    this.jet.scale.setScalar(1.8); // ~70 m airliner
     sc.add(this.jet);
     this.trail = new StreakCloud(400, { additive: false });
-    this.trail.emitters.push({ fill: (t, push) => { if (!this.jet.visible) return; const j = this.jet.position; for (let i = 0; i < 200; i++) { const d = i * 25; for (const z of [-10, 10]) push(j.x - d - 30, j.y - 2 - i * 0.02, j.z + z + Math.sin(i * 0.3) * 0.3 * i * 0.02, j.x - d - 55, j.y - 2 - i * 0.02, j.z + z, 1.2 + i * 0.06, 0.95, 0.96, 1.0, 0.85 * Math.exp(-i / 140)); } } });
+    this.trail.emitters.push({ fill: (t, push) => { if (!this.jet.visible) return; const j = this.jet.position; for (let i = 0; i < 200; i++) { const d = i * 25; for (const z of [-18, 18]) push(j.x - d - 50, j.y - 3 - i * 0.03, j.z + z * (1 + i * 0.01) + Math.sin(i * 0.3) * 0.3 * i * 0.02, j.x - d - 78, j.y - 3 - i * 0.03, j.z + z * (1 + i * 0.01), 5 + i * 0.35, 0.95, 0.96, 1.0, 0.75 * Math.exp(-i / 150) * Math.min(1, i / 4)); } } });
     sc.add(this.trail.mesh);
     this.birds = new Birds(70, 0x202020);
     sc.add(this.birds.mesh);
@@ -355,8 +356,8 @@ export class StraitSet extends BaseSet {
     const p = shot.p || {};
     this.camPos = cam.position;
     if (this._shock) this.shock.set(this._shock[0], this._shock[1], this._shock[2], undefined, cam.position);
-    if (this.SH.on) this.SH.dCam = Math.hypot(cam.position.x - this.SH.c[0], cam.position.z - this.SH.c[2]);
     else this.shock.set([0, 0, 0], 0, 0);
+    if (this.SH.on) this.SH.dCam = Math.hypot(cam.position.x - this.SH.c[0], cam.position.z - this.SH.c[2]);
     this.puffs.update(vt, cam.position);
     this.sparks.update(vt);
     this.flakes.update(vt);

@@ -242,9 +242,9 @@ export function lightningEmitter(E) {
           cache.set(s, segs);
           if (cache.size > 40) cache.delete(cache.keys().next().value);
         }
-        const wBase = Math.max(18, Math.hypot(b[0] - a[0], b[1] - a[1]) * 0.004);
+        const wBase = Math.max(30, Math.hypot(b[0] - a[0], b[1] - a[1]) * 0.006) * (E.boltW ?? 1);
         for (const [p, q, wk] of segs) {
-          push(q[0], q[1], q[2], p[0], p[1], p[2], wBase * wk * 2.2, 2.2 * flick, 2.6 * flick, 5.5 * flick, 0.5 * wk);
+          push(q[0], q[1], q[2], p[0], p[1], p[2], wBase * wk * 3.0, 2.0 * flick, 2.4 * flick, 5.0 * flick, 0.5 * wk);
           push(q[0], q[1], q[2], p[0], p[1], p[2], wBase * wk * 0.6, 14 * flick, 15 * flick, 22 * flick, wk);
         }
         const k2 = flick * (toSea ? 1.3 : 1);

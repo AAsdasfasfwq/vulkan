@@ -23,7 +23,7 @@ export default function act8(A, D) {
   add(shot(A.at('along with tens of millions') - L, 'studio', dolly([0, 1.8, 7.5], [0, 1.6, 6.4], [0, 1.2, 0], [0, 1.3, 0], 40), {
     bg: 'ember', items: [0, 1, 2, 3, 4, 5, 6].map((i) => ({ kind: 'SO2', id: 'so' + i, pos: [(i - 3) * 1.3, 0.8 + (i % 3) * 0.55, -(i % 2) * 1.2], appear: 0.1 + i * 0.12, spin: 0.5 + i * 0.1, float: true, scale: 0.8 })),
   }, { amb: 'none', sfx: [['pop', 0.1], ['pop', 0.34], ['pop', 0.58], ['pop', 0.82]], draw: word('SO₂', 0.2, { y: H * 0.2, size: 120, tracking: 6 }) }));
-  add(shot(A.at('have been blasted into') - L, 'globe', dolly([0, -6, 13.2], [0, -5.6, 12.6], [0, -9.4, 0], [0, -9.2, 0], 50), { ll: [[-6, 105], [-6, 100]], cloud: 0.5, veil: 0.9, veilK: 1, sunAz: 80, sunGlare: 0.6 }, { amb: 'space' }));
+  add(shot(A.at('have been blasted into') - L, 'globe', dolly([0, -6, 13.2], [0, -5.6, 12.6], [0, -9.4, 0], [0, -9.2, 0], 50), { ll: [[-6, 105], [-6, 100]], cloud: 0.5, veil: 0.9, veilK: 1, mirror: 0.8, sunAz: 80, sunGlare: 0.6 }, { amb: 'space' }));
   add(shot(A.at('High-altitude winds carry') - L, 'globe', orbit([0, 0, 0], [30, 28], [0, 60], [4, 8], 40, 'lin'), { ll: [[-6, 100], [-6, 40]], cloud: 0.45, veil: [0.75, 1], veilK: 1 }, { amb: 'space', sfx: [['wind', 0]] }));
   add(shot(A.at('and people begin to see') - L, 'town', dolly([2, 1.5, 22], [1.8, 1.4, 20], [0, 9, -60], [0, 12, -60], 40), {
     style: 'victorian', mood: 'violet', smoke: false, people: [{ style: 'gentleman', at: [1, 12], rot: 180, pose: { lookUp: -0.5 } }, { style: 'lady', at: [2.4, 13], rot: 185, pose: { lookUp: -0.4 } }, { style: 'clerk', at: [-1.5, 10], rot: 175, pose: { lookUp: -0.45, point: true } }],

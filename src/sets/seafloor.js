@@ -54,7 +54,7 @@ export class SeafloorSet extends BaseSet {
     // sea grass / kelp strands
     const kelpG = new THREE.PlaneGeometry(0.25, 3, 1, 8);
     kelpG.translate(0, 1.5, 0);
-    const kelpM = new THREE.MeshStandardMaterial({ color: 0x4f8a3a, roughness: 0.7, side: THREE.DoubleSide, emissive: 0x0a1a08 });
+    const kelpM = new THREE.MeshStandardMaterial({ color: 0x5f9a44, roughness: 0.7, side: THREE.DoubleSide, emissive: 0x1d3a14 });
     kelpM.onBeforeCompile = (sh) => {
       sh.uniforms.uTime = this.uTime;
       sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nuniform float uTime;').replace('#include <begin_vertex>', `#include <begin_vertex>

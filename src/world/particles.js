@@ -230,6 +230,7 @@ export class StreakCloud {
         }`,
       transparent: true,
       depthWrite: false,
+      side: THREE.DoubleSide, // the ribbon's winding flips with its direction on screen
       blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
     });
     this.mesh = new THREE.Mesh(g, mat);

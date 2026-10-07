@@ -73,7 +73,7 @@ vec3 skyBase(vec3 d) {
   c += uSunColor * (0.025 * pow(sd, 3.0) + 0.06 * pow(sd, 12.0) + 0.18 * pow(sd, 80.0)) * uSunVisible;
   // volcanic glow on the horizon
   float gd = max(dot(d, uGlowDir), 0.0);
-  c += uGlowColor * pow(gd, uGlowSize) * smoothstep(-0.15, 0.25, h + 0.15);
+  c += uGlowColor * pow(gd, uGlowSize) * smoothstep(-0.15, 0.05, h) * exp(-max(h, 0.0) * 3.5);
   return c;
 }
 

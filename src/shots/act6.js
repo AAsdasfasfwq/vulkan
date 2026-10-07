@@ -21,7 +21,7 @@ export default function act6(A) {
   const tE = A.at('Early that morning') - L;
   const exAt = A.peek('another explosion') - tE + 0.4;
   add(shot(tE, 'strait', dolly([-11000, 60, 7000], [-10800, 64, 6800], [0, 2500, -600], [0, 3200, -600], 40, 'lin'), {
-    mood: 'dawn', mood2: 'blast', moodK: 0.6, erupt: big({ t0: exAt, rise: 1200, height: 22000, umbrella: 0.4 }), island: { ash: 0.8, lava: 1 }, glowLight: 0.5,
+    mood: 'dawn', mood2: 'blast', moodK: (u, lt) => clamp(0.55 + (lt - exAt) * 0.4, 0.55, 1), erupt: big({ t0: exAt, rise: 1200, height: 22000, umbrella: 0.4 }), island: { ash: 0.8, lava: 1 }, glowLight: 0.5,
     ring: { t0: exAt, speed: 500, h: 3, w: 100 }, burst: { t0: exAt, R: 3000, speed: 1.2, heat: 1.8, c: [-100, 0, -600] },
   }, { amb: 'eruption', mus: 'chaos', sfx: [['bigBoom', exAt]], fx: { flashes: [{ at: exAt, amp: 2.5, decay: 6 }], shakes: [{ at: exAt + 0.3, amp: 1.8, decay: 1.5, zoom: 0.05 }] } }));
   add(shot(A.at('Krakatoa is already close') - L, 'strait', dolly([-3200, 500, 2600], [-3000, 520, 2300], [-100, 300, -400], [-100, 360, -400], 42, 'lin'), {

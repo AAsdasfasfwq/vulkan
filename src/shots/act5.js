@@ -11,6 +11,8 @@ import { clamp, ease, lerp, rng } from '../core/math.js';
 const julPlume = (o = {}) => ({ at: 'danan', height: 9000, intensity: 0.9, glow: 0.5, dark: 0.18, bombs: 0.2, count: 1400, wind: [0.25, 0.08], ...o });
 const augPlume = (o = {}) => ({ at: 'centre', height: 27000, intensity: 1, glow: 1.4, dark: 0.12, bombs: 0.8, bombSpeed: 380, lightning: 0.6, umbrella: 0.7, umbrellaR: 26000, count: 2000, wind: [0.12, 0.04], ...o });
 
+const hashS = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
 export default function act5(A) {
   const L = LEAD;
   const S = [];
@@ -90,7 +92,7 @@ export default function act5(A) {
   }));
   add(flat(A.at('A vast column of black ash') - L, (k, lt, S2) => INFO.altitude(k, lt, S2, { km: 27, max: 50, at: 0.2, dur: A.peek('reaching 17 miles') - A.peek('A vast column of black') + 0.3, umbrella: true }), { sfx: [['riser', 0], ['whooshBig', 0.2]] }));
   add(shot(A.at('Day turns to pitch black') - L, 'strait', dolly([-9000, 30, 9000], [-8800, 32, 8800], [0, 3000, 0], [0, 3000, 0], 44, 'lin'), {
-    mood: 'haze', mood2: 'ashDark', moodK: (u) => ease.inOut(u), erupt: augPlume({ t0: -20 }), veil: { amount: [0.2, 1], dark: 0.03, alpha: 0.55, y0: 7000, y1: 20000 }, island: { ash: 0.8 },
+    mood: 'blast', mood2: 'ashDark', moodK: (u) => ease.inOut(u), erupt: augPlume({ t0: -20, lightning: 0.8 }), veil: { amount: [0.1, 0.7], dark: 0.03, alpha: 0.35, y0: 9000, y1: 22000 }, island: { ash: 0.8 }, glowLight: 0.5,
   }, { amb: 'eruption', sfx: [['drone', 0]] }));
   add(flat(A.at('Within roughly 90 miles') - L, (k, lt, S2) => drawMap(k, lt, S2, {
     theme: 'ash', center: [[105.6, -5.9], [105.6, -5.9]], scale: [[9000, 10500]], box: [98, -12, 113, 1], hi: true,
@@ -130,7 +132,7 @@ export default function act5(A) {
       const [sx, sy] = placeXY(M, [-5.98, 105.32]);
       k.pin(sx, sy, 'CHARLES BAL', lt, { start: 0.6, size: 32, dir: [-1, -1], len: 70 });
       k.ctx.globalAlpha = ease.out(clamp((lt - 1.0) / 0.4));
-      k.text('15 km · 9 miles', kx + 40, ky + 220, { size: 48, weight: 900, color: '#fff', shadow: { blur: 14 } });
+      k.text('15 km · 9 miles', kx + 40, ky - 250, { size: 48, weight: 900, color: '#fff', shadow: { blur: 14 } });
       k.ctx.globalAlpha = 1;
     },
   }), { sfx: [['pop', 0.6]] }));
@@ -139,9 +141,9 @@ export default function act5(A) {
     mood: 'ashDark', moodOv: { glowAz: 135 }, sea: 'rough', erupt: augPlume({ t0: -55 }), glowLight: 0.8, ashfall: 0.9, rockRain: 1, embers: 1, shipAsh: 0.9,
     ships: [{ id: 'cb', type: 'barque', ...cb, extraRoll: 0.05, opts: { flag: 0x1a3a8a } }], people: deckPeople,
   }, { amb: 'ashStorm', sfx: [['rocksRain', 0], ['thud', 0.6], ['thud', 1.4], ['sizzle', 0.8]], fx: { grade: 'fire', shakes: [{ at: 0.6, amp: 0.6, decay: 3 }, { at: 1.4, amp: 0.6, decay: 3 }] } }));
-  add(shot(A.at('Sulfur fills the air') - L, 'strait', onShip(cb, [-2, 5.0, 3.0], [-1.6, 5.0, 2.6], [3, 4.4, 0], [3, 4.4, 0], 38), {
+  add(shot(A.at('Sulfur fills the air') - L, 'strait', onShip(cb, [6.6, 4.95, 2.7], [6.3, 4.9, 2.5], [3.2, 4.5, -0.4], [3.2, 4.5, -0.4], 38), {
     mood: 'ashDark', moodOv: { glowAz: 135, horizon: [0.12, 0.1, 0.03], fog: 0.004 }, sea: 'rough', erupt: augPlume({ t0: -60 }), glowLight: 0.7, ashfall: 1, embers: 0.6, shipAsh: 1,
-    ships: [{ id: 'cb', type: 'barque', ...cb, extraRoll: 0.05 }], people: deckPeople,
+    ships: [{ id: 'cb', type: 'barque', ...cb, extraRoll: 0.05 }], people: [{ style: 'sailor', ship: 'cb', at: [4, 1.4], rot: -130, pose: { cough: true } }, { style: 'sailor2', ship: 'cb', at: [2.6, -1.2], rot: -70, pose: { cough: true } }],
   }, { amb: 'ashStorm', sfx: [['cough', 0.6]], fx: { grade: 'ash', saturation: 0.7 } }));
   add(shot(A.at('Breathing becomes') - L, 'strait', onShip(cb, [2.6, 4.9, 0.0], [2.4, 4.85, 0.1], [1.0, 4.6, -1.4], [1.0, 4.6, -1.4], 34), {
     mood: 'ashDark', moodOv: { glowAz: 135, horizon: [0.12, 0.1, 0.03], fog: 0.004 }, sea: 'rough', erupt: augPlume({ t0: -60 }), glowLight: 0.7, ashfall: 1, embers: 0.5, shipAsh: 1,
@@ -170,37 +172,67 @@ export default function act5(A) {
 // Ash particles colliding and building up electrical charge
 function charges(k, lt, S, aGen) {
   const ctx = k.ctx;
-  k.bgDark('#14121a', '#030305');
+  // inside the ash column: warm darkness, drifting smoke, lava light from below
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#0b0807'); bg.addColorStop(0.6, '#1d0f0a'); bg.addColorStop(1, '#4a1a0a');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  const rs = rng(17);
+  for (let i = 0; i < 18; i++) {
+    const x = rs() * W, y = ((rs() * H - lt * (30 + rs() * 30)) % H + H) % H, R = 160 + rs() * 260;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, R);
+    g.addColorStop(0, 'rgba(60,40,32,0.35)'); g.addColorStop(1, 'rgba(60,40,32,0)');
+    ctx.fillStyle = g; ctx.fillRect(x - R, y - R, R * 2, R * 2);
+  }
   const r = rng(5);
-  const N = 70;
+  const N = 80;
   const sep = ease.inOut(clamp((lt - aGen) / 1.6));
   for (let i = 0; i < N; i++) {
     const bx = r() * W, by = r() * H, sp = 30 + r() * 60, ph = r() * 6.28;
     const pos = i % 2 ? -1 : 1;
     let x = bx + Math.sin(lt * 0.7 + ph) * sp, y = (by - lt * (20 + r() * 40) + H * 2) % H;
     y = y * (1 - sep * 0.55) + (pos > 0 ? H * 0.15 : H * 0.85) * sep * 0.55;
-    const R = 10 + r() * 22;
-    const g = ctx.createRadialGradient(x - R * 0.3, y - R * 0.3, 1, x, y, R);
-    g.addColorStop(0, '#9a948c'); g.addColorStop(1, '#3a3632');
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill();
+    const R = 9 + r() * 20, rot = r() * 6.28 + lt * (r() - 0.5) * 2;
+    // jagged glassy ash shard
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+    ctx.beginPath();
+    const nv = 6 + Math.floor(r() * 3);
+    for (let v = 0; v < nv; v++) { const a = (v / nv) * 6.283, rr = R * (0.55 + r() * 0.6); v ? ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr * 0.8) : ctx.moveTo(Math.cos(a) * rr, Math.sin(a) * rr * 0.8); }
+    ctx.closePath();
+    const g = ctx.createLinearGradient(0, -R, 0, R);
+    g.addColorStop(0, '#6e6660'); g.addColorStop(0.55, '#3a3330'); g.addColorStop(1, '#c2541e');
+    ctx.fillStyle = g; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,170,110,0.35)'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.restore();
     if (sep > 0.05) {
       ctx.globalAlpha = sep;
-      k.text(pos > 0 ? '+' : '−', x, y + 12, { size: 34, weight: 900, color: pos > 0 ? '#ff9a5a' : '#7fc0ff' });
+      ctx.strokeStyle = pos > 0 ? '#ff9a5a' : '#7fc0ff'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(x, y, R + 9, 0, 6.283); ctx.stroke();
+      k.text(pos > 0 ? '+' : '−', x, y + 12, { size: 34, weight: 900, color: pos > 0 ? '#ffb27a' : '#9fd0ff' });
       ctx.globalAlpha = 1;
     }
     // collision sparks
     const sp2 = (lt * 3 + i * 0.37) % 1;
-    if (sp2 < 0.08) k.circle(x + R, y, 6, 'rgba(200,220,255,0.9)');
+    if (sp2 < 0.08) { ctx.strokeStyle = 'rgba(210,225,255,0.95)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + R, y - 6); ctx.lineTo(x + R + 10, y + 2); ctx.lineTo(x + R + 4, y + 8); ctx.stroke(); }
   }
-  // inner lightning once charges separate
-  if (sep > 0.6) {
-    const fl = Math.sin(lt * 23) > 0.6 ? 1 : 0;
-    if (fl) {
-      ctx.strokeStyle = 'rgba(210,225,255,0.95)'; ctx.lineWidth = 5; ctx.shadowBlur = 30; ctx.shadowColor = '#9fc0ff';
-      ctx.beginPath(); let x = W * 0.5, y = H * 0.18; ctx.moveTo(x, y);
-      const rr = rng(Math.floor(lt * 4));
-      while (y < H * 0.82) { x += (rr() - 0.5) * 120; y += 40 + rr() * 50; ctx.lineTo(x, y); }
-      ctx.stroke(); ctx.shadowBlur = 0;
+  // lightning between the separated charge layers (main bolt + branches)
+  if (sep > 0.5) {
+    const slot = Math.floor(lt * 5);
+    const on = (lt * 5 - slot) < 0.55 && hashS(slot) > 0.25;
+    if (on) {
+      const rr = rng(slot * 7 + 3);
+      const bolt = (x, y, y1, w, depth) => {
+        ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x, y);
+        while (y < y1) {
+          x += (rr() - 0.5) * 110; y += 30 + rr() * 45; ctx.lineTo(x, y);
+          if (depth > 0 && rr() < 0.18) { ctx.stroke(); bolt(x, y, y + 120 + rr() * 140, w * 0.5, depth - 1); ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x, y); }
+        }
+        ctx.stroke();
+      };
+      ctx.save();
+      ctx.strokeStyle = 'rgba(215,228,255,0.97)'; ctx.shadowBlur = 36; ctx.shadowColor = '#9fc0ff';
+      bolt(W * (0.3 + rr() * 0.4), H * 0.2, H * 0.8, 5, 2);
+      ctx.restore();
+      ctx.fillStyle = 'rgba(160,190,255,0.08)'; ctx.fillRect(0, 0, W, H);
     }
   }
   k.kinetic('ELECTRICAL CHARGE', W / 2, 130, lt, { size: 52, weight: 900, color: '#fff', start: aGen, stagger: 0.03, tracking: 10 });

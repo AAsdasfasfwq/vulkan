@@ -71,6 +71,8 @@ const chromeArgs = [
   '--ignore-gpu-blocklist', '--enable-gpu-rasterization', '--enable-zero-copy',
   '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows',
   '--autoplay-policy=no-user-gesture-required', '--force-color-profile=srgb',
+  // Chrome adds anti-fingerprinting noise to canvas readbacks in fresh profiles; frames must be exact
+  '--disable-features=CanvasNoise',
 ];
 if (process.platform === 'linux') chromeArgs.push('--no-sandbox');
 if (opt('angle')) chromeArgs.push('--use-angle=' + opt('angle'));

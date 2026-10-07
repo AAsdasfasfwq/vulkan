@@ -1,3 +1,4 @@
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import * as THREE from 'three';
 import { BaseSet, val } from './base.js';
 import { PuffCloud } from '../world/particles.js';
@@ -15,6 +16,9 @@ export class MachineSet extends BaseSet {
     this.sky.mesh.visible = false;
     sc.background = new THREE.Color(0x0c0806);
     sc.fog = new THREE.FogExp2(0x1a120c, 0.025);
+    // reflections for the brass and iron (metals are black without an environment)
+    sc.environment = engine.pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    sc.environmentIntensity = 0.32;
     const iron = M(0x2a2c30, 0.45, 0.85), brass = M(0xc89b45, 0.25, 0.95), red = M(0x6a1a12, 0.5, 0.4), green = M(0x1f3a2c, 0.45, 0.4);
     const brick = canvasTex(512, 512, (c, W, H) => { c.fillStyle = '#3a1c12'; c.fillRect(0, 0, W, H); const r = rng(5); for (let y = 0; y < 16; y++) for (let x = 0; x < 8; x++) { const v = 0.6 + r() * 0.5; c.fillStyle = `rgb(${120 * v},${55 * v},${35 * v})`; c.fillRect(x * 64 + (y % 2) * 32 + 2, y * 32 + 2, 60, 28); } });
     brick.wrapS = brick.wrapT = THREE.RepeatWrapping; brick.repeat.set(6, 3);

@@ -102,7 +102,7 @@ export class GlobeSet extends BaseSet {
             float reach = smoothstep(uVeil * 3.4, uVeil * 3.4 - 0.6, lonD) ;
             float swirl = fbm3(o * 4.0 + vec3(uTime * 0.03, 0.0, 0.0));
             float v = band * max(reach, step(0.95, uVeil)) * (0.5 + 0.7 * swirl) * uVeilK;
-            col = mix(col, vec3(0.78, 0.6, 0.42) * (0.06 + 0.85 * max(ndl, 0.0)), clamp(v * 0.75, 0.0, 0.5));
+            col = mix(col, vec3(0.8, 0.62, 0.44) * (0.06 + 0.85 * max(ndl, 0.0)), clamp(v * 0.55, 0.0, 0.36));
           }
           col *= uTint;
           // pressure wave rings (and antipodal reflections)
