@@ -1,0 +1,1 @@
+export class Preview { constructor(f) { this.f = f; this.t0 = 0; this.s = 0; } async play(t) { this.s = t; this.t0 = performance.now(); } stop() {} time() { return this.s + (performance.now() - this.t0) / 1000; } }

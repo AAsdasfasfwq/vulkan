@@ -1,0 +1,27 @@
+{
+  "name": "krakatoa-1883",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Krakatoa 1883 — procedural cinematic documentary video (Three.js + Web Audio), rendered with Puppeteer",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "render": "node render.js",
+    "render:preview": "node render.js --scale 0.5 --out out/preview.mp4"
+  },
+  "dependencies": {
+    "@fontsource/bebas-neue": "^5.2.5",
+    "@fontsource/inter": "^5.2.5",
+    "@fontsource/montserrat": "^5.2.5",
+    "@fontsource/playfair-display": "^5.2.5",
+    "d3-geo": "^3.1.1",
+    "ffmpeg-static": "^5.3.0",
+    "postprocessing": "^6.39.5",
+    "puppeteer": "^25.12.0",
+    "three": "^0.186.1",
+    "topojson-client": "^3.1.0",
+    "vite": "^8.3.3",
+    "world-atlas": "^2.0.2"
+  }
+}
