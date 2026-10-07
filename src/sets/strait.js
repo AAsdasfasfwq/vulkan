@@ -366,9 +366,9 @@ export class StraitSet extends BaseSet {
     const fl = this.E.flash;
     const PU = this.puffs.uniforms;
     if (fl) {
-      PU.uFlash.value.set(fl.pos[0], fl.pos[1], fl.pos[2], fl.k * 3.0);
-      this.ocean.uniforms.uFlash.value = fl.k * 0.35;
-      fx.exposure *= 1 + fl.k * 0.12;
+      PU.uFlash.value.set(fl.pos[0], fl.pos[1], fl.pos[2], fl.k * 2.2);
+      this.ocean.uniforms.uFlash.value = fl.k * 0.12;
+      fx.exposure *= 1 + fl.k * 0.05;
     } else {
       PU.uFlash.value.w = 0;
       this.ocean.uniforms.uFlash.value = 0;

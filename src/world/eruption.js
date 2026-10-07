@@ -226,7 +226,7 @@ export function lightningEmitter(E) {
         const dt = t - t0;
         const len = 0.22 + hash1(s * 5.1) * 0.2;
         if (dt < 0 || dt > len) continue;
-        const flick = (Math.sin(dt * 90 + s) > -0.3 ? 1 : 0.25) * (1 - dt / len);
+        const flick = (Math.sin(dt * 38 + s) > -0.4 ? 1 : 0.45) * (1 - dt / len);
         const H = E.height * clamp((t - E.t0) * E.rise / E.height);
         const ang = hash1(s * 9.1) * Math.PI * 2, ang2 = ang + (hash1(s * 2.2) - 0.5) * 2;
         const R = lerp(E.baseW, E.topW, 0.5) * (0.4 + hash1(s * 4.4) * 0.8);
