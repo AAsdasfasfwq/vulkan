@@ -5,10 +5,11 @@ import { Island, PEAKS, makeCoastStrip, islandHeight } from '../world/island.js'
 import { makeCrownGeometry, makePalmGeometry, addSway } from '../world/plants.js';
 import { PuffCloud, StreakCloud } from '../world/particles.js';
 import { makeEruption, columnEmitter, veilEmitter, surgeEmitter, plumeletEmitter, bombEmitter, lightningEmitter, Shockwave } from '../world/eruption.js';
-import { makeBarque, makeSteamer, makeContainerShip, makeLongboat } from '../world/ships.js';
+import { makeBarque, makeSteamer, makeContainerShip, makeLongboat, setShipAsh } from '../world/ships.js';
 import { makeFigure, poseFigure, addProp } from '../world/figures.js';
 import { clamp, lerp, rng, fract, smoothstep, ease } from '../core/math.js';
 import { evalCamera, makeCamState } from '../core/camera.js';
+import { Birds } from '../world/birds.js';
 
 const CRATERS = {
   perboewatan: [PEAKS.perboewatan[0], 70, PEAKS.perboewatan[1]],
@@ -82,6 +83,21 @@ export class StraitSet extends BaseSet {
     this.people = [];
     this.shipRoot = new THREE.Group();
     sc.add(this.shipRoot);
+    // passenger jet with contrail (modern era)
+    this.jet = new THREE.Group();
+    const jm = new THREE.MeshStandardMaterial({ color: 0xe8ecf0, roughness: 0.35, metalness: 0.4 });
+    const fus = new THREE.Mesh(new THREE.CapsuleGeometry(2.0, 36, 6, 12), jm); fus.rotation.z = Math.PI / 2; this.jet.add(fus);
+    const wing = new THREE.Mesh(new THREE.BoxGeometry(9, 0.5, 52), jm); wing.position.set(-2, -0.8, 0); this.jet.add(wing);
+    const tail = new THREE.Mesh(new THREE.BoxGeometry(5, 8, 0.5), jm); tail.position.set(-18, 4, 0); this.jet.add(tail);
+    const stab = new THREE.Mesh(new THREE.BoxGeometry(4, 0.4, 16), jm); stab.position.set(-18, 1, 0); this.jet.add(stab);
+    for (const z of [-10, 10]) { const eng = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, 5, 12), new THREE.MeshStandardMaterial({ color: 0x9aa4ae, metalness: 0.7, roughness: 0.3 })); eng.rotation.z = Math.PI / 2; eng.position.set(0, -2, z); this.jet.add(eng); }
+    this.jet.visible = false;
+    sc.add(this.jet);
+    this.trail = new StreakCloud(400, { additive: false });
+    this.trail.emitters.push({ fill: (t, push) => { if (!this.jet.visible) return; const j = this.jet.position; for (let i = 0; i < 200; i++) { const d = i * 25; for (const z of [-10, 10]) push(j.x - d - 30, j.y - 2 - i * 0.02, j.z + z + Math.sin(i * 0.3) * 0.3 * i * 0.02, j.x - d - 55, j.y - 2 - i * 0.02, j.z + z, 1.2 + i * 0.06, 0.95, 0.96, 1.0, 0.85 * Math.exp(-i / 140)); } } });
+    sc.add(this.trail.mesh);
+    this.birds = new Birds(70, 0x202020);
+    sc.add(this.birds.mesh);
     this.camTmp = makeCamState();
   }
 
@@ -161,6 +177,7 @@ export class StraitSet extends BaseSet {
     fx.exposure = (fx.exposure ?? 1) * (p.exposure ?? 1);
     // island state
     const I = p.island || {};
+    if (I.destroyedAt !== undefined) this.island.setState({ destroyed: lt >= I.destroyedAt ? 1 : 0, anak: I.anak ?? 0, craterP: I.craterP ?? 0.6 });
     this.island.uniforms.uAsh.value = val(I.ash, u, lt, 0);
     this.island.uniforms.uLava.value = val(I.lava, u, lt, 0);
     if (p.erupt) { const c0 = typeof p.erupt.at === 'string' ? CRATERS[p.erupt.at] : p.erupt.at || CRATERS.perboewatan; this.island.uniforms.uLavaCenter.value.set(c0[0], 0, c0[2]); }
@@ -253,6 +270,7 @@ export class StraitSet extends BaseSet {
       this.shock.set(sh.c ?? [E.c[0], 0, E.c[2]], R, k);
     } else this.shock.set([0, 0, 0], 0, 0);
 
+    setShipAsh(val(p.shipAsh, u, lt, 0));
     // ships
     for (const sd of p.ships || []) {
       const ship = this.ships.get(sd.id);
@@ -281,6 +299,16 @@ export class StraitSet extends BaseSet {
     if (!(p.ships || []).some((s) => ['warship', 'excursion', 'steamer'].includes(s.type))) this.funnel.on = false;
     this.shipRoot.updateMatrixWorld(true);
     // people on ships / at positions
+    const jt = p.jet;
+    this.jet.visible = !!jt;
+    if (jt) { this.jet.position.set(jt.pos[0] + (jt.speed ?? 230) * lt, jt.pos[1], jt.pos[2]); }
+    // birds: p.birds = { c:[x,y,z], r, h, speed, spread, scale }
+    const bd = p.birds;
+    this.birds.mesh.visible = !!bd;
+    if (bd) {
+      const path = (t) => { const a = t * (bd.speed ?? 0.12) + (bd.ph ?? 0); return { pos: [bd.c[0] + Math.cos(a) * bd.r, bd.c[1] + Math.sin(a * 2.3) * (bd.h ?? 6), bd.c[2] + Math.sin(a) * bd.r], dir: [-Math.sin(a), 0.05, Math.cos(a)] }; };
+      this.birds.update(vt, path, bd.spread ?? 30, bd.scale ?? 1.4);
+    }
     for (const f of this.activePeople) {
       const d = f.userData.def;
       if (d.ship) {
@@ -305,6 +333,7 @@ export class StraitSet extends BaseSet {
     this.puffs.update(vt, cam.position);
     this.sparks.update(vt);
     this.flakes.update(vt);
+    this.trail.update(vt);
     // lightning flash lights the scene
     const fl = this.E.flash;
     const PU = this.puffs.uniforms;

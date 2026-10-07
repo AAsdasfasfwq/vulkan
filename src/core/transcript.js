@@ -44,10 +44,23 @@ export function parseTranscript(json) {
     for (const w of list) {
       const raw = (w.word || '').trim();
       if (!raw) continue;
+      // Whisper splits hyphenated words ("present" + "-day"): glue them back.
+      if (/^[-,.]/.test(w.word || '') && words.length) {
+        const pw = words[words.length - 1];
+        pw.text += raw;
+        pw.key = norm(pw.text);
+        pw.e = Math.max(pw.e, w.end);
+        pw.ve = srcToVideo(pw.e);
+        lastEnd = pw.e;
+        continue;
+      }
       // Whisper hallucinations at the very end of the file ("For more information...")
       if (w.start >= 855.0) continue;
-      const s = Math.max(w.start, lastEnd - 0.05);
-      const e = Math.max(w.end, s + 0.05);
+      let s = Math.max(w.start, lastEnd - 0.05);
+      let e = Math.max(w.end, s + 0.05);
+      // A word that straddles an inserted gap is spoken after it (Whisper
+      // tends to start words early when they follow a silence).
+      for (const g of GAPS) if (s < g.at && e > g.at) { s = g.at; e = Math.max(e, s + 0.12); }
       lastEnd = e;
       words.push({ text: raw, key: norm(raw), s, e, vs: srcToVideo(s), ve: srcToVideo(e) });
     }
@@ -60,47 +73,33 @@ export function parseTranscript(json) {
 
 // Phrase finder: anchors visuals on the exact spoken words.
 export function makeFinder(words) {
-  let cursor = 0;
+  // Flatten into sub-tokens (a Whisper "word" may contain several, e.g. "gases—water").
+  const toks = [];
+  words.forEach((w, wi) => w.key.split(/\s+/).filter(Boolean).forEach((t) => toks.push({ t, wi })));
+  let cursor = 0; // index into toks
   function search(phrase, from) {
-    const toks = norm(phrase).split(/\s+/).filter(Boolean);
-    for (let i = from; i < words.length; i++) {
-      let ok = true, j = i, k = 0;
-      while (k < toks.length) {
-        if (j >= words.length) { ok = false; break; }
-        const wk = words[j].key.split(/\s+/).filter(Boolean);
-        // a word token may contain several sub tokens (e.g. "gases water")
-        for (const sub of wk) {
-          if (k >= toks.length) break;
-          if (sub !== toks[k] && !(k === toks.length - 1 && sub.startsWith(toks[k]))) { ok = false; break; }
-          k++;
-        }
-        if (!ok) break;
-        j++;
+    const q = norm(phrase).split(/\s+/).filter(Boolean);
+    for (let i = from; i <= toks.length - q.length; i++) {
+      let ok = true;
+      for (let k = 0; k < q.length; k++) {
+        const t = toks[i + k].t;
+        if (t !== q[k] && !(k === q.length - 1 && t.startsWith(q[k]))) { ok = false; break; }
       }
-      if (ok) return { first: i, last: j - 1 };
+      if (ok) return { first: i, last: i + q.length - 1 };
     }
     return null;
   }
+  const need = (phrase) => {
+    const r = search(phrase, cursor);
+    if (!r) throw new Error('Phrase not found in transcript (after previous anchor): "' + phrase + '"');
+    return r;
+  };
   return {
     // Video start time of the phrase (searches forward from the previous anchor).
-    at(phrase) {
-      const r = search(phrase, cursor);
-      if (!r) throw new Error('Phrase not found in transcript: "' + phrase + '"');
-      cursor = r.first;
-      return words[r.first].vs;
-    },
-    end(phrase) {
-      const r = search(phrase, cursor);
-      if (!r) throw new Error('Phrase not found in transcript: "' + phrase + '"');
-      return words[r.last].ve;
-    },
-    // Start of a word occurrence after the current cursor (does not move it).
-    peek(phrase) {
-      const r = search(phrase, cursor);
-      if (!r) throw new Error('Phrase not found in transcript: "' + phrase + '"');
-      return words[r.first].vs;
-    },
-    wordAt(i) { return words[i]; },
+    at(phrase) { const r = need(phrase); cursor = r.first; return words[toks[r.first].wi].vs; },
+    end(phrase) { const r = need(phrase); return words[toks[r.last].wi].ve; },
+    // Start of a phrase after the current cursor (does not move it).
+    peek(phrase) { const r = need(phrase); return words[toks[r.first].wi].vs; },
     reset() { cursor = 0; },
   };
 }

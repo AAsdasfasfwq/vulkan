@@ -33,7 +33,7 @@ export function drawCard(k, lt, dur, card) {
   k.text(main, W / 2, y, { size, weight: 800, color: '#F6F2EC', tracking });
   ctx.filter = 'none';
   if (sub) {
-    const su = clamp((lt - 0.35) / 0.7);
+    const su = clamp((lt - (card.subAt ?? 0.35)) / 0.7);
     ctx.globalAlpha = ease.out(su) * fadeOut * 0.78;
     k.text(sub, W / 2, y + 74, { size: 30, weight: 600, color: '#cfc7bc', tracking: lerp(20, 12, ease.out(su)) });
     // thin rule

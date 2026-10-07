@@ -132,6 +132,13 @@ const MAT = {};
 function mats() {
   if (MAT.hull) return MAT;
   MAT.hull = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, metalness: 0.05 });
+  MAT.ash = { value: 0 };
+  MAT.hull.onBeforeCompile = (sh) => {
+    sh.uniforms.uShipAsh = MAT.ash;
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWN;').replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\nvWN = normalize(mat3(modelMatrix) * objectNormal);');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWN; uniform float uShipAsh;')
+      .replace('#include <color_fragment>', '#include <color_fragment>\n diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.46, 0.45, 0.43), uShipAsh * smoothstep(0.55, 0.95, vWN.y));');
+  };
   MAT.sail = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, side: THREE.DoubleSide });
   MAT.rope = new THREE.LineBasicMaterial({ color: 0x1a140e, transparent: true, opacity: 0.85 });
   MAT.metal = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.6 });
@@ -146,6 +153,8 @@ function rigging(lines) {
 }
 
 // Three-masted merchant barque, ~48 m.
+export function setShipAsh(v) { mats(); MAT.ash.value = v; }
+
 export function makeBarque(opts = {}) {
   const M = mats();
   const r = rng(opts.seed ?? 1);

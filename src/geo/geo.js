@@ -43,6 +43,8 @@ export const PLACES = {
   rio: [-22.9, -43.2],
   sanfrancisco: [37.77, -122.42],
   tokyo: [35.68, 139.76],
+  amsterdam: [52.37, 4.9],
+  sydney: [-33.87, 151.2],
 };
 
 // Telegraph network of the early 1880s (approximate routes)

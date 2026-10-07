@@ -456,7 +456,7 @@ export class CoastSet extends BaseSet {
       const pose = typeof d.pose === 'function' ? d.pose(u, lt) : d.pose || {};
       let x = d.at[0], z = d.at[1];
       if (d.move) { x += d.move[0] * lt; z += d.move[1] * lt; }
-      f.position.set(x, coastHeight(x, z) + (d.dy ?? 0), z);
+      f.position.set(x, d.y !== undefined ? d.y : coastHeight(x, z) + (d.dy ?? 0), z);
       f.rotation.set(0, ((d.rot ?? 0) * Math.PI) / 180, 0);
       f.scale.setScalar(d.scale ?? 1);
       poseFigure(f, vt, pose);
