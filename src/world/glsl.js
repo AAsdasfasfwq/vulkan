@@ -67,7 +67,7 @@ vec3 skyBase(vec3 d) {
   float h = d.y;
   vec3 c;
   if (h >= 0.0) c = mix(uHorizon, uZenith, pow(clamp(h, 0.0, 1.0), uHazePow));
-  else c = mix(uHorizon, uGround, clamp(-h * 6.0, 0.0, 1.0));
+  else c = mix(uHorizon, uGround, smoothstep(0.0, 0.45, -h));
   float sd = max(dot(d, uSunDir), 0.0);
   // broad forward scattering around the sun
   c += uSunColor * (0.025 * pow(sd, 3.0) + 0.06 * pow(sd, 12.0) + 0.18 * pow(sd, 80.0)) * uSunVisible;

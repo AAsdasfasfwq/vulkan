@@ -26,6 +26,66 @@ function planks(w, h, base = '#7a5233') {
   return t;
 }
 
+// Lime-washed ochre plaster over a teak wainscot, painted frieze and two framed paintings.
+function verandaWall() {
+  return canvasTex(2048, 528, (c, W, H) => {
+    const r = rng(21);
+    const g = c.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#c99a5c'); g.addColorStop(0.7, '#d8ad6c'); g.addColorStop(1, '#b98a52');
+    c.fillStyle = g; c.fillRect(0, 0, W, H);
+    for (let i = 0; i < 900; i++) { c.fillStyle = `rgba(${r() < 0.5 ? '255,235,200' : '90,55,25'},${r() * 0.06})`; const s = 10 + r() * 90; c.beginPath(); c.ellipse(r() * W, r() * H, s, s * 0.6, r() * 3, 0, 6.28); c.fill(); }
+    // frieze
+    const fy = H * (1 - 2.95 / 3.6);
+    c.fillStyle = '#7a2418'; c.fillRect(0, fy, W, 16); c.fillStyle = '#e0b860'; c.fillRect(0, fy + 18, W, 3); c.fillRect(0, fy - 4, W, 2);
+    for (let x = 0; x < W; x += 48) { c.fillStyle = '#e0b860'; c.beginPath(); c.moveTo(x, fy + 8); c.lineTo(x + 8, fy + 2); c.lineTo(x + 16, fy + 8); c.lineTo(x + 8, fy + 14); c.fill(); }
+    // wainscot
+    const wy = H * (1 - 1.0 / 3.6);
+    c.fillStyle = '#4a2c16'; c.fillRect(0, wy, W, H - wy);
+    c.fillStyle = '#2e1a0c'; c.fillRect(0, wy, W, 8);
+    for (let x = 12; x < W; x += 110) { c.strokeStyle = 'rgba(20,10,4,0.8)'; c.lineWidth = 4; c.strokeRect(x, wy + 22, 90, H - wy - 40); c.strokeStyle = 'rgba(160,110,60,0.35)'; c.lineWidth = 2; c.strokeRect(x + 4, wy + 26, 82, H - wy - 48); }
+    // paintings (between the doors at x = -2 and x = +2 m)
+    for (const [xm, kind] of [[-2, 0], [2, 1]]) {
+      const cx = ((xm + 7) / 14) * W, cy = H * (1 - 2.0 / 3.6), pw = 150, ph = 110;
+      c.fillStyle = '#2a1608'; c.fillRect(cx - pw / 2 - 14, cy - ph / 2 - 14, pw + 28, ph + 28);
+      c.fillStyle = '#c8962e'; c.fillRect(cx - pw / 2 - 6, cy - ph / 2 - 6, pw + 12, ph + 12);
+      const sky = c.createLinearGradient(0, cy - ph / 2, 0, cy + ph / 2);
+      if (kind) { sky.addColorStop(0, '#2d4f7a'); sky.addColorStop(0.6, '#e9a45a'); sky.addColorStop(1, '#3a5a3a'); }
+      else { sky.addColorStop(0, '#7fa8c8'); sky.addColorStop(0.6, '#f0d8a8'); sky.addColorStop(1, '#2e5a8a'); }
+      c.fillStyle = sky; c.fillRect(cx - pw / 2, cy - ph / 2, pw, ph);
+      c.fillStyle = kind ? '#24462a' : '#2f6a3a';
+      c.beginPath(); c.moveTo(cx - pw / 2, cy + ph * 0.25); c.quadraticCurveTo(cx - 10, cy - ph * 0.3, cx + 30, cy + ph * 0.12); c.lineTo(cx + pw / 2, cy + ph * 0.3); c.lineTo(cx + pw / 2, cy + ph / 2); c.lineTo(cx - pw / 2, cy + ph / 2); c.fill();
+      if (!kind) { c.fillStyle = '#3a2410'; c.fillRect(cx + 20, cy + 6, 26, 6); c.fillRect(cx + 31, cy - 18, 2, 24); c.fillStyle = '#eee'; c.beginPath(); c.moveTo(cx + 33, cy - 16); c.lineTo(cx + 44, cy + 2); c.lineTo(cx + 33, cy + 2); c.fill(); }
+    }
+  });
+}
+function tilesTex() {
+  const t = canvasTex(1024, 1024, (c, W, H) => {
+    const n = 4, s = W / n;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      const x = i * s, y = j * s;
+      c.fillStyle = '#e6d6b8'; c.fillRect(x, y, s, s);
+      c.fillStyle = '#9a3a22'; c.beginPath(); c.moveTo(x + s / 2, y + 12); c.lineTo(x + s - 12, y + s / 2); c.lineTo(x + s / 2, y + s - 12); c.lineTo(x + 12, y + s / 2); c.closePath(); c.fill();
+      c.fillStyle = '#e6d6b8'; c.beginPath(); c.arc(x + s / 2, y + s / 2, s * 0.26, 0, 6.28); c.fill();
+      c.fillStyle = '#1f4a6a'; for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4; c.beginPath(); c.ellipse(x + s / 2 + Math.cos(a) * s * 0.12, y + s / 2 + Math.sin(a) * s * 0.12, s * 0.09, s * 0.04, a, 0, 6.28); c.fill(); }
+      c.fillStyle = '#c89a3a'; c.beginPath(); c.arc(x + s / 2, y + s / 2, s * 0.05, 0, 6.28); c.fill();
+      c.fillStyle = '#1f4a6a'; for (const [cx, cy] of [[x, y], [x + s, y], [x, y + s], [x + s, y + s]]) { c.beginPath(); c.arc(cx, cy, s * 0.14, 0, 6.28); c.fill(); }
+      c.strokeStyle = 'rgba(60,40,25,0.55)'; c.lineWidth = 3; c.strokeRect(x + 1.5, y + 1.5, s - 3, s - 3);
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(14 / 1.3, 10 / 1.3);
+  return t;
+}
+function shutterTex() {
+  return canvasTex(256, 512, (c, W, H) => {
+    c.fillStyle = '#1f4a3c'; c.fillRect(0, 0, W, H);
+    c.fillStyle = '#163629'; c.fillRect(W / 2 - 3, 0, 6, H);
+    for (let y = 20; y < H - 20; y += 14) { c.fillStyle = '#2d6150'; c.fillRect(16, y, W / 2 - 26, 7); c.fillRect(W / 2 + 10, y, W / 2 - 26, 7); c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(16, y + 7, W / 2 - 26, 3); c.fillRect(W / 2 + 10, y + 7, W / 2 - 26, 3); }
+    c.strokeStyle = '#0f2a20'; c.lineWidth = 10; c.strokeRect(5, 5, W - 10, H - 10);
+    c.fillStyle = '#c8a040'; c.beginPath(); c.arc(W / 2 - 14, H * 0.52, 6, 0, 6.28); c.fill();
+  });
+}
+
 export class InteriorSet extends BaseSet {
   constructor(engine, film) {
     super(engine, film);
@@ -33,15 +93,22 @@ export class InteriorSet extends BaseSet {
     this.rooms = {};
     // ---------------- VERANDA (Batavia, sunset) ----------------
     const v = new THREE.Group();
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(14, 10), M(0xffffff, 0.55, 0, { map: planks(3, 2) }));
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(14, 10), M(0xffffff, 0.35, 0, { map: tilesTex() }));
     floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; v.add(floor);
-    const roof = new THREE.Mesh(new THREE.PlaneGeometry(14, 10), M(0xe8e2d4, 0.8)); roof.rotation.x = Math.PI / 2; roof.position.y = 3.6; v.add(roof);
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(14, 3.6), M(0xe9e3d3, 0.85)); wall.position.set(0, 1.8, -5); wall.receiveShadow = true; v.add(wall);
+    const roof = new THREE.Mesh(new THREE.PlaneGeometry(14, 10), M(0xffffff, 0.7, 0, { map: planks(4, 3, '#6a4426') })); roof.rotation.x = Math.PI / 2; roof.position.y = 3.6; v.add(roof);
+    for (let i = 0; i < 7; i++) { const beam = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.22, 10), M(0x3a2212, 0.6)); beam.position.set(-6 + i * 2, 3.49, 0); v.add(beam); }
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(14, 3.6), M(0xffffff, 0.9, 0, { map: verandaWall() })); wall.position.set(0, 1.8, -5); wall.receiveShadow = true; v.add(wall);
+    for (const sx of [-7, 7]) { const sw = new THREE.Mesh(new THREE.PlaneGeometry(10, 3.6), M(0xffffff, 0.9, 0, { map: verandaWall() })); sw.rotation.y = -Math.sign(sx) * Math.PI / 2; sw.position.set(sx, 1.8, 0); sw.receiveShadow = true; v.add(sw); }
     for (let i = 0; i < 6; i++) { const col = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.17, 3.6, 16), M(0xf3efe4, 0.5)); col.position.set(-6 + i * 2.4, 1.8, 4.5); col.castShadow = true; v.add(col); }
     for (let i = 0; i < 30; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.8, 0.06), M(0xf0ebdf, 0.6)); b.position.set(-7 + i * 0.48, 0.4, 4.5); v.add(b); }
     const rail = new THREE.Mesh(new THREE.BoxGeometry(14, 0.08, 0.16), M(0xf0ebdf, 0.6)); rail.position.set(0, 0.84, 4.5); v.add(rail);
     // doors/windows with shutters
-    for (let i = 0; i < 3; i++) { const d = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.4), M(0x24463a, 0.6)); d.position.set(-4 + i * 4, 1.2, -4.98); v.add(d); }
+    const shut = shutterTex();
+    for (let i = 0; i < 3; i++) {
+      const fr = new THREE.Mesh(new THREE.BoxGeometry(1.55, 2.62, 0.08), M(0xf0ead8, 0.5)); fr.position.set(-4 + i * 4, 1.31, -4.97); v.add(fr);
+      const d = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 2.4), M(0xffffff, 0.55, 0, { map: shut })); d.position.set(-4 + i * 4, 1.2, -4.92); v.add(d);
+      const arch = new THREE.Mesh(new THREE.CircleGeometry(0.66, 24, 0, Math.PI), M(0x8a5a2a, 0.5, 0, { emissive: 0x2a1406 })); arch.position.set(-4 + i * 4, 2.45, -4.92); v.add(arch);
+    }
     // table + chairs + glasses + bottle + newspaper
     const table = new THREE.Group();
     const top = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.05, 32), M(0x5b3820, 0.35)); top.position.y = 0.76; table.add(top);

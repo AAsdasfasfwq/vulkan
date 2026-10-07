@@ -43,13 +43,13 @@ export default function act2(A) {
   // --- tropical paradise -----------------------------------------------------
   add(shot(A.at('On the surface, it is still') - L, 'coast', dolly([-70, 3.5, 30], [-60, 3.2, 22], [20, 6, -40], [24, 7, -40], 40, 'lin'), { layout: 'wild', mood: 'day', sea: 'calm', wind: 1.2 }, { amb: 'beach', mus: 'calm', sfx: [['whoosh', 0], ['birdsong', 0.3]], fx: { grade: 'tropical' } }));
   add(shot(A.at('No one lives on the island') - L, 'strait', dolly(up(-2600, -1500, 220), up(-2100, -900, 260), up(0, 400, 200), up(200, 700, 220), 44, 'lin'), { mood: 'day', wind: 1.2, birds: { c: [-2200, 300, -1100], r: 150, speed: 0.12, spread: 40 } }, { amb: 'jungle' }));
-  add(shot(A.at('but sailors often stop there') - L, 'coast', dolly(cup(-14, 14, 1.7), cup(-16, 11, 1.7), cup(-24, 5, 1.2), cup(-26, 4, 1.1), 40), {
+  add(shot(A.at('but sailors often stop there') - L, 'coast', dolly(cup(-14, -1, 1.7), cup(-16, -4, 1.7), cup(-24, -11, 1.2), cup(-26, -12, 1.1), 40), {
     layout: 'wild', mood: 'golden', sea: 'calm', barque: true, barquePos: [-60, 300],
-    people: [{ style: 'sailor', at: [-20, 5], rot: -40, pose: { carry: true }, prop: 'bucket' }, { style: 'sailor2', at: [-27, 4], rot: 30, move: [0.6, 0.5], pose: { walk: 0.8, carry: true }, prop: 'log' }, { style: 'sailor', at: [-22, 2.5], rot: 160, pose: { sweep: 0 } }],
+    people: [{ style: 'sailor', at: [-20, -11], rot: -40, pose: { carry: true }, prop: 'bucket' }, { style: 'sailor2', at: [-27, -12], rot: 30, move: [0.6, 0.5], pose: { walk: 0.8, carry: true }, prop: 'log' }, { style: 'sailor', at: [-22, -13.5], rot: 160, pose: { sweep: 0 } }],
   }, { amb: 'beach', fx: { dof: { focus: 7, range: 4, bokeh: 3 } }, sfx: [['waveLap', 0.2]] }));
-  add(shot(A.at('collect fresh water and wood') - L, 'coast', dolly([-30, 6, 30], [-26, 5, 26], [-22, 1.5, 6], [-22, 1.5, 6], 36), {
+  add(shot(A.at('collect fresh water and wood') - L, 'coast', dolly([-30, 6, 14], [-26, 5, 10], [-22, 1.8, -10], [-22, 1.8, -10], 36), {
     layout: 'wild', mood: 'golden', sea: 'calm', barque: true, barquePos: [-60, 300],
-    people: [{ style: 'sailor', at: [-21, 6], rot: -60, move: [0.7, -0.4], pose: { walk: 0.8, carry: true }, prop: 'bucket' }, { style: 'sailor2', at: [-25, 3], rot: 90, move: [0.9, 0], pose: { walk: 0.9, carry: true }, prop: 'log' }],
+    people: [{ style: 'sailor', at: [-21, -10], rot: -60, move: [0.7, -0.4], pose: { walk: 0.8, carry: true }, prop: 'bucket' }, { style: 'sailor2', at: [-25, -13], rot: 90, move: [0.9, 0], pose: { walk: 0.9, carry: true }, prop: 'log' }],
   }, { amb: 'beach' }));
 
   // --- crystals & gases -------------------------------------------------------
@@ -71,7 +71,7 @@ export default function act2(A) {
   }));
   add(shot(A.at('steadily increases') - L, 'studio', dolly([0, 0.25, 2.4], [0, 0.2, 2.0], [0, 0, 0], [0, 0, 0], 36), { bg: 'dark', items: [{ kind: 'gauge', pos: [0, 0, 0], appear: 0, spin: 0, value: (u) => lerp(0.55, 0.85, u), jitter: 0.015 }] }, { amb: 'none', sfx: [['gaugeTick', 0.1]] }));
   add(shot(A.at('Deep underground') - L, 'studio', dolly([2.4, 1.2, 3.6], [1.9, 1.0, 2.9], [0, 0.8, 0], [0, 0.7, 0], 38), { bg: 'ember', items: [{ kind: 'spring', pos: [0, 0, 0], appear: 0, spin: 0.15, value: (u) => ease.inOut(u) * 0.85, glow: (u) => u }] }, {
-    amb: 'none', sfx: [['springCreak', 0.2], ['riser', 0.6]], fx: { fadeOut: 0.25 },
+    amb: 'none', sfx: [['springCreak', 0.2], ['riser', 0.6]], fx: { fadeOut: 0.25 }, subsOff: A.peek('the spring is') - A.peek('Deep underground') - 0.05,
     draw: word('the spring is winding tighter', A.peek('the spring is') - A.peek('Deep underground'), { y: H * 0.16, size: 52, mode: 'blur', tracking: 1 }),
   }));
   return S;

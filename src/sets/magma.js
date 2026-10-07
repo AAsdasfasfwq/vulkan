@@ -69,7 +69,7 @@ export class MagmaSet extends BaseSet {
     this.jet.position.set(0, 30, -10);
     sc.add(this.jet);
     this.puffs = new PuffCloud(1500);
-    this.steam = { on: false, c: [0, 0, -10], h: 40, spread: 20, size: 8, life: 4, alpha: 0.7, col: [0.95, 0.95, 0.97], n: 600, seed: 8, wind: [0.2, 0.3], glow: 0.5 };
+    this.steam = { on: false, c: [0, 0, -10], h: 32, spread: 18, size: 6, life: 3.4, alpha: 0.42, col: [0.78, 0.76, 0.76], n: 480, seed: 8, wind: [0.2, 0.3], glow: 0.28 };
     this.puffs.emitters.push(plumeletEmitter(this.steam));
     sc.add(this.puffs.mesh);
     this.glow = new THREE.PointLight(0xff5a14, 300, 120, 1.2); this.glow.position.set(0, 4, 0); sc.add(this.glow);

@@ -21,10 +21,10 @@ export default function act4(A) {
   }));
   const war = { pos: [-6200, -6800], heading: 70, speed: 5 };
   add(shot(A.at('Passing through the Sunda Strait') - L, 'strait', dolly([-6600, 40, -6400], [-6450, 36, -6650], [-6100, 8, -7000], [-5900, 10, -7300], 40, 'lin'), { mood: 'day', erupt: mayPlume(), ships: [{ id: 'eli', type: 'warship', ...war }] }, { amb: 'ocean', sfx: [['shipHorn', 0.6], ['whoosh', 0]] }));
-  add(shot(A.at('the captain of the German') - L, 'strait', onShip(war, [6, 5.2, -3.0], [7, 5.1, -2.6], [11, 5.3, 0.0], [11, 5.4, 0.0], 36), {
+  add(shot(A.at('the captain of the German') - L, 'strait', onShip(war, [12.0, 5.7, -2.6], [12.5, 5.55, -2.0], [14.6, 5.6, 8], [14.8, 5.7, 8], 38), {
     mood: 'day', erupt: mayPlume(), ships: [{ id: 'eli', type: 'warship', ...war }],
-    people: [{ style: 'captain', ship: 'eli', at: [11, 0.4], rot: 150, pose: { telescope: true }, prop: 'telescope' }, { style: 'officer', ship: 'eli', at: [8.5, 1.8], rot: 120 }],
-  }, { amb: 'ocean', fx: { dof: { focus: 5, range: 2.5, bokeh: 3 } }, draw: stamp('SMS ELISABETH', 'German Imperial Navy · 20 May 1883', 0.25) }));
+    people: [{ style: 'captain', ship: 'eli', at: [13.4, 1.4], rot: 8, pose: { telescope: true }, prop: 'telescope' }, { style: 'officer', ship: 'eli', at: [11.0, 2.6], rot: -25 }],
+  }, { amb: 'ocean', fx: { dof: { focus: 4, range: 2.5, bokeh: 2.5 } }, draw: stamp('SMS ELISABETH', 'German Imperial Navy · 20 May 1883', 0.25) }));
   add(shot(A.at('spots a column of smoke') - L, 'strait', dolly([-5900, 6, -6600], [-5900, 6, -6600], [250, 4000, -2500], [250, 5200, -2500], 9, 'lin'), { mood: 'day', erupt: mayPlume() }, { amb: 'ocean', sfx: [['scope', 0]], draw: (k, lt, S2) => INFO.scope(k, lt, S2, { r: 470 }) }));
   add(flat(A.at('ash rising nearly seven miles') - L, (k, lt, S2) => INFO.altitude(k, lt, S2, { km: 11, max: 30, at: 0.1, dur: 2.0 }), { sfx: [['riser', 0], ['whoosh', 0]] }));
   add(shot(A.at('The volcano has awakened') - L, 'strait', dolly([-2200, 30, -6000], [-1900, 40, -5500], [250, 2500, -2500], [250, 3000, -2500], 46, 'lin'), { mood: 'day', erupt: mayPlume({ intensity: 1, bombs: 0.4, lightning: 0.15 }), island: { ash: 0.25 } }, { amb: 'eruption', mus: 'tension', sfx: [['boom', 0.3]], fx: { shakes: [{ at: 0.3, amp: 0.8, decay: 2 }] } }));
@@ -39,7 +39,7 @@ export default function act4(A) {
   add(shot(tSh, 'coast', dolly([172, 3.2, 52], [176, 3.4, 66], [-6000, 2600, 42000], [-6400, 3000, 42000], 40), {
     layout: 'anjer', mood: 'golden', volcano: true, erupt: { height: 18000, intensity: 0.9, glow: 0.4, umbrella: 0.2 },
     people: [{ style: 'gentleman', at: [181, 90], y: 1.5, rot: 10 }, { style: 'lady', at: [179, 92], y: 1.5, rot: 5 }, { style: 'lady2', at: [182, 95], y: 1.5, rot: -5 }, { style: 'merchant', at: [178.5, 86], y: 1.5, rot: 0, pose: { point: true } }],
-  }, { amb: 'beach', draw: word('A SPECTACULAR SHOW', A.peek('spectacular') - tSh, { y: H * 0.2, size: 80, tracking: 10 }) }));
+  }, { amb: 'beach', subsOff: A.peek('spectacular') - tSh - 0.3, draw: word('A SPECTACULAR SHOW', A.peek('spectacular') - tSh, { y: H * 0.2, size: 80, tracking: 10 }) }));
   add(flat(A.at('Local entrepreneurs organize') - L, (k, lt, S2) => INFO.poster(k, lt, S2, {}), { sfx: [['paper', 0], ['stampHit', 0.6]] }));
   const exc = { pos: [-4600, -6200], heading: 55, speed: 4 };
   add(shot(A.at('sightseeing trips') - L, 'strait', dolly([-4800, 18, -5800], [-4650, 20, -5900], [-4400, 6, -6400], [-4300, 8, -6600], 40, 'lin'), { mood: 'day', erupt: mayPlume({ intensity: 0.75 }), ships: [{ id: 'exc', type: 'excursion', ...exc }] }, { amb: 'ocean', sfx: [['paddle', 0], ['shipHorn', 1.0]] }));
@@ -48,19 +48,25 @@ export default function act4(A) {
     { style: 'lady2', ship: 'exc', at: [1.5, -1.6], rot: 60 }, { style: 'gentleman', ship: 'exc', at: [0.8, -0.4], rot: 80, prop: 'champagne', pose: { drink: 0.3 } },
     { style: 'lady3', ship: 'exc', at: [5.4, -1.2], rot: 100 }, { style: 'officer', ship: 'exc', at: [-0.5, 2.4], rot: 95 }, { style: 'merchant', ship: 'exc', at: [6.5, 1.6], rot: 110, pose: { point: true } },
   ];
+  // the same guests turned to starboard, watching the eruption
+  const watchers = [
+    { style: 'lady', ship: 'exc', at: [3, 2.2], rot: 12, prop: 'champagne', pose: { hold: true } }, { style: 'gentleman', ship: 'exc', at: [3.9, 1.3], rot: -8, pose: { lookUp: -0.15 } },
+    { style: 'lady2', ship: 'exc', at: [1.6, 1.2], rot: 20 }, { style: 'gentleman', ship: 'exc', at: [0.9, 2.6], rot: 5, prop: 'champagne', pose: { drink: 0.3 } },
+    { style: 'lady3', ship: 'exc', at: [5.2, 2.8], rot: -15 }, { style: 'officer', ship: 'exc', at: [-0.6, 3.0], rot: 10 }, { style: 'merchant', ship: 'exc', at: [6.6, 2.0], rot: -20, pose: { point: true } },
+  ];
   const tW = A.at('Women in hoop skirts') - L;
   add(shot(tW, 'strait', onShip(exc, [-5.5, 5.3, 1.4], [-4.6, 5.2, 1.0], [3, 5.0, 0.4], [3.5, 5.0, 0.4], 40), { mood: 'day', erupt: mayPlume({ intensity: 0.75 }), ships: [{ id: 'exc', type: 'excursion', ...exc }], people: party }, {
     amb: 'deckParty', fx: { dof: { focus: 7, range: 3, bokeh: 2.5 } }, sfx: [['laughter', 0.4]],
   }));
-  add(shot(A.at('champagne on deck') - L, 'strait', onShip(exc, [2.6, 5.5, 0.9], [2.4, 5.45, 0.7], [3.6, 5.2, 1.7], [3.6, 5.25, 1.7], 30), { mood: 'day', erupt: mayPlume({ intensity: 0.75 }), ships: [{ id: 'exc', type: 'excursion', ...exc }], people: party }, {
-    amb: 'deckParty', sfx: [['glassClink', 0.4], ['cork', 0.1]], fx: { dof: { focus: 1.2, range: 0.6, bokeh: 4 } },
+  add(shot(A.at('champagne on deck') - L, 'strait', onShip(exc, [2.0, 5.3, 0.55], [2.1, 5.25, 0.8], [3.0, 4.9, 2.15], [3.0, 4.95, 2.15], 32), { mood: 'day', erupt: mayPlume({ intensity: 0.75 }), ships: [{ id: 'exc', type: 'excursion', ...exc }], people: party }, {
+    amb: 'deckParty', sfx: [['glassClink', 0.4], ['cork', 0.1]], fx: { dof: { focus: 1.75, range: 0.7, bokeh: 4 } },
   }));
-  add(shot(A.at('watching the volcano hurl') - L, 'strait', onShip(exc, [-1, 5.6, 0.0], [0, 5.6, 0.0], [250, 1800, -2500], [250, 2600, -2500], 40, { lookWorld: true }), {
-    mood: 'day', erupt: mayPlume({ intensity: 0.95, bombs: 0.8, bombSpeed: 300 }), ships: [{ id: 'exc', type: 'excursion', ...exc }], people: party, island: { ash: 0.3 },
+  add(shot(A.at('watching the volcano hurl') - L, 'strait', onShip(exc, [5.6, 5.6, -2.6], [5.0, 5.55, -2.2], [250, 1800, -2500], [250, 2600, -2500], 40, { lookWorld: true }), {
+    mood: 'day', erupt: mayPlume({ intensity: 0.95, bombs: 0.8, bombSpeed: 300 }), ships: [{ id: 'exc', type: 'excursion', ...exc }], people: watchers, island: { ash: 0.3 },
   }, { amb: 'eruption', sfx: [['boomFar', 0.5], ['crowdGasp', 0.7]] }));
-  add(shot(A.at('They have no idea') - L, 'strait', onShip(exc, [-3.2, 5.9, -2.6], [-2.4, 5.8, -2.2], [250, 1500, -2500], [250, 1500, -2500], 34, { lookWorld: true }), { mood: 'day', mood2: 'dusk', moodK: [0.2, 0.5], erupt: mayPlume(), ships: [{ id: 'exc', type: 'excursion', ...exc }], people: party }, { amb: 'eruption', mus: 'dread', sfx: [['drone', 0]] }));
+  add(shot(A.at('They have no idea') - L, 'strait', onShip(exc, [6.0, 5.05, -1.9], [5.6, 5.0, -1.6], [250, 1300, -2500], [250, 1300, -2500], 30, { lookWorld: true }), { mood: 'day', mood2: 'dusk', moodK: [0.2, 0.5], erupt: mayPlume(), ships: [{ id: 'exc', type: 'excursion', ...exc }], people: watchers }, { amb: 'eruption', mus: 'dread', sfx: [['drone', 0]], fx: { dof: { focus: 4.5, range: 3, bokeh: 2 } } }));
   const cr = CRATERS.perboewatan;
-  add(shot(A.at('staring down the barrel') - L, 'strait', dolly([cr[0] + 30, 2200, cr[2] + 40], [cr[0] + 5, 420, cr[2] + 8], [cr[0], 0, cr[2]], [cr[0], 0, cr[2]], 40, 'in'), { mood: 'golden', steam: { at: 'perboewatan', amount: 0.35, h: 400, col: [0.55, 0.5, 0.48] }, island: { lava: 1.2, ash: 0.5 }, glowLight: 0.4 }, { amb: 'eruption', fx: { vignette: 0.75 }, sfx: [['whooshDown', 0.1], ['gunCock', A.peek('loaded shotgun') - A.peek('staring down the barrel')]] }));
+  add(shot(A.at('staring down the barrel') - L, 'strait', dolly([cr[0] + 30, 2200, cr[2] + 40], [cr[0] + 5, 420, cr[2] + 8], [cr[0], 0, cr[2]], [cr[0], 0, cr[2]], 40, 'in'), { mood: 'golden', steam: { at: 'perboewatan', amount: 0.22, h: 400, col: [0.4, 0.37, 0.35] }, island: { lava: 0.75, ash: 0.5 }, glowLight: 0.2, exposure: 0.8 }, { amb: 'eruption', fx: { vignette: 0.75 }, sfx: [['whooshDown', 0.1], ['gunCock', A.peek('loaded shotgun') - A.peek('staring down the barrel')]] }));
   add(shot(A.at('And the trigger') - L, 'xsection', orbit([0, -3, 0], [28, 22], [-6, 6], [6, 10], 40), { magma: 1, fill: 1, pressure: 1, vent: [0.3, 0.9], plug: 0.6, cracks: 0.2 }, { amb: 'rumble', sfx: [['thudLow', 0.3], ['boomLow', 0.6]], fx: { shakes: [{ at: 0.6, amp: 1, decay: 2 }] } }));
   add(shot(A.at('Then the activity subsides') - L, 'strait', dolly([-7000, 200, -5000], [-6800, 200, -4700], [250, 1500, -2500], [250, 1200, -2500], 36, 'lin'), { mood: 'golden', erupt: mayPlume({ intensity: [0.9, 0.15], bombs: 0 }), island: { ash: 0.3 } }, { amb: 'rumbleSoft', mus: 'calm' }));
   add(shot(A.at('Krakatoa seems to pause') - L, 'strait', dolly([-5200, 12, -1200], [-5000, 12, -1000], [0, 250, -1000], [0, 250, -1000], 30, 'lin'), { mood: 'dusk', sea: 'calm', steam: { at: 'perboewatan', amount: 0.4, h: 400 }, island: { ash: 0.3 }, ships: [{ id: 'exc', type: 'excursion', pos: [-3200, -1800], heading: 200, speed: 4 }] }, { amb: 'oceanCalm' }));

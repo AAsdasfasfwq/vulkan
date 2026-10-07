@@ -21,23 +21,23 @@ export default function act5(A) {
   add(shot(A.at('The volcano becomes active') - L, 'strait', dolly([-8000, 60, 6000], [-7600, 80, 5600], [0, 2000, -400], [0, 2600, -400], 38, 'lin'), { mood: 'day', mood2: 'haze', moodK: 0.4, erupt: julPlume({ t0: -1.0 }), island: { ash: 0.4 } }, { amb: 'eruption', mus: 'tension', sfx: [['boom', 0.5]], fx: { shakes: [{ at: 0.5, amp: 0.6, decay: 2 }] } }));
   add(shot(A.at("This time, the eruption doesn't stop") - L, 'strait', orbit([0, 1500, 0], [16000, 15000], [-150, -120], [5, 6], 40, 'lin'), { mood: 'haze', erupt: julPlume(), island: { ash: 0.5 } }, { amb: 'eruption' }));
   add(shot(A.at('A gray haze hangs') - L, 'strait', dolly([-6000, 8, 9000], [-5900, 8, 8800], [-4000, 40, 6000], [-3900, 40, 6000], 40, 'lin'), {
-    mood: 'haze', moodOv: { fog: 0.00045 }, erupt: julPlume(), island: { ash: 0.5 }, ashfall: 0.25,
+    mood: 'haze', moodOv: { fog: 0.00022, sunEl: 9, sunAz: 140, sunVisible: 1 }, erupt: julPlume(), island: { ash: 0.5 }, ashfall: 0.25,
     ships: [{ id: 'g1', type: 'barque', pos: [-4300, 6500], heading: 20, speed: 3 }, { id: 'g2', type: 'steamer', pos: [-5200, 6100], heading: 20, speed: 4 }],
   }, { amb: 'oceanGrey', fx: { grade: 'ash' } }));
   const ashShip = { pos: [-6500, 7200], heading: 20, speed: 2 };
   add(shot(A.at('Ash blankets the decks') - L, 'strait', onShip(ashShip, [16, 5.4, -3.0], [14.5, 5.2, -2.6], [2, 3.4, 0], [1, 3.4, 0], 40), {
-    mood: 'haze', moodOv: { fog: 0.0004 }, erupt: julPlume(), ashfall: 0.8, shipAsh: 1, ships: [{ id: 'ash1', type: 'barque', ...ashShip }],
+    mood: 'haze', moodOv: { fog: 0.00018 }, erupt: julPlume(), ashfall: 0.8, shipAsh: 1, ships: [{ id: 'ash1', type: 'barque', ...ashShip }],
     people: [{ style: 'sailor2', ship: 'ash1', at: [4, -1.6], rot: 60, pose: { sweep: 0 }, prop: 'broom' }],
   }, { amb: 'oceanGrey', fx: { grade: 'ash', dof: { focus: 11, range: 5, bokeh: 2.5 } } }));
-  add(shot(A.at('Sailors have to sweep') - L, 'strait', onShip(ashShip, [3.6, 4.1, 0.6], [3.3, 4.0, 0.2], [1.8, 3.6, -1.0], [1.9, 3.6, -1.0], 36), {
-    mood: 'haze', moodOv: { fog: 0.0004 }, erupt: julPlume(), ashfall: 1, shipAsh: 1, ships: [{ id: 'ash1', type: 'barque', ...ashShip }],
-    people: [{ style: 'sailor2', ship: 'ash1', at: [2.2, -1.2], rot: 60, pose: { sweep: 0 }, prop: 'broom' }, { style: 'sailor', ship: 'ash1', at: [4.6, 2.2], rot: -30, pose: { sweep: 0 }, prop: 'broom' }],
-  }, { amb: 'oceanGrey', sfx: [['sweep', 0.2], ['sweep', 1.3]], fx: { grade: 'ash', dof: { focus: 2, range: 1, bokeh: 3.5 } } }));
+  add(shot(A.at('Sailors have to sweep') - L, 'strait', onShip(ashShip, [4.8, 4.75, 2.9], [4.5, 4.7, 2.6], [1.6, 3.7, -1.2], [1.7, 3.7, -1.2], 36), {
+    mood: 'haze', moodOv: { fog: 0.00018 }, erupt: julPlume(), ashfall: 1, shipAsh: 1, ships: [{ id: 'ash1', type: 'barque', ...ashShip }],
+    people: [{ style: 'sailor2', ship: 'ash1', at: [2.2, -1.2], rot: 60, pose: { sweep: 0 }, prop: 'broom' }, { style: 'sailor', ship: 'ash1', at: [0.2, 1.8], rot: -70, pose: { sweep: 0.5 }, prop: 'broom' }],
+  }, { amb: 'oceanGrey', sfx: [['sweep', 0.2], ['sweep', 1.3]], fx: { grade: 'ash', dof: { focus: 4.6, range: 2, bokeh: 3 } } }));
   add(shot(A.at('At night, glowing lava') - L, 'strait', dolly([-9000, 30, 5000], [-8700, 34, 4800], [0, 600, -400], [0, 700, -400], 30, 'lin'), {
     mood: 'nightGlow', moodOv: { glowAz: 125, glowEl: 3 }, erupt: julPlume({ glow: 2.2, bombs: 0.5 }), island: { lava: 1.1, ash: 0.5 }, glowLight: 1,
   }, { amb: 'nightEruption', sfx: [['boomFar', 1.0]] }));
   add(shot(A.at("Krakatoa's summit") - L, 'strait', dolly([-2400, 900, 1400], [-2200, 860, 1200], [-250, 450, -200], [-250, 600, -200], 36, 'lin'), {
-    mood: 'nightGlow', moodOv: { glowAz: 125, glowEl: 3 }, erupt: julPlume({ glow: 2.4, bombs: 0.8, intensity: 0.8 }), island: { lava: 1.3, ash: 0.6 }, glowLight: 1.4,
+    mood: 'nightGlow', moodOv: { glowAz: 125, glowEl: 3 }, erupt: julPlume({ glow: 1.5, bombs: 0.8, intensity: 0.8 }), island: { lava: 0.8, ash: 0.6 }, glowLight: 0.6, exposure: 0.85,
   }, { amb: 'nightEruption', sfx: [['lavaBloop', 0.3]] }));
   add(flat(A.at('But the human mind') - L, (k, lt, S2) => INFO.calendar(k, lt, S2, { days: 58 }), { sfx: [['pageFlips', 0]], mus: 'calm' }));
   add(shot(A.at('Even the extraordinary') - L, 'town', dolly([4, 1.7, 28], [3.6, 1.7, 24], [0, 3, -40], [0, 3.2, -40], 40), {
@@ -45,7 +45,7 @@ export default function act5(A) {
     people: [{ style: 'merchant', at: [1, 14], rot: 180, move: [0, -1.0], pose: { walk: 1.0 } }, { style: 'lady3', at: [-2, 8], rot: 0, move: [0, 0.8], pose: { walk: 0.8 } }, { style: 'clerk', at: [3, 4], rot: 0, move: [0, 1.1], pose: { walk: 1.1 } }, { style: 'villager', at: [-4, 18], rot: 180, move: [0, -0.9], pose: { walk: 0.9 } }],
   }, { amb: 'crowd' }));
   add(shot(A.at('Merchant ships keep sailing') - L, 'strait', dolly([-6800, 300, 4200], [-6400, 280, 3800], [-3500, 0, 2000], [-3300, 0, 1600], 40, 'lin'), {
-    mood: 'haze', erupt: julPlume(), island: { ash: 0.5 },
+    mood: 'haze', moodOv: { fog: 0.00007 }, erupt: julPlume(), island: { ash: 0.5 },
     ships: [{ id: 'm1', type: 'barque', pos: [-4200, 4200], heading: 75, speed: 4 }, { id: 'm2', type: 'steamer', pos: [-4800, 3000], heading: 80, speed: 6 }, { id: 'm3', type: 'barque', pos: [-3600, 1500], heading: 85, speed: 3.5 }],
   }, { amb: 'oceanGrey' }));
   add(shot(A.at('Colonial officials keep') - L, 'interior', dolly([2.2, 1.35, 0.3], [1.9, 1.3, 0.0], [1.0, 0.9, -1.0], [1.0, 0.9, -1.0], 36), {
@@ -65,7 +65,7 @@ export default function act5(A) {
   }), { sfx: [['pop', 0.6], ['pop', 0.9], ['pop', 1.2]] }));
 
   // --- the deadly process beneath -----------------------------------------------------
-  add(shot(A.at('Meanwhile, deep beneath') - L, 'xsection', orbit([0, -8, -4], [90, 60], [-24, -10], [20, 10], 40, 'inOut'), { magma: 1, fill: 0.85, vent: 1, erupt: { height: 30, intensity: 0.7, umbrella: 0.2 }, pressure: 0.5 }, { amb: 'rumble', mus: 'dread', sfx: [['whooshDown', 0]] }));
+  add(shot(A.at('Meanwhile, deep beneath') - L, 'xsection', orbit([0, -8, -4], [90, 60], [-24, -10], [20, 10], 40, 'inOut'), { magma: 1, fill: 0.85, vent: 1, erupt: { height: 18, intensity: 0.35 }, pressure: 0.5 }, { amb: 'rumble', mus: 'dread', sfx: [['whooshDown', 0]] }));
   add(shot(A.at('The continuous eruptions') - L, 'xsection', orbit([0, -9, 0], [40, 34], [8, 14], [8, 8], 40), { magma: 0.6, fill: [0.85, 0.35], vent: 1, erupt: { height: 30, intensity: 0.8, umbrella: 0.2 } }, { amb: 'rumble', sfx: [['drain', 0.3]], draw: pin3(XS.chamber, 'DRAINING', 0.6, { dir: [1, -1], color: '#ffb27a' }) }));
   add(shot(A.at('Without support from below') - L, 'xsection', orbit([0, -7, 0], [30, 26], [-10, -2], [8, 10], 40), { magma: 0.5, fill: 0.35, vent: 0.8, cracks: [0, 0.5], strain: 0.8 }, { amb: 'rumble', sfx: [['creak', 0.2], ['crackRock', 1.0]] }));
   add(shot(A.at('develop tiny cracks') - L, 'xsection', dolly([3, -3.5, 12], [2, -4.5, 9], [0, -6.5, 0], [0, -6.8, 0], 38), { magma: 0.5, fill: 0.35, cracks: [0.5, 0.9], strain: 1 }, { amb: 'rumble', sfx: [['crackRock', 0.2], ['crackRock', 0.9]] }));

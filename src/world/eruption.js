@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { rng, fract, clamp, smoothstep, lerp, noise, hash1 } from '../core/math.js';
 import { boltSegments } from './particles.js';
+import { NOISE } from './glsl.js';
 
 const n3 = (x, y, z) => noise.n3(x, y, z);
 
@@ -142,8 +143,8 @@ export function burstEmitter(B) {
         const z = B.c[2] + Math.sin(th) * Math.cos(el) * R;
         const y = B.c[1] + Math.sin(el) * R * (B.flat ?? 0.75) + dt * dt * 6 * (1 - el);
         const size = (B.R * 0.12 + B.R * 0.25 * grow) * (0.5 + 0.9 * d);
-        const heat = Math.exp(-dt * (0.5 + 0.6 * c)) * (1.2 - shell * 0.6);
-        const dk = 0.11 + 0.1 * e;
+        const heat = Math.exp(-dt * (0.28 + 0.4 * c)) * Math.max(1.5 - shell * 1.25, 0.05) * (0.6 + 0.4 * Math.exp(-dt * 0.15));
+        const dk = 0.06 + 0.08 * e;
         const al = clamp(dt / 0.08) * (B.k ?? 1) * (0.75 + 0.25 * d) * clamp((40 - dt) / 10);
         push(x, y, z, size, dk, dk * 0.92, dk * 0.85, al, a * 30 + dt * 0.1 * (d - 0.5), Math.floor(e * 16), 0, heat * (B.heat ?? 1.5) * (0.4 + 0.6 * d));
       }
@@ -253,13 +254,20 @@ export function lightningEmitter(E) {
 // Shockwave condensation dome (Wilson cloud) + bright ring.
 export class Shockwave {
   constructor() {
-    this.uniforms = { uK: { value: 0 }, uCol: { value: new THREE.Vector3(1, 1, 1) } };
+    this.uniforms = { uK: { value: 0 }, uCol: { value: new THREE.Vector3(1, 1, 1) }, uT: { value: 0 } };
     const mat = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
-      vertexShader: `varying vec3 vN; varying vec3 vV; varying float vY;
-        void main(){ vec4 wp = modelMatrix*vec4(position,1.0); vN = normalize(mat3(modelMatrix)*normal); vV = normalize(cameraPosition-wp.xyz); vY = position.y; gl_Position = projectionMatrix*viewMatrix*wp; }`,
-      fragmentShader: `uniform float uK; uniform vec3 uCol; varying vec3 vN; varying vec3 vV; varying float vY;
-        void main(){ float f = 1.0-abs(dot(vN,vV)); f = pow(f, 3.0); float base = smoothstep(0.0, 0.08, vY) ; gl_FragColor = vec4(uCol*f*uK, f*uK*0.8*base); }`,
+      vertexShader: `varying vec3 vN; varying vec3 vV; varying float vY; varying vec3 vP;
+        void main(){ vec4 wp = modelMatrix*vec4(position,1.0); vN = normalize(mat3(modelMatrix)*normal); vV = normalize(cameraPosition-wp.xyz); vY = position.y; vP = position; gl_Position = projectionMatrix*viewMatrix*wp; }`,
+      // condensation (Wilson) cloud: a broken, cloudy rim rather than a clean glass shell
+      fragmentShader: NOISE + `uniform float uK; uniform vec3 uCol; uniform float uT; varying vec3 vN; varying vec3 vV; varying float vY; varying vec3 vP;
+        void main(){
+          float f = 1.0 - abs(dot(vN, vV));
+          float n = fbm3(vP * 4.5 + vec3(0.0, uT * 0.25, 0.0));
+          float rim = pow(f, 2.4) * (0.25 + 1.2 * smoothstep(0.38, 0.78, n));
+          float haze = 0.1 * smoothstep(0.35, 0.85, n);
+          float a = (rim + haze) * uK * smoothstep(0.0, 0.08, vY);
+          gl_FragColor = vec4(uCol * a, a * 0.7); }`,
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
     });
     this.mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 24, 0, Math.PI * 2, 0, Math.PI / 2), mat);
@@ -272,6 +280,7 @@ export class Shockwave {
     this.mesh.position.set(center[0], center[1], center[2]);
     this.mesh.scale.set(radius, radius * 0.55, radius);
     this.uniforms.uK.value = k;
+    this.uniforms.uT.value = radius * 0.001;
     this.uniforms.uCol.value.set(...col);
   }
 }

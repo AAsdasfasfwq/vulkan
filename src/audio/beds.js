@@ -14,7 +14,8 @@ function lfoGain(S, g, t0, t1, rate, depth, base) {
   // amplitude movement via automation points (deterministic)
   const p = g.gain;
   p.setValueAtTime(base, t0);
-  for (let t = t0; t < t1; t += 0.25) p.linearRampToValueAtTime(base * (1 - depth * (0.5 + 0.5 * Math.sin(t * rate * 6.283 + Math.sin(t * rate * 2.1) * 1.3))), t);
+  const o = S.off ?? 0; // absolute phase so neighbouring render blocks line up
+  for (let t = t0; t < t1; t += 0.25) { const ta = t + o; p.linearRampToValueAtTime(base * (1 - depth * (0.5 + 0.5 * Math.sin(ta * rate * 6.283 + Math.sin(ta * rate * 2.1) * 1.3))), t); }
 }
 const events = (S, t0, t1, every, fn) => { let t = t0 + S.rand(0, every); while (t < t1 - 0.3) { fn(t); t += every * S.rand(0.6, 1.4); } };
 
@@ -26,7 +27,9 @@ const ocean = (lvl, lp = 700) => (S, t0, t1) => {
 const wind = (lvl, f = 500) => (S, t0, t1) => {
   const bp = S.filt('bandpass', f, 0.9);
   const g = loopNoise(S, S.pink, t0, t1, [bp], lvl);
-  for (let t = t0; t < t1; t += 0.6) bp.frequency.linearRampToValueAtTime(f * (0.6 + 0.9 * (0.5 + 0.5 * Math.sin(t * 0.37 + Math.sin(t * 0.13) * 2))), t);
+  const o = S.off ?? 0;
+  bp.frequency.setValueAtTime(f, t0);
+  for (let t = t0; t < t1; t += 0.6) { const ta = t + o; bp.frequency.linearRampToValueAtTime(f * (0.6 + 0.9 * (0.5 + 0.5 * Math.sin(ta * 0.37 + Math.sin(ta * 0.13) * 2))), t); }
   lfoGain(S, g, t0, t1, 0.07, 0.6, lvl);
 };
 const insects = (lvl, f = 6500) => (S, t0, t1) => {

@@ -29,7 +29,7 @@ export default function act7(A) {
   }, { amb: 'oceanStorm', sfx: [['tsunamiRoar', 0.2]], draw: word('TSUNAMI', A.peek('tsunami') - A.peek('unleash a catastrophic'), { y: H * 0.2, size: 130, tracking: 26, mode: 'track' }) }));
   add(shot(A.at('A wall of water roughly') - L, 'coast', dolly(cup(-20, -10, 2.0), cup(-20, -16, 2.4), [-10, 22, 300], [-10, 30, 260], 44), {
     layout: 'village', mood: 'storm', moodOv: { fog: 0.0012 }, tsunami: { z0: 640, speed: 26, H: 40, t0: 0 }, wind: 2,
-    people: [{ style: 'villager', at: [-14, -2], rot: 10, pose: { lookUp: -0.2 } }, { style: 'villager2', at: [-26, -4], rot: -10, pose: { point: true } }],
+    people: [{ style: 'villager', at: [-14, -5.5], rot: 10, pose: { lookUp: -0.2 } }, { style: 'villager2', at: [-26, -7], rot: -10, pose: { point: true } }],
   }, { amb: 'tsunamiFar', mus: 'chaos', sfx: [['tsunamiRoar', 0]] }));
   add(flat(A.at('as tall as a 12-story') - L, (k, lt, S2) => INFO.waveScale(k, lt, S2, { at: 0.4 }), { sfx: [['whoosh', 0.4], ['waveCrash', 1.4]] }));
   const tSl = A.at('slams into the coasts') - L;
@@ -91,11 +91,12 @@ export default function act7(A) {
   const aNY = A.peek('New York') - tNp, aBo = A.peek('Boston') - tNp;
   add(shot(tNp, 'studio', dolly([0, 3.2, 5.0], [0, 3.0, 4.4], [0, 0.6, 0], [0, 0.6, 0], 40), {
     bg: 'dark', items: [
+      { kind: 'paper', id: 'p0', args: ['TELEGRAM', 'Batavia: Krakatoa in Violent Eruption', 'REUTER\'S AGENCY', 'BATAVIA · AUGUST 27, 1883'], pos: [0.4, 0.03, -1.1], rot: [-Math.PI / 2, 0, -0.35], appear: -1, spin: 0 },
       { kind: 'paper', id: 'p1', args: ['KRAKATOA', 'Terrible Volcanic Eruption in Java', 'THE TIMES', 'LONDON · TUESDAY, AUGUST 28, 1883'], pos: [-1.5, 0.05, 0.2], rot: [-Math.PI / 2, 0, 0.2], appear: A.peek('London') - tNp, spin: 0, drop: 1.4 },
       { kind: 'paper', id: 'p2', args: ['DISASTER', 'Whole Islands Swallowed by the Sea', 'THE NEW YORK TIMES', 'NEW YORK · AUGUST 28, 1883'], pos: [0.1, 0.06, -0.1], rot: [-Math.PI / 2, 0, -0.1], appear: aNY, spin: 0, drop: 1.4 },
       { kind: 'paper', id: 'p3', args: ['JAVA', 'Thousands Perish in the East Indies', 'THE BOSTON GLOBE', 'BOSTON · AUGUST 28, 1883'], pos: [1.6, 0.07, 0.25], rot: [-Math.PI / 2, 0, 0.15], appear: aBo, spin: 0, drop: 1.4 },
     ],
-  }, { amb: 'room', sfx: [['paperSlap', A.peek('London') - tNp], ['paperSlap', aNY], ['paperSlap', aBo]] }));
+  }, { amb: 'room', sfx: [['morse', 0], ['paperSlap', A.peek('London') - tNp], ['paperSlap', aNY], ['paperSlap', aBo]], draw: word('WITHIN HOURS', 0.05, { y: H * 0.16, size: 84, color: '#ffd9a8', tracking: 12, out: A.peek('London') - tNp - 0.1 }) }));
   add(shot(A.at('announce a disaster') - L, 'studio', dolly([0.1, 1.2, 1.2], [0.1, 1.0, 0.9], [0.1, 0.05, -0.15], [0.1, 0.05, -0.15], 36), {
     bg: 'dark', items: [{ kind: 'paper', id: 'p2', args: ['DISASTER', 'Whole Islands Swallowed by the Sea', 'THE NEW YORK TIMES', 'NEW YORK · AUGUST 28, 1883'], pos: [0.1, 0.06, -0.1], rot: [-Math.PI / 2, 0, -0.1], appear: -1, spin: 0 }],
   }, { amb: 'room', fx: { dof: { focus: 1.2, range: 0.5, bokeh: 3 } } }));

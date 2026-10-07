@@ -56,13 +56,17 @@ function taiko(S, t, k) {
   S.noiseHit(t, { f0: 500, f1: 150, d: 0.12, peak: 0.06 * k, wet: 0.3 });
 }
 
-export function scheduleMusic(S, sections) {
+// sections use absolute video time; only the chords that start inside [from, to) are
+// scheduled (block rendering), at times relative to S.off.
+export function scheduleMusic(S, sections, { from = 0, to = Infinity } = {}) {
   for (const sec of sections) {
     const M = MOODS[sec.mood];
     if (!M || M.silent) continue;
-    const { t0, t1 } = sec;
     let i = 0;
-    for (let t = t0; t < t1 - 0.5; t += M.dur, i++) {
+    for (let ta = sec.t0; ta < sec.t1 - 0.5; ta += M.dur, i++) {
+      if (M.once && i > 0) break;
+      if (ta < from || ta >= to) continue;
+      const t = ta - (S.off ?? 0), t1 = sec.t1 - (S.off ?? 0);
       const chord = ch(M.chords[i % M.chords.length]);
       const d = Math.min(M.dur, t1 - t);
       chord.forEach((f, k) => padVoice(S, t, d, f, M.cut, M.pad / Math.sqrt(chord.length) * 1.6, (k / (chord.length - 1 || 1) - 0.5) * 1.2));

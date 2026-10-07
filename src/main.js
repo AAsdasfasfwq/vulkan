@@ -11,7 +11,7 @@ import '@fontsource/inter/latin-400.css';
 import '@fontsource/inter/latin-600.css';
 import { Film } from './core/film.js';
 import { FPS, GAPS } from './core/transcript.js';
-import { renderSoundtrack, encodeWavChunks } from './audio/mixer.js';
+import { renderSoundtrackBlocks, encodePCM16 } from './audio/mixer.js';
 
 const params = new URLSearchParams(location.search);
 const RENDER = params.has('render');
@@ -57,12 +57,18 @@ async function boot() {
         return canvas.toDataURL('image/jpeg', quality);
       },
       frameShot(i) { const s = film.renderFrame(i); return s.index; },
+      // Renders the sound design block by block; each block becomes one base64 PCM chunk.
       async audio() {
-        soundtrack = await renderSoundtrack(film);
-        soundtrack.chunks = encodeWavChunks(soundtrack.buffer, 4 * 1024 * 1024);
-        return { chunks: soundtrack.chunks.length, sampleRate: soundtrack.buffer.sampleRate, length: soundtrack.buffer.length };
+        const chunks = [];
+        const t0 = performance.now();
+        const info = await renderSoundtrackBlocks(film, (L, R, n) => { chunks.push(encodePCM16(L, R, n)); }, {
+          onProgress: (k) => { window.__AUDIO_PROGRESS = k; },
+        });
+        soundtrack = { chunks };
+        return { chunks: chunks.length, sampleRate: info.sampleRate, length: info.length, ms: performance.now() - t0 };
       },
-      audioChunk(i) { return soundtrack.chunks[i]; },
+      audioProgress() { return window.__AUDIO_PROGRESS ?? 0; },
+      audioChunk(i) { const c = soundtrack.chunks[i]; soundtrack.chunks[i] = null; return c; },
     };
     status.textContent = 'ready';
     window.__READY = true;

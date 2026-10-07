@@ -31,45 +31,63 @@ function speech(film) {
   return out;
 }
 
-function duck(param, spans, base, low, dur) {
-  param.setValueAtTime(base, 0);
+// Ducking under the narration. Only the spans that touch [from, until] are scheduled,
+// times are relative to `from` (block rendering) and never negative.
+function duck(param, spans, base, low, from, until) {
+  const RI = 0.15, RO = 0.35;
+  const valueAt = (t) => {
+    for (const [a, b] of spans) {
+      if (t >= a - RI && t < a) return base + (low - base) * ((t - (a - RI)) / RI);
+      if (t >= a && t <= b) return low;
+      if (t > b && t < b + RO) return low + (base - low) * ((t - b) / RO);
+    }
+    return base;
+  };
+  param.setValueAtTime(valueAt(from), 0);
   for (const [a, b] of spans) {
-    param.setValueAtTime(base, Math.max(0, a - 0.15));
-    param.linearRampToValueAtTime(low, a);
-    param.setValueAtTime(low, b);
-    param.linearRampToValueAtTime(base, Math.min(dur, b + 0.35));
+    if (b + RO < from || a - RI > until) continue;
+    const pts = [[a - RI, base, 'set'], [a, low, 'ramp'], [b, low, 'set'], [b + RO, base, 'ramp']];
+    for (const [t, v, kind] of pts) {
+      const tt = t - from;
+      if (tt <= 0) continue;
+      if (kind === 'set') param.setValueAtTime(v, tt); else param.linearRampToValueAtTime(v, tt);
+    }
   }
 }
 
-export function buildMix(ctx, film, { from = 0 } = {}) {
+// Schedules everything that STARTS inside [from, to) (video seconds) into ctx, whose time 0
+// is `from`. Sounds keep ringing past `to`; the caller overlap-adds the tails.
+export function buildMix(ctx, film, { from = 0, to = Infinity, tail = 0 } = {}) {
   const dur = film.duration;
+  const until = Math.min(dur, to) + tail;
   const master = ctx.createGain(); master.gain.value = 0.85;
-  const comp = ctx.createDynamicsCompressor();
-  comp.threshold.value = -16; comp.knee.value = 8; comp.ratio.value = 3.5; comp.attack.value = 0.004; comp.release.value = 0.3;
-  master.connect(comp); comp.connect(ctx.destination);
+  master.connect(ctx.destination);
   const verb = ctx.createConvolver(); verb.buffer = impulse(ctx);
   const verbOut = ctx.createGain(); verbOut.gain.value = 0.55;
   verb.connect(verbOut); verbOut.connect(master);
   const mk = (lvl) => { const g = ctx.createGain(); g.gain.value = lvl; const d = ctx.createGain(); g.connect(d); d.connect(master); return { in: g, duck: d }; };
   const sfx = mk(0.9), amb = mk(0.6), mus = mk(0.55);
   const sp = speech(film);
-  duck(sfx.duck.gain, sp, 1.0, 0.62, dur);
-  duck(amb.duck.gain, sp, 1.0, 0.7, dur);
-  duck(mus.duck.gain, sp, 1.0, 0.55, dur);
+  duck(sfx.duck.gain, sp, 1.0, 0.62, from, until);
+  duck(amb.duck.gain, sp, 1.0, 0.7, from, until);
+  duck(mus.duck.gain, sp, 1.0, 0.55, from, until);
   const S = new Synth(ctx, sfx.in, verb);
-  const T = (t) => t - from; // shift for partial renders
+  S.off = from; // absolute time offset, keeps LFO phases continuous across blocks
+  const T = (t) => t - from;
+  const inBlock = (t) => t >= from && t < to;
 
   // sound effects
   for (const shot of film.shots) {
     for (const [name, at, opts] of shot.sfx || []) {
       const t = shot.t + (at || 0);
-      if (t < from - 0.5 || t > dur) continue;
+      if (!inBlock(t) || t > dur) continue;
       const fn = SFX[name];
       if (fn) fn(S, T(t), opts || {});
       else console.warn('unknown sfx', name);
     }
   }
-  // ambience runs
+  // ambience runs, cut into block-sized pieces that crossfade over XF seconds
+  const XF = 0.06;
   const runs = [];
   for (const s of film.shots) {
     const type = s.amb ?? (s.set ? DEFAULT_BED[s.set] : 'none') ?? 'none';
@@ -80,18 +98,22 @@ export function buildMix(ctx, film, { from = 0 } = {}) {
   const prevDest = S.dest;
   for (const r of runs) {
     if (r.type === 'none' || !BEDS[r.type]) continue;
-    if (r.t1 < from) continue;
+    const ra = Math.max(0, r.t0 - 0.25), rb = r.t1 + 0.3;
+    const pa = Math.max(ra, from - XF), pb = Math.min(rb, to + XF);
+    if (pb <= pa || pb < from || pa >= to + XF) continue;
     const g = ctx.createGain();
-    const a = Math.max(0, T(r.t0 - 0.25)), b = T(r.t1 + 0.3);
+    const a = Math.max(0, T(pa)), b = T(pb);
+    const fadeIn = pa > ra + 1e-6 ? 2 * XF : 0.4;
+    const fadeOut = pb < rb - 1e-6 ? 2 * XF : 0.45;
     g.gain.setValueAtTime(0.0001, a);
-    g.gain.linearRampToValueAtTime(1, a + 0.4);
-    g.gain.setValueAtTime(1, Math.max(a + 0.4, b - 0.45));
+    g.gain.linearRampToValueAtTime(1, a + fadeIn);
+    g.gain.setValueAtTime(1, Math.max(a + fadeIn, b - fadeOut));
     g.gain.linearRampToValueAtTime(0.0001, b);
     g.connect(amb.in);
     S.dest = g;
     BEDS[r.type](S, a, b);
   }
-  // music sections
+  // music sections (chord grid stays anchored to each section start)
   const secs = [];
   for (const s of film.shots) {
     if (s.mus) {
@@ -102,37 +124,73 @@ export function buildMix(ctx, film, { from = 0 } = {}) {
     }
   }
   S.dest = mus.in;
-  scheduleMusic(S, secs.filter((x) => x.t1 > from).map((x) => ({ ...x, t0: Math.max(0, T(x.t0)), t1: T(x.t1) })));
+  scheduleMusic(S, secs, { from, to });
   S.dest = prevDest;
   return { master };
 }
 
-export async function renderSoundtrack(film) {
-  const len = Math.ceil(film.duration * SR);
-  const ctx = new OfflineAudioContext(2, len, SR);
-  buildMix(ctx, film);
-  const buffer = await ctx.startRendering();
+// Stateful bus compressor + soft limiter applied in order to the finished stream
+// (replaces a DynamicsCompressorNode, which cannot span independently rendered blocks).
+function makeDynamics(sr, { threshold = -16, ratio = 3.5, attack = 0.004, release = 0.3, makeup = 4 } = {}) {
+  const thr = Math.pow(10, threshold / 20), mk = Math.pow(10, makeup / 20);
+  const ca = Math.exp(-1 / (attack * sr)), cr = Math.exp(-1 / (release * sr));
+  let env = 0;
+  const soft = (x) => { const a = Math.abs(x); if (a <= 0.8) return x; const y = 0.8 + 0.2 * Math.tanh((a - 0.8) / 0.2); return x < 0 ? -y : y; };
+  return (L, R, n) => {
+    for (let i = 0; i < n; i++) {
+      const lvl = Math.max(Math.abs(L[i]), Math.abs(R[i]));
+      env = lvl > env ? ca * env + (1 - ca) * lvl : cr * env + (1 - cr) * lvl;
+      const g = (env > thr ? Math.pow(env / thr, 1 / ratio - 1) : 1) * mk;
+      L[i] = soft(L[i] * g); R[i] = soft(R[i] * g);
+    }
+  };
+}
+
+// Renders the soundtrack block by block. onBlock(L, R, n, startFrame) receives final samples
+// in order. Each block holds only the sounds that start inside it, so the Web Audio graph
+// stays small and rendering is fast; ringing tails are overlap-added into the next blocks.
+export async function renderSoundtrackBlocks(film, onBlock, { block = 30, tail = 18, onProgress } = {}) {
+  const total = Math.ceil(film.duration * SR);
+  const C = Math.round(block * SR), TL = Math.round(tail * SR);
+  const accL = new Float32Array(C + TL), accR = new Float32Array(C + TL);
+  const dyn = makeDynamics(SR);
+  for (let base = 0; base < total; base += C) {
+    const len = Math.min(C + TL, total - base);
+    const ctx = new OfflineAudioContext(2, len, SR);
+    buildMix(ctx, film, { from: base / SR, to: (base + C) / SR, tail });
+    const buf = await ctx.startRendering();
+    const L = buf.getChannelData(0), R = buf.getChannelData(1);
+    for (let i = 0; i < len; i++) { accL[i] += L[i]; accR[i] += R[i]; }
+    const n = Math.min(C, total - base);
+    const outL = accL.slice(0, n), outR = accR.slice(0, n);
+    dyn(outL, outR, n);
+    await onBlock(outL, outR, n, base);
+    accL.copyWithin(0, C); accL.fill(0, TL);
+    accR.copyWithin(0, C); accR.fill(0, TL);
+    if (onProgress) onProgress(Math.min(1, (base + C) / total));
+  }
+  return { length: total, sampleRate: SR };
+}
+
+// Whole soundtrack as one AudioBuffer (interactive preview).
+export async function renderSoundtrack(film, opts = {}) {
+  const total = Math.ceil(film.duration * SR);
+  const buffer = new AudioBuffer({ length: total, numberOfChannels: 2, sampleRate: SR });
+  const L = buffer.getChannelData(0), R = buffer.getChannelData(1);
+  await renderSoundtrackBlocks(film, (l, r, n, base) => { L.set(l.subarray(0, n), base); R.set(r.subarray(0, n), base); }, opts);
   return { buffer };
 }
 
-// Interleaved 16-bit PCM, base64 chunks (the WAV header is written by render.js)
-export function encodeWavChunks(buffer, chunkBytes = 4 * 1024 * 1024) {
-  const L = buffer.getChannelData(0), R = buffer.numberOfChannels > 1 ? buffer.getChannelData(1) : L;
-  const frames = buffer.length;
-  const framesPerChunk = Math.floor(chunkBytes / 4);
-  const chunks = [];
-  for (let f0 = 0; f0 < frames; f0 += framesPerChunk) {
-    const n = Math.min(framesPerChunk, frames - f0);
-    const bytes = new Uint8Array(n * 4);
-    const dv = new DataView(bytes.buffer);
-    for (let i = 0; i < n; i++) {
-      const l = Math.max(-1, Math.min(1, L[f0 + i])), r = Math.max(-1, Math.min(1, R[f0 + i]));
-      dv.setInt16(i * 4, l * 32767, true);
-      dv.setInt16(i * 4 + 2, r * 32767, true);
-    }
-    let s = '';
-    for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-    chunks.push(btoa(s));
+// Interleaved 16-bit PCM as base64 (the WAV header is written by render.js)
+export function encodePCM16(L, R, n) {
+  const bytes = new Uint8Array(n * 4);
+  const dv = new DataView(bytes.buffer);
+  for (let i = 0; i < n; i++) {
+    const l = Math.max(-1, Math.min(1, L[i])), r = Math.max(-1, Math.min(1, R[i]));
+    dv.setInt16(i * 4, Math.round(l * 32767), true);
+    dv.setInt16(i * 4 + 2, Math.round(r * 32767), true);
   }
-  return chunks;
+  let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s);
 }

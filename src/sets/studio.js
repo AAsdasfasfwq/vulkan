@@ -13,6 +13,8 @@ const BG = {
   navy: [0x13233a, 0x070c16],
   green: [0x4f8f2a, 0x24451a],
   paper: [0xefe9df, 0xd9d0c1],
+  study: [0x3a2a1c, 0x120c08],
+  teal: [0x173c40, 0x081618],
 };
 
 let ROOM_ENV = null;

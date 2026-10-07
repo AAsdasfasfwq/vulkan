@@ -8,7 +8,7 @@ import { serve } from './server.mjs';
 const args = process.argv.slice(2);
 const get = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 ? args[i + 1] : d; };
 const has = (k) => args.includes('--' + k);
-const root = path.resolve('dist');
+const root = path.resolve(get('root', 'dist'));
 const out = path.resolve(get('out', 'snaps'));
 fs.mkdirSync(out, { recursive: true });
 const scale = get('scale', '0.5');

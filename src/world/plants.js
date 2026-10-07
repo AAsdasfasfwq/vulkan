@@ -27,6 +27,7 @@ export function addSway(mat, uniforms, strength = 1) {
       .replace('#include <color_fragment>', `#include <color_fragment>
         diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.4, 0.39, 0.37), uAsh);`);
   };
+  mat.customProgramCacheKey = () => 'sway' + strength.toFixed(3);
 }
 
 // Broadleaf rainforest crown: a cluster of lumpy blobs on a short trunk. Unit height ~1.

@@ -3,7 +3,7 @@ import { BaseSet, val } from './base.js';
 import { Ocean } from '../world/ocean.js';
 import { NOISE } from '../world/glsl.js';
 import { makeCrownGeometry, makePalmGeometry, addSway } from '../world/plants.js';
-import { hutGeometry, colonialGeometry, lighthouseGroup, prauGeometry, buildingMat, brickGeometry, windowsGeometry } from '../world/buildings.js';
+import { hutGeometry, colonialGeometry, lighthouseGroup, prauGeometry, buildingMat, brickMat, windowMat, brickGeometry, windowsGeometry } from '../world/buildings.js';
 import { makeSteamer, makeBarque, makeLongboat } from '../world/ships.js';
 import { makeFigure, poseFigure, addProp } from '../world/figures.js';
 import { PuffCloud, StreakCloud } from '../world/particles.js';
@@ -138,7 +138,7 @@ export class CoastSet extends BaseSet {
     sc.add(this.anjer);
     // resort (2018): hotel blocks with lit windows
     this.resort = new THREE.Group();
-    const winMat = new THREE.MeshBasicMaterial({ vertexColors: true });
+    const winMat = windowMat(1);
     for (let i = 0; i < 6; i++) {
       const b = brickGeometry(i + 40, { w: 24, d: 14, floors: 3 + (i % 3), color: [0.85, 0.83, 0.78] });
       const mesh = new THREE.Mesh(b.geo, bm);
@@ -200,9 +200,9 @@ export class CoastSet extends BaseSet {
       const sl = 1 - nor.getY(i);
       const v = nz.n2(x * 0.01, z * 0.01) * 0.5 + 0.5;
       let c;
-      if (y < -0.4) c = [0.5, 0.45, 0.35];
-      else if (y < 1.2) c = [0.62, 0.52, 0.36];
-      else if (y < 2.6) c = [0.8, 0.7, 0.5];
+      if (y < -0.4) c = [0.3, 0.26, 0.19];
+      else if (y < 1.2) c = [0.42, 0.33, 0.22];
+      else if (y < 2.6) c = [0.56, 0.45, 0.29];
       else c = [lerp(0.14, 0.08, v), lerp(0.36, 0.24, v), lerp(0.08, 0.05, v)];
       if (sl > 0.35) c = [0.32, 0.27, 0.2];
       if (bare && y > 1.0) c = [0.36 + v * 0.1, 0.29 + v * 0.06, 0.2];

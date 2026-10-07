@@ -148,7 +148,8 @@ export class Film {
       }
       if (fx.grain !== 0) grainOverlay(ctx, frame, fx.grain2d ?? 0.07);
     }
-    if (this.subtitles && shot.subs !== false && !shot.card) drawSubtitles(k, vt, this.captions);
+    // subsOff: a kinetic title takes over from the captions at this local time
+    if (this.subtitles && shot.subs !== false && !shot.card && !(shot.subsOff !== undefined && vt - shot.t >= shot.subsOff)) drawSubtitles(k, vt, this.captions);
     return shot;
   }
 }

@@ -5,7 +5,7 @@ import { NOISE } from '../world/glsl.js';
 import { PuffCloud, StreakCloud } from '../world/particles.js';
 import { plumeletEmitter } from '../world/eruption.js';
 import { makeCrownGeometry, addSway, paint } from '../world/plants.js';
-import { brickGeometry, buildingMat } from '../world/buildings.js';
+import { brickGeometry, brickMat } from '../world/buildings.js';
 import { makeFigure, poseFigure } from '../world/figures.js';
 import { makeNoise, rng, clamp, lerp, fract, smoothstep } from '../core/math.js';
 
@@ -111,7 +111,7 @@ export class LandSet extends BaseSet {
     trees.castShadow = true;
     this.trees = trees;
     sc.add(trees);
-    const bm = buildingMat();
+    const bm = brickMat();
     for (let i = 0; i < 30; i++) {
       const b = brickGeometry(900 + i, { w: 10 + r() * 6, d: 7 + r() * 3, floors: 1 + Math.floor(r() * 2), color: [0.75, 0.7, 0.6] });
       const mesh = new THREE.Mesh(b.geo, bm);

@@ -108,12 +108,14 @@ const total = f1 - f0;
 
 // ---------------------------------------------------------------- audio
 const sfxWav = path.join(TMP, 'sfx.wav');
+// The sound design renders in its own browser page, in parallel with the frames.
 const audioTask = (async () => {
   if (flag('skip-audio')) return;
   if (fs.existsSync(sfxWav) && flag('reuse-audio')) { log('reusing', sfxWav); return; }
-  log('rendering sound design (Web Audio, offline)…');
+  const ap = await openPage();
+  log('rendering sound design (Web Audio, offline, in parallel)…');
   const t = Date.now();
-  const a = await first.page.evaluate(() => KRAKATOA.audio());
+  const a = await ap.page.evaluate(() => KRAKATOA.audio());
   const fd = fs.openSync(sfxWav, 'w');
   const dataBytes = a.length * 4;
   const h = Buffer.alloc(44);
@@ -122,13 +124,15 @@ const audioTask = (async () => {
   h.writeUInt32LE(a.sampleRate * 4, 28); h.writeUInt16LE(4, 32); h.writeUInt16LE(16, 34); h.write('data', 36); h.writeUInt32LE(dataBytes, 40);
   fs.writeSync(fd, h);
   for (let i = 0; i < a.chunks; i++) {
-    const b64 = await first.page.evaluate((k) => KRAKATOA.audioChunk(k), i);
+    const b64 = await ap.page.evaluate((k) => KRAKATOA.audioChunk(k), i);
     fs.writeSync(fd, Buffer.from(b64, 'base64'));
   }
   fs.closeSync(fd);
-  log(`sound design done in ${((Date.now() - t) / 1000).toFixed(1)} s`);
+  await ap.browser.close();
+  process.stdout.write('\n');
+  log(`sound design done in ${((Date.now() - t) / 1000).toFixed(1)} s → ${sfxWav}`);
 })();
-await audioTask;
+audioTask.catch((e) => { console.error('\n[render] sound design failed:', e.message); process.exit(1); });
 
 // ---------------------------------------------------------------- video
 let done = 0;
@@ -175,6 +179,7 @@ await Promise.all(workers.map((wk, w) => {
 }));
 process.stdout.write('\n');
 for (const w of workers) await w.browser.close();
+if (!flag('skip-audio')) { log('waiting for the sound design…'); await audioTask; }
 srv.close();
 segs.sort();
 

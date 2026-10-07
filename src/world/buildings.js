@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng, lerp } from '../core/math.js';
 import { paint } from './plants.js';
+import { NOISE } from './glsl.js';
 
 const prep = (g, c) => { g = g.index ? g.toNonIndexed() : g; if (g.attributes.uv) g.deleteAttribute('uv'); return paint(g, c); };
 const box = (w, h, d, c, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.BoxGeometry(w, h, d); if (ry) g.rotateY(ry); g.translate(x, y, z); return prep(g, c); };
@@ -16,12 +17,80 @@ const prism = (w, h, d, c, x, y, z, ry = 0) => {
 };
 
 export const MATS = {};
+// Facade detail without textures: colour variation, street-level grime, rain streaks and
+// (for brick buildings) a running-bond brick pattern with stone storey bands. The brick
+// pattern fades out with screen-space frequency so distant facades never shimmer.
+function facade(m, brick) {
+  m.onBeforeCompile = (sh) => {
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vOP; varying vec3 vON; varying vec3 vWQ;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvOP = position; vON = normal; vWQ = (modelMatrix * vec4(position, 1.0)).xyz;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\n' + NOISE + '\nvarying vec3 vOP; varying vec3 vON; varying vec3 vWQ;')
+      .replace('#include <color_fragment>', `#include <color_fragment>
+      {
+        vec3 an = abs(normalize(vON));
+        float wall = 1.0 - smoothstep(0.4, 0.75, an.y);
+        vec2 fuv = an.x > an.z ? vOP.zy : vOP.xy;
+        float big = vnoise(vWQ.xz * 0.045 + vWQ.y * 0.02);
+        diffuseColor.rgb *= 0.86 + 0.26 * big;
+        float streak = vnoise(vec2(fuv.x * 1.7, vOP.y * 0.12 + 3.0));
+        diffuseColor.rgb *= 1.0 - wall * (0.2 * (1.0 - smoothstep(0.0, 2.2, vOP.y)) + 0.13 * smoothstep(0.55, 0.9, streak));
+        ${brick ? `
+        vec2 b = fuv / vec2(0.5, 0.17); b.x += 0.5 * floor(b.y);
+        vec2 fw = fwidth(b);
+        float fade = wall * (1.0 - smoothstep(0.3, 0.8, max(fw.x, fw.y)));
+        vec2 f = fract(b);
+        float dx = min(f.x, 1.0 - f.x), dy = min(f.y, 1.0 - f.y);
+        float mortar = 1.0 - smoothstep(0.035, 0.035 + fw.x, dx) * smoothstep(0.07, 0.07 + fw.y, dy);
+        float bn = hash12(floor(b));
+        vec3 bc = diffuseColor.rgb * (0.82 + 0.34 * bn);
+        bc = mix(bc, vec3(0.34, 0.31, 0.28), mortar * 0.55);
+        diffuseColor.rgb = mix(diffuseColor.rgb, bc, fade);
+        float sy = mod(vOP.y, 3.6);
+        float band = (1.0 - smoothstep(0.24, 0.32, sy)) * step(0.5, vOP.y) * wall;
+        diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.44, 0.4, 0.35), band * 0.7);` : ''}
+      }`);
+  };
+  m.customProgramCacheKey = () => 'facade' + (brick ? 1 : 0);
+  return m;
+}
+
 export function buildingMat() {
-  if (!MATS.b) {
-    MATS.b = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.82 });
-    MATS.win = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.4, emissive: 0xffffff, emissiveIntensity: 1, emissiveMap: null });
-  }
+  if (!MATS.b) MATS.b = facade(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.82 }), false);
   return MATS.b;
+}
+export function brickMat() {
+  if (!MATS.brick) MATS.brick = facade(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.86 }), true);
+  return MATS.brick;
+}
+
+// Unlit window panes with frames, mullions, curtains (lit) or dark sky-reflecting glass (unlit).
+// style 0 = sash window, 1 = modern curtain-wall panel. Colour scale (material.color) dims them.
+export function windowMat(style = 0) {
+  const m = new THREE.MeshBasicMaterial({ vertexColors: true });
+  m.defines = { USE_UV: '' };
+  m.onBeforeCompile = (sh) => {
+    sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+      {
+        vec2 w = vUv;
+        float lum = dot(diffuseColor.rgb, vec3(0.333));
+        float lit = smoothstep(0.06, 0.16, lum);
+        float fx = ${style ? '0.035' : '0.085'}, fy = ${style ? '0.05' : '0.06'};
+        float edge = 1.0 - step(fx, w.x) * step(w.x, 1.0 - fx) * step(fy, w.y) * step(w.y, 1.0 - fy);
+        float mull = ${style ? '1.0 - step(0.012, abs(w.x - 0.5))' : 'max(1.0 - step(0.024, abs(w.x - 0.5)), 1.0 - step(0.02, abs(w.y - 0.64)))'};
+        float frame = clamp(edge + mull, 0.0, 1.0);
+        float curtain = ${style ? '1.0' : 'mix(0.42, 1.0, smoothstep(0.36, 0.2, abs(w.x - 0.5)))'};
+        vec3 inside = diffuseColor.rgb * curtain * (0.68 + 0.45 * w.y);
+        vec3 glass = mix(vec3(0.025, 0.03, 0.04), vec3(0.12, 0.14, 0.18), smoothstep(0.1, 1.0, w.y + 0.2 * (w.x - 0.5)));
+        vec3 c = mix(glass, inside, lit);
+        vec3 fc = vec3(${style ? '0.05, 0.055, 0.06' : '0.075, 0.06, 0.05'});
+        vec3 res = mix(c, fc, frame);
+        vec2 fw = fwidth(w);
+        float far = smoothstep(0.1, 0.3, max(fw.x, fw.y));
+        diffuseColor.rgb = mix(res, mix(c, fc, 0.3), far);
+      }`);
+  };
+  m.customProgramCacheKey = () => 'window' + style;
+  return m;
 }
 
 // Javanese stilt hut with thatched roof (~6 m)
@@ -82,7 +151,7 @@ export function windowsGeometry(b, seed = 1, litRatio = 0.6) {
         const g = new THREE.PlaneGeometry(1.1, 1.7);
         if (side < 0) g.rotateY(Math.PI);
         g.translate(-b.w / 2 + (c + 0.5) * (b.w / cols), f * b.fh + 2.0, side * (b.d / 2 + 0.03));
-        parts.push(prep(g, col));
+        parts.push(paint(g.toNonIndexed(), col));
       }
   return mergeGeometries(parts);
 }
@@ -150,7 +219,7 @@ export function towerWindows(b, seed = 1, lit = 0.5) {
         if (side === 1) { g.rotateY(Math.PI / 2); g.translate(b.w / 2 + 0.05, 0, 0); }
         if (side === 2) { g.rotateY(Math.PI); g.translate(0, 0, -b.d / 2 - 0.05); }
         if (side === 3) { g.rotateY(-Math.PI / 2); g.translate(-b.w / 2 - 0.05, 0, 0); }
-        parts.push(prep(g, col));
+        parts.push(paint(g.toNonIndexed(), col));
       }
     }
   }

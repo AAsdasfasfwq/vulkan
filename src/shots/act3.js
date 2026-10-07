@@ -27,8 +27,11 @@ export default function act3(A) {
     ll: [[38, 20], [10, 75]], cables: 1, cableK: 0.7, cloud: 0.35, dots: ['london', 'batavia'],
     arcs: [{ id: 'news', from: 'london', to: 'batavia', start: 0.3, dur: A.peek('Batavia') - tN, col: [1, 0.45, 0.15], lift: 0.08 }],
   }, { amb: 'space', sfx: [['morse', 0.2], ['pop', A.peek('Batavia') - tN]], draw: both(gpin('london', 'LONDON', 0.1, { dir: [-1, -1] }), gpin('batavia', 'BATAVIA', A.peek('Batavia') - tN, { dir: [1, 1] })) }));
-  add(shot(A.at('present-day Jakarta') - L, 'interior', dolly([1.4, 1.2, -0.2], [1.2, 1.15, -0.4], [0.7, 0.86, -1.0], [0.72, 0.86, -1.0], 34), { room: 'telegraph', clockSpeed: 0.2 }, {
-    amb: 'room', sfx: [['morse', 0.0]], fx: { dof: { focus: 0.8, range: 0.4, bokeh: 4 } }, draw: stamp('BATAVIA', 'present-day Jakarta', 0.15),
+  add(shot(A.at('present-day Jakarta') - L, 'town', dolly([3, 9, 64], [2, 6.5, 50], [0, 3.5, -40], [0, 3.2, -40], 40), {
+    style: 'batavia', mood: 'golden', moodOv: { sunEl: 14, sunAz: -120 },
+    people: [{ style: 'officer', at: [2.5, 26], rot: 180, move: [0, -1.1], pose: { walk: 1.1 } }, { style: 'lady3', at: [3.6, 27], rot: 180, move: [0, -1.1], pose: { walk: 1.1 } }, { style: 'merchant', at: [-3, 18], rot: 20 }, { style: 'villager', at: [-5, 30], rot: 160, move: [0.2, 1.0], pose: { walk: 1.0, carry: true }, prop: 'basket' }, { style: 'villager2', at: [5.5, 12], rot: -90 }],
+  }, {
+    amb: 'veranda', sfx: [['morse', 0.0]], draw: stamp('BATAVIA', 'present-day Jakarta', 0.15),
   }));
   add(flat(A.at('in a matter of hours') - L, (k, lt, S) => hoursVsWeeks(k, lt, S), { sfx: [['whoosh', 0], ['strike', 0.8], ['pop', 1.1]] }));
 
@@ -44,7 +47,7 @@ export default function act3(A) {
   }));
 
   // --- beneath them ------------------------------------------------------------
-  add(shot(A.at('Beneath them') - L, 'interior', dolly([0, 1.6, 3.2], [0, 0.4, 2.0], [0, 1.0, 1.5], [0, 0.0, 1.6], 40, 'in'), { room: 'veranda', people: elite() }, { tin: 'push', amb: 'veranda', mus: 'unease', sfx: [['whooshDown', 0.2], ['rumble', 0.4]] }));
+  add(shot(A.at('Beneath them') - L, 'interior', dolly([0.05, 3.25, 1.95], [0.0, 1.95, 1.72], [0, 0.6, 1.45], [0, 0.0, 1.5], 44, 'in'), { room: 'veranda', people: elite() }, { tin: 'push', amb: 'veranda', mus: 'unease', sfx: [['whooshDown', 0.2], ['rumble', 0.4]] }));
   add(shot(A.at("Krakatoa's magma chamber") - L, 'xsection', orbit([0, -9, 0], [40, 30], [-10, 2], [8, 6], 40, 'inOut'), { magma: 1, fill: 1, pressure: [0.5, 0.95], plug: 1 }, {
     amb: 'rumble', sfx: [['gaugeTick', 0.4]], draw: both(pin3(XS.chamber, 'APPROACHING ITS LIMIT', 0.5, { dir: [1, -1], color: '#ffb27a' })),
   }));
@@ -61,8 +64,8 @@ export default function act3(A) {
     layout: 'village', mood: 'day', sea: 'calm', quake: 0.6,
     people: [{ style: 'villager', at: [-54, -22], rot: 150, pose: { look: -0.5 } }, { style: 'villager2', at: [-57, -24], rot: 120, pose: { lookUp: -0.2, point: true } }, { style: 'villager', at: [-50, -27], rot: 200 }],
   }, { amb: 'village', sfx: [['rumbleQuake', 0.4]], fx: { dof: { focus: 9, range: 4, bokeh: 3 }, shakes: [{ at: 0.6, amp: 0.5, decay: 1.0, freq: 22 }] } }));
-  add(shot(A.at('But seismology is not yet') - L, 'studio', dolly([1.6, 1.6, 2.6], [1.2, 1.4, 2.1], [0.2, 0.7, 0], [0.25, 0.7, 0], 36), { bg: 'paper', items: [{ kind: 'seismo', pos: [0, 0, 0], appear: 0, spin: 0, value: 0.5 }] }, { amb: 'room', sfx: [['penScratch', 0.1]], fx: { dof: { focus: 2.2, range: 1.2, bokeh: 2 } } }));
-  add(shot(A.at('No one knows how to read') - L, 'studio', dolly([0.4, 1.1, 1.3], [0.35, 1.05, 1.15], [0.3, 0.75, 0.2], [0.3, 0.75, 0.2], 32), { bg: 'paper', items: [{ kind: 'seismo', pos: [0, 0, 0], appear: 0, spin: 0, value: 0.7 }] }, {
+  add(shot(A.at('But seismology is not yet') - L, 'studio', dolly([1.6, 1.6, 2.6], [1.2, 1.4, 2.1], [0.2, 0.7, 0], [0.25, 0.7, 0], 36), { bg: 'study', items: [{ kind: 'seismo', pos: [0, 0, 0], appear: 0, spin: 0, value: 0.5 }] }, { amb: 'room', sfx: [['penScratch', 0.1]], fx: { dof: { focus: 2.2, range: 1.2, bokeh: 2 } } }));
+  add(shot(A.at('No one knows how to read') - L, 'studio', dolly([0.4, 1.1, 1.3], [0.35, 1.05, 1.15], [0.3, 0.75, 0.2], [0.3, 0.75, 0.2], 32), { bg: 'study', items: [{ kind: 'seismo', pos: [0, 0, 0], appear: 0, spin: 0, value: 0.7 }] }, {
     amb: 'room', sfx: [['penScratch', 0]], draw: word('?', A.peek('warning signs') - A.peek('No one knows how'), { y: H * 0.36, size: 260, color: PAL.red, mode: 'scale' }),
   }));
   add(shot(A.at('Nature is already sounding') - L, 'strait', dolly([-5200, 60, -3000], [-4700, 80, -2700], [250, 300, -2500], [250, 320, -2500], 34, 'lin'), { mood: 'golden', mood2: 'dusk', moodK: 0.4, steam: { at: 'perboewatan', amount: 0.8, h: 700, col: [0.6, 0.58, 0.55] }, birds: { c: [-1500, 200, -2200], r: 2000, speed: 0.4, spread: 80, scale: 2.4 } }, { amb: 'rumble', sfx: [['rumbleDeep', 0.1], ['birdsFlee', 0.4]] }));

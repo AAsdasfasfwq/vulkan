@@ -38,7 +38,7 @@ export default function act6(A) {
     amb: 'none', sfx: [['riser', 0], ['sizzle', 0.6]], draw: counter((v) => `${Math.round(v).toLocaleString('en-US')} °C`, 20, 1000, 0.1, 2.2, { x: W * 0.7, y: H * 0.45, size: 110, label: '≈ 1,830 °F' }),
   }));
   add(flat(A.at('The physics is simple') - L, (k, lt, S2) => INFO.headline(k, lt, S2, { bg: 'ember', small: 'the physics is simple and', big: 'MERCILESS', size: 170, bigAt: A.peek('merciless') - A.peek('The physics is simple') }), { sfx: [['hit', A.peek('merciless') - A.peek('The physics is simple')]] }));
-  add(shot(A.at('At that temperature') - L, 'magma', dolly([8, 4, 18], [6, 3.5, 14], [0, 4, -10], [0, 6, -10], 46), { water: 1, steam: 1, crust: 0.2, pressure: 1 }, { amb: 'lava', sfx: [['steamBurst', A.peek('flashes into steam') - A.peek('At that temperature')]], fx: { flashes: [{ at: A.peek('flashes into steam') - A.peek('At that temperature'), amp: 1.2, decay: 4 }] } }));
+  add(shot(A.at('At that temperature') - L, 'magma', dolly([8, 4, 18], [6, 3.5, 14], [0, 4, -10], [0, 6, -10], 46), { water: 1, steam: 1, crust: 0.2, pressure: 1 }, { amb: 'lava', sfx: [['steamBurst', A.peek('flashes into steam') - A.peek('At that temperature')]], fx: { flashes: [{ at: A.peek('flashes into steam') - A.peek('At that temperature'), amp: 0.6, decay: 5 }] } }));
   const tX = A.at('expanding to thousands') - L;
   add(shot(tX, 'studio', dolly([0, 2.6, 9], [0, 3.2, 11], [0, 1.4, 0], [0, 2.0, 0], 40), {
     bg: 'navy', items: [{ kind: 'waterCube', id: 'wc', pos: [-2.2, 0.15, 1.2], appear: 0, scale: 0.3, spin: 0.3 }, { kind: 'steamCube', id: 'sc', pos: [1.4, 0.0, -1.0], appear: 0.4, scale: 1, spin: 0.08 }],
@@ -71,10 +71,10 @@ export default function act6(A) {
     burst: { t0: -rel, R: 7500, speed: 1.0, heat: 2.2, c: [-100, 0, -600] },
     ring: { t0: 0.05 - rel, speed: 900, h: 14, w: 220, decay: 20000 }, shock: { t0: -rel, speed: 2200, k: 2.4, decay: 0.35, c: [-100, 0, -600] }, glowLight: 1.4,
   });
-  add(shot(tB, 'strait', dolly([-22000, 90, 16500], [-21300, 140, 16000], [-100, 2500, -600], [-100, 6000, -600], 42, 'lin'), blastP(0), {
+  add(shot(tB, 'strait', dolly([-16500, 60, 12500], [-15800, 120, 12000], [-100, 2200, -600], [-100, 5200, -600], 42, 'lin'), blastP(0), {
     name: 'THE BLAST', amb: 'eruptionMax', mus: 'chaos', subs: false,
     sfx: [['megaBoom', 0.0], ['rumbleLong', 0.4], ['debris', 0.8]],
-    fx: { flashes: [{ at: 0, amp: 3.5, decay: 5 }], flashColor: [1, 0.9, 0.75], shakes: [{ at: 0.05, amp: 2.2, decay: 1.4, zoom: 0.1, freq: 22 }], bloom: 1.0 },
+    fx: { flashes: [{ at: 0, amp: 3.2, decay: 8 }], flashColor: [1, 0.9, 0.75], shakes: [{ at: 0.05, amp: 2.2, decay: 1.4, zoom: 0.1, freq: 22 }], bloom: 0.9 },
   }));
   add(shot(tB2, 'strait', dolly([-11000, 7000, 24000], [-10200, 7200, 23000], [-100, 5000, -600], [-100, 9000, -600], 48, 'lin'), blastP(tB2 - tB), { name: 'blast wide', amb: 'eruptionMax', subs: false, fx: { shakes: [{ at: 0, amp: 1.0, decay: 1.2 }], bloom: 0.95 } }));
   add(shot(tB3, 'strait', dolly([-7600, 16, 9400], [-7590, 16, 9390], [-100, 4500, -600], [-100, 5200, -600], 44, 'lin'), { ...blastP(tB3 - tB), shock: { t0: -(tB3 - tB), speed: 2200, k: 2.8, decay: 0.12, c: [-100, 0, -600] } }, {
@@ -93,7 +93,7 @@ export default function act6(A) {
     ],
   }), { sfx: [['pop', 0.2], ['whoosh', A.peek('the Tsar Bomba') - A.peek('Four times the power')], ['hit', A.peek('the most powerful weapon') - A.peek('Four times the power') + 0.6]] }));
   const tC = A.at('Krakatoa ceases to exist') - L;
-  add(shot(tC, 'strait', dolly([300, 26000, 1400], [300, 24000, 1300], [0, 0, 0], [0, 0, 0], 24, 'lin'), { mood: 'day', island: { destroyedAt: A.peek('ceases to exist') - tC + 0.35 }, sea: 'calm' }, {
+  add(shot(tC, 'strait', dolly([300, 26000, 1400], [300, 24000, 1300], [0, 0, 0], [0, 0, 0], 24, 'lin'), { mood: 'day', island: { destroyedAt: A.peek('ceases to exist') - tC + 0.35 }, sea: 'calm', moodOv: { fog: 0.000008 } }, {
     amb: 'wind', subs: true, sfx: [['bigBoom', A.peek('ceases to exist') - tC + 0.3]], fx: { flashes: [{ at: A.peek('ceases to exist') - tC + 0.3, amp: 3, decay: 3 }], grade: 'film' },
   }));
   add(flat(A.at('Two-thirds of the island') - L, (k, lt, S2) => twoThirds(k, lt, S2), { sfx: [['whoosh', 0], ['dissolve', 0.6]] }));

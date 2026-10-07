@@ -38,7 +38,7 @@ export default function act1(A) {
 
   // --- Science / masters ---------------------------------------------------
   add(shot(A.at('Science had become') - L, 'interior', dolly([2.6, 1.25, 0.6], [2.1, 1.2, 0.3], [0.6, 1.0, -1.2], [0.7, 1.05, -1.2], 36), { room: 'study' }, {
-    amb: 'room', fx: { dof: { focus: 2.0, range: 1.2, bokeh: 3.5 } }, sfx: [['hit', A.peek('religion') - A.peek('Science had') ]],
+    amb: 'room', fx: { dof: { focus: 2.0, range: 1.2, bokeh: 3.5 } }, subsOff: A.peek('a new religion') - A.peek('Science had') - 0.1, sfx: [['hit', A.peek('religion') - A.peek('Science had') ]],
     draw: both(word('SCIENCE', 0.05, { y: H * 0.3, size: 130 }), word('a new religion', A.peek('a new religion') - A.peek('Science had'), { y: H * 0.3 + 90, size: 54, mode: 'blur', tracking: 2 })),
   }));
   add(shot(A.at('People truly believed') - L, 'town', dolly([5, 1.7, 30], [4.6, 1.7, 26], [0, 2.4, -40], [0, 2.4, -40], 40), {

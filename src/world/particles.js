@@ -86,9 +86,10 @@ export class PuffCloud {
       uniforms: this.uniforms,
       vertexShader: /* glsl */ `
         attribute vec4 iPos; attribute vec4 iCol; attribute vec4 iExt;
-        varying vec2 vUv; varying vec4 vCol; varying vec4 vExt; varying vec3 vWorld; varying vec3 vRight; varying vec3 vUp; varying vec3 vFwd;
+        varying vec2 vUv; varying vec4 vCol; varying vec4 vExt; varying vec3 vWorld; varying vec3 vRight; varying vec3 vUp; varying vec3 vFwd; varying float vNear;
         void main() {
           float c = cos(iExt.x), s = sin(iExt.x);
+          vNear = length(cameraPosition - iPos.xyz) / max(iPos.w, 1e-3);
           vec2 q = vec2(c * position.x - s * position.y, s * position.x + c * position.y);
           vec3 right = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
           vec3 up = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
@@ -104,10 +105,11 @@ export class PuffCloud {
       fragmentShader: /* glsl */ `
         uniform sampler2D uAtlas; uniform vec3 uSunDir; uniform vec3 uSunCol; uniform vec3 uAmb; uniform vec3 uGlowCol;
         uniform vec4 uFlash; uniform vec3 uFlashCol; uniform float uFogDensity; uniform vec3 uFogColor;
-        varying vec2 vUv; varying vec4 vCol; varying vec4 vExt; varying vec3 vWorld; varying vec3 vRight; varying vec3 vUp; varying vec3 vFwd;
+        varying vec2 vUv; varying vec4 vCol; varying vec4 vExt; varying vec3 vWorld; varying vec3 vRight; varying vec3 vUp; varying vec3 vFwd; varying float vNear;
         void main() {
           vec4 tx = texture2D(uAtlas, vUv);
-          float d = tx.r * vCol.a;
+          // puffs that brush the lens fade out instead of filling the frame
+          float d = tx.r * vCol.a * smoothstep(0.5, 1.8, vNear);
           if (d < 0.004) discard;
           vec2 n2 = tx.gb * 2.0 - 1.0;
           vec3 n = normalize(vRight * n2.x + vUp * n2.y + vFwd * sqrt(max(1.0 - dot(n2, n2), 0.05)));
@@ -122,6 +124,8 @@ export class PuffCloud {
           // underglow from lava (vExt.z) and emissive heat (vExt.w)
           col += uGlowCol * vExt.z * (0.6 + 0.4 * clamp(-n.y + 0.5, 0.0, 1.0)) * core;
           col += uGlowCol * vExt.w * 2.0;
+          // white-hot cores where the heat is extreme
+          col += vec3(1.6, 1.25, 0.7) * max(vExt.w - 0.9, 0.0) * 1.6 * core;
           // lightning illumination
           if (uFlash.w > 0.0) {
             float fd = length(vWorld - uFlash.xyz);

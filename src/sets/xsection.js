@@ -386,7 +386,7 @@ export class XSectionSet extends BaseSet {
     const ep = p.erupt;
     this.E.on = !!ep;
     if (ep) {
-      Object.assign(this.E, { c: [0, 9.5 * cone, -2], height: val(ep.height, u, lt, 30), intensity: val(ep.intensity, u, lt, 1), baseW: 0.6, topW: 5, rise: ep.rise ?? 4, t0: ep.t0 !== undefined ? shot.t + ep.t0 : -1e6, dark: ep.dark ?? 0.14, glow: 1.2, wind: [0.15, 0], size: 0.011, bombs: val(ep.bombs, u, lt, 0), bombSpeed: 14, lightning: 0, count: 900, umbrella: val(ep.umbrella, u, lt, 0.3), umbrellaR: 30, tint: [1, 0.93, 0.86] });
+      Object.assign(this.E, { c: [0, 9.5 * cone, -5], height: val(ep.height, u, lt, 30), intensity: val(ep.intensity, u, lt, 1), baseW: 0.6, topW: 4, rise: ep.rise ?? 4, t0: ep.t0 !== undefined ? shot.t + ep.t0 : -1e6, dark: ep.dark ?? 0.14, glow: 1.2, wind: [0.15, 0], size: 0.011, bombs: val(ep.bombs, u, lt, 0), bombSpeed: 14, lightning: 0, count: 900, umbrella: val(ep.umbrella, u, lt, 0.2), umbrellaR: 18, tint: [1, 0.93, 0.86] });
     }
     const PU = this.puffs.uniforms;
     PU.uSunDir.value.set(0.4, 0.8, 0.45).normalize();

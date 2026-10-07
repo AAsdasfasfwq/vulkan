@@ -77,7 +77,7 @@ export class GlobeSet extends BaseSet {
           float isOcean = step(alb.b, alb.g * 1.6 + 0.02) < 0.5 ? 1.0 : 0.0;
           isOcean = smoothstep(0.0, 0.05, alb.b - alb.r * 1.5);
           vec3 H = normalize(uSun + V);
-          float spec = pow(max(dot(N, H), 0.0), 60.0) * isOcean * 0.6;
+          float nh = max(dot(N, H), 0.0); float spec = (pow(nh, 260.0) * 0.32 + pow(nh, 18.0) * 0.035) * isOcean;
           // clouds
           vec3 cp = o * 3.0 + vec3(uTime * 0.004, 0.0, uTime * 0.002);
           float cl = fbm3(cp * 1.6) ;
@@ -89,7 +89,7 @@ export class GlobeSet extends BaseSet {
           }
           vec3 col = alb * (0.03 + 1.25 * max(ndl, 0.0)) ;
           col = mix(col, vec3(1.0) * (0.06 + 1.1 * max(ndl, 0.0)), cl * 0.9);
-          col += vec3(1.0, 0.95, 0.85) * spec * day * (1.0 - cl);
+          col += vec3(1.0, 0.9, 0.75) * spec * day * (1.0 - cl);
           // night side faint
           col += alb * uNight * 0.35 * (1.0 - day);
           // ash darkness spot over the strait
@@ -102,7 +102,7 @@ export class GlobeSet extends BaseSet {
             float reach = smoothstep(uVeil * 3.4, uVeil * 3.4 - 0.6, lonD) ;
             float swirl = fbm3(o * 4.0 + vec3(uTime * 0.03, 0.0, 0.0));
             float v = band * max(reach, step(0.95, uVeil)) * (0.5 + 0.7 * swirl) * uVeilK;
-            col = mix(col, vec3(0.75, 0.62, 0.45) * (0.1 + 1.0 * max(ndl, 0.0)), clamp(v, 0.0, 0.75));
+            col = mix(col, vec3(0.78, 0.6, 0.42) * (0.06 + 0.85 * max(ndl, 0.0)), clamp(v * 0.75, 0.0, 0.5));
           }
           col *= uTint;
           // pressure wave rings (and antipodal reflections)
@@ -159,7 +159,7 @@ export class GlobeSet extends BaseSet {
           void main(){ vec3 N = normalize(vN); vec3 V = normalize(cameraPosition - vW); vec3 H = normalize(uSun + V);
             float s = pow(max(dot(N,H),0.0), 18.0); float n = fbm3(N*5.0 + uTime*0.02);
             float a = uMirror * (0.25 + 0.5*n) * smoothstep(-0.1, 0.4, dot(N,uSun));
-            gl_FragColor = vec4(vec3(1.0,0.9,0.7)*(a*0.6 + s*uMirror*1.5), a*0.6); }`,
+            gl_FragColor = vec4(vec3(1.0,0.88,0.66)*(a*0.32 + s*uMirror*0.8), a*0.4); }`,
         transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
       }),
     );

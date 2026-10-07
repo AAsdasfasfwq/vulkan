@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { BaseSet, val } from './base.js';
 import { NOISE } from '../world/glsl.js';
-import { brickGeometry, windowsGeometry, stackGeometry, colonialGeometry, streetLamp, buildingMat, towerGeometry, towerWindows } from '../world/buildings.js';
+import { brickGeometry, windowsGeometry, stackGeometry, colonialGeometry, streetLamp, buildingMat, brickMat, windowMat, towerGeometry, towerWindows } from '../world/buildings.js';
 import { makeFigure, poseFigure, addProp } from '../world/figures.js';
 import { PuffCloud, StreakCloud } from '../world/particles.js';
 import { plumeletEmitter } from '../world/eruption.js';
@@ -22,9 +22,10 @@ export class TownSet extends BaseSet {
     ground.receiveShadow = true;
     sc.add(ground);
     this.ground = ground;
-    const bm = buildingMat();
-    const winMat = new THREE.MeshBasicMaterial({ vertexColors: true });
-    this.winMat = winMat;
+    const bm = brickMat();
+    const winMat = windowMat(0);
+    const winMatM = windowMat(1);
+    this.winMat = winMat; this.winMatM = winMatM;
     // Victorian street
     this.victorian = new THREE.Group();
     for (const side of [-1, 1]) {
@@ -82,7 +83,7 @@ export class TownSet extends BaseSet {
     this.batavia = new THREE.Group();
     for (const side of [-1, 1]) {
       for (let i = 0; i < 18; i++) {
-        const m = new THREE.Mesh(colonialGeometry(i * 3 + (side > 0 ? 1 : 2)), bm);
+        const m = new THREE.Mesh(colonialGeometry(i * 3 + (side > 0 ? 1 : 2)), buildingMat());
         m.position.set(side * 20, 0, -300 + i * 34);
         m.rotation.y = -side * Math.PI / 2;
         m.castShadow = m.receiveShadow = true;
@@ -107,7 +108,7 @@ export class TownSet extends BaseSet {
       m.position.set(gx * 70 + (r() - 0.5) * 20, 0, -150 - gz * 70 + (r() - 0.5) * 20);
       this.modern.add(m);
       const wg = towerWindows(b, i, 0.45);
-      if (wg) { const w = new THREE.Mesh(wg, winMat); w.position.copy(m.position); this.modern.add(w); }
+      if (wg) { const w = new THREE.Mesh(wg, winMatM); w.position.copy(m.position); this.modern.add(w); }
     }
     sc.add(this.modern);
     // fire wagon (steam pumper)
@@ -200,6 +201,7 @@ export class TownSet extends BaseSet {
     fx.exposure = (fx.exposure ?? 1) * (p.exposure ?? 1);
     for (const l of this.lampLights) l.intensity = p.lampsOn === false ? 0 : (p.lampI ?? 25);
     this.winMat.color.setScalar(p.windows ?? 1);
+    this.winMatM.color.setScalar(p.windows ?? 1);
     this.ashK = val(p.ashfall, u, lt, 0);
     this.snow = !!p.snow;
     if (this.snow) this.ashK = val(p.snow, u, lt, 0);

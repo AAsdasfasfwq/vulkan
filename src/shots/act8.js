@@ -30,7 +30,7 @@ export default function act8(A, D) {
   }, { amb: 'eveningTown', fx: { dof: { focus: 9, range: 4, bokeh: 2 } } }));
   add(shot(A.at('For months, the sky') - L, 'strait', dolly([-9000, 6, 9000], [-8960, 6, 8960], [0, 400, 0], [0, 600, 0], 34, 'lin'), { mood: 'violet', sea: 'calm', island: { destroyed: 1 } }, { amb: 'oceanCalm', mus: 'awe' }));
   const tBs = A.at('Light passing through') - L;
-  add(shot(tBs, 'land', dolly([-200, 30, 160], [-180, 32, 150], [0, 120, -400], [0, 140, -400], 40, 'lin'), { mood: 'blueSun', train: false }, {
+  add(shot(tBs, 'land', dolly([-200, 14, 160], [-186, 15, 150], [-60, 92, -400], [-50, 96, -400], 40, 'lin'), { mood: 'blueSun', moodOv: { sunEl: 9, sunAz: 165, sunSize: 0.045 }, train: false }, {
     amb: 'wind', draw: word('BLUE SUN', A.peek('blue or green') - tBs, { y: H * 0.18, size: 90, color: '#bfe8ff', tracking: 14 }),
   }));
   add(shot(A.at('Sunrise and sunset become') - L, 'strait', dolly([-7000, 30, -2000], [-6800, 32, -2100], [-20000, 300, 4000], [-20000, 300, 4000], 38, 'lin'), { mood: 'blood', sea: 'calm', island: { destroyed: 1 } }, { amb: 'oceanCalm', sfx: [['drone', 0]] }));
@@ -103,7 +103,7 @@ export default function act8(A, D) {
   add(card(A.at('140 years after') - 0.15, '140 YEARS AFTER', 'TODAY'));
   const cs = { pos: [-7000, 9000], heading: 25, speed: 7 };
   add(shot(A.at('Today, giant') - L, 'strait', dolly([-6800, 60, 9300], [-6500, 50, 9100], [-6200, 20, 8600], [-5900, 20, 8500], 40, 'lin'), { mood: 'day', island: { destroyed: 1, anak: 300 }, steam: { at: 'anak', amount: 0.3, h: 300 }, ships: [{ id: 'cs', type: 'container', ...cs, roll: 0.2 }] }, { amb: 'ocean', mus: 'modern', sfx: [['shipHorn', 0.8]] }));
-  add(shot(A.at('Passenger jets') - L, 'strait', dolly([-2000, 4, 6000], [-2000, 4, 6000], [-1000, 9000, 2000], [-600, 9000, 2000], 30, 'lin'), { mood: 'day', island: { destroyed: 1, anak: 300 }, jet: { pos: [-6000, 9500, 1800], speed: 240 } }, { amb: 'ocean', sfx: [['jetPass', 0]] }));
+  add(shot(A.at('Passenger jets') - L, 'strait', dolly([-1500, 12, 5600], [-1480, 12, 5560], [-1820, 2600, 3200], [-1340, 2640, 3200], 26, 'lin'), { mood: 'day', island: { destroyed: 1, anak: 300 }, jet: { pos: [-1900, 2700, 3200], speed: 240 } }, { amb: 'ocean', sfx: [['jetPass', 0]] }));
   const tI = A.at('The age of steam') - L;
   add(flat(tI, (k, lt, S2) => INFO.iconsRow(k, lt, S2, {
     items: [
@@ -123,10 +123,10 @@ export default function act8(A, D) {
     mood: 'overcast', island: { destroyed: 1, anak: 12 }, erupt: anakPlume({ height: 1600, intensity: 1, dark: 0.07, glow: 0.1, bombs: 0.4, bombSpeed: 120 }), boil: { c: [-150, -900], r: 500, k: 1 }, surfSteam: { at: [-150, 0, -900], amount: 1, h: 500, spread: 300, size: 120 },
   }, { amb: 'surtsey', sfx: [['steamBurst', 0.4], ['boomLow', 1.0]], draw: word('1927', 0.15, { y: H * 0.22, size: 160, tracking: 10 }) }));
   add(shot(A.at('The sea began to boil') - L, 'strait', dolly([-600, 8, -700], [-560, 9, -730], [-150, 4, -900], [-150, 10, -900], 44, 'lin'), { mood: 'overcast', island: { destroyed: 1, anak: 0 }, boil: { c: [-150, -900], r: 400, k: 1 }, surfSteam: { at: [-150, 0, -900], amount: 1, h: 400, spread: 300, size: 90 } }, { amb: 'surtsey', sfx: [['boilingSea', 0]] }));
-  add(shot(A.at('The volcano was returning') - L, 'strait', orbit([-150, 60, -900], [1400, 1200], [-70, -40], [8, 10], 40), { mood: 'overcast', island: { destroyed: 1, anak: 60 }, erupt: anakPlume({ height: 2400, dark: 0.08 }), boil: { c: [-150, -900], r: 400, k: 0.5 } }, { amb: 'surtsey', sfx: [['boomLow', 0.5]] }));
+  add(shot(A.at('The volcano was returning') - L, 'strait', orbit([-150, 300, -900], [3600, 3300], [-120, -95], [5, 6], 36), { mood: 'overcast', island: { destroyed: 1, anak: 60 }, erupt: anakPlume({ height: 2400, dark: 0.08, wind: [0.3, 0.05] }), boil: { c: [-150, -900], r: 400, k: 0.5 } }, { amb: 'surtsey', sfx: [['boomLow', 0.5]] }));
   const tAk = A.at('Local people named it') - L;
   add(shot(tAk, 'strait', dolly([-2600, 60, 1000], [-2400, 64, 800], [-150, 250, -900], [-150, 300, -900], 36, 'lin'), { mood: 'dusk', island: { destroyed: 1, anak: 200 }, erupt: anakPlume({ glow: 1.2 }), glowLight: 0.3 }, {
-    amb: 'eruptionSoft', mus: 'awe', draw: both(word('ANAK KRAKATAU', A.peek('Anak Krakatau') - tAk, { y: H * 0.22, size: 110, tracking: 14 }), word('the child of Krakatoa', A.peek('the child of') - tAk, { y: H * 0.22 + 76, size: 46, mode: 'blur', tracking: 2 })),
+    amb: 'eruptionSoft', mus: 'awe', subsOff: A.peek('Anak Krakatau') - tAk - 0.1, draw: both(word('ANAK KRAKATAU', A.peek('Anak Krakatau') - tAk, { y: H * 0.22, size: 110, tracking: 14 }), word('the child of Krakatoa', A.peek('the child of') - tAk, { y: H * 0.22 + 76, size: 46, mode: 'blur', tracking: 2 })),
   }));
   add(shot(A.at('chamber beneath it never') - L, 'xsection', orbit([0, -9, -2], [50, 40], [-12, 0], [10, 8], 40), { magma: 1, fill: [0.4, 0.8], cone: 0.45, bare: true, erupt: { height: 20, intensity: 0.6 } }, { amb: 'rumble' }));
   add(shot(A.at('The grinding tectonic') - L, 'xsection', orbit([0, -14, -6], [80, 70], [20, 28], [12, 10], 40), { magma: 1, fill: 0.8, cone: 0.45, bare: true, plateSpeed: 1.2, hl: 1 }, { amb: 'rumble', sfx: [['rockGrind', 0.2]], draw: arrow3([-36, -3.6, 0.5], [-14, -4.2, 0.5], 0.1, { color: '#7fd0ff' }) }));
@@ -166,7 +166,7 @@ export default function act8(A, D) {
     ll: [[30, 100], [30, 70]], cloud: 0.35, sats: true, cables: 1, cableK: 2.2, dots: ['london', 'newyork', 'tokyo', 'shanghai', 'singapore', 'bombay', 'sydney', 'sanfrancisco'],
     arcs: [{ id: 'n1', from: 'tokyo', to: 'sanfrancisco', start: 0.0, dur: 0.8, col: [0.4, 0.8, 1] }, { id: 'n2', from: 'london', to: 'singapore', start: 0.2, dur: 0.8, col: [0.4, 0.8, 1] }, { id: 'n3', from: 'newyork', to: 'london', start: 0.3, dur: 0.6, col: [0.4, 0.8, 1] }],
   }, { amb: 'space', sfx: [['dataBlips', 0]] }));
-  add(shot(A.at('rests on a thin') - L, 'xsection', orbit([0, -6, -10], [60, 46], [10, -4], [14, 8], 40, 'inOut'), { city: true, magma: 0.8, fill: 0.9, pressure: 0.5, cone: 0.0, bg: 0x05060a }, { amb: 'rumble', sfx: [['rumbleDeep', 0.2]], draw: word('a thin, fragile crust', A.peek('fragile crust') - A.peek('rests on a thin') - 0.4, { y: H * 0.16, size: 56, mode: 'blur', tracking: 2 }) }));
+  add(shot(A.at('rests on a thin') - L, 'xsection', orbit([0, -6, -10], [60, 46], [10, -4], [14, 8], 40, 'inOut'), { city: true, magma: 0.8, fill: 0.9, pressure: 0.5, cone: 0.0, bg: 0x05060a }, { amb: 'rumble', sfx: [['rumbleDeep', 0.2]], subsOff: A.peek('fragile crust') - A.peek('rests on a thin') - 0.45, draw: word('a thin, fragile crust', A.peek('fragile crust') - A.peek('rests on a thin') - 0.4, { y: H * 0.16, size: 56, mode: 'blur', tracking: 2 }) }));
   add(shot(A.at('above an ocean of liquid fire') - L, 'magma', dolly([0, 14, 60], [0, 10, 44], [0, 1, 0], [0, 1, -10], 52, 'lin'), { crust: 0.3, pressure: 0.3, bubbles: 0.4 }, { amb: 'lava' }));
   add(shot(A.at('We do not own this planet') - L, 'globe', dolly([0, 2, 44], [0, 1.5, 38], [0, 0, 0], [0, 0, 0], 40, 'lin'), { ll: [[0, 60], [0, 40]], cloud: 0.5, sunGlare: 1.0, sunAz: 60 }, { amb: 'space', mus: 'outro' }));
   add(shot(A.at('We are tenants') - L, 'strait', dolly([-9000, 12, 1200], [-8960, 12, 1180], [-150, 300, -900], [-150, 320, -900], 32, 'lin'), { mood: 'dawn', sea: 'calm', island: { destroyed: 1, anak: 330 }, steam: { at: 'anak', amount: 0.5, h: 600 }, birds: { c: [-7000, 80, 800], r: 300, speed: 0.08, spread: 60, scale: 2.2 } }, { amb: 'oceanCalm' }));
