@@ -79,8 +79,8 @@ export function islandHeight(x, z, st = {}) {
 }
 
 const COL = {
-  sand: [0.78, 0.66, 0.48], wetSand: [0.45, 0.37, 0.26], grass: [0.2, 0.42, 0.09], jungle: [0.05, 0.22, 0.04],
-  jungle2: [0.09, 0.3, 0.06], rock: [0.32, 0.27, 0.22], darkRock: [0.13, 0.11, 0.1], ash: [0.46, 0.44, 0.41], ashDark: [0.22, 0.21, 0.2],
+  sand: [0.78, 0.66, 0.48], wetSand: [0.45, 0.37, 0.26], grass: [0.14, 0.3, 0.07], jungle: [0.03, 0.13, 0.025],
+  jungle2: [0.07, 0.2, 0.035], rock: [0.32, 0.27, 0.22], darkRock: [0.13, 0.11, 0.1], ash: [0.46, 0.44, 0.41], ashDark: [0.22, 0.21, 0.2],
   under: [0.25, 0.3, 0.26],
 };
 
@@ -103,19 +103,33 @@ export class Island {
     mat.onBeforeCompile = (sh) => {
       Object.assign(sh.uniforms, this.uniforms);
       sh.vertexShader = sh.vertexShader
-        .replace('#include <common>', '#include <common>\nvarying vec3 vWp;')
-        .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvWp = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+        .replace('#include <common>', '#include <common>\nvarying vec3 vWp; varying float vJungle;')
+        .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvWp = (modelMatrix * vec4(transformed, 1.0)).xyz;\n#ifdef USE_COLOR\nvJungle = clamp((color.g - color.r * 1.25) * 9.0, 0.0, 1.0);\n#else\nvJungle = 0.0;\n#endif');
       sh.fragmentShader = sh.fragmentShader
-        .replace('#include <common>', '#include <common>\nvarying vec3 vWp;\nuniform float uAsh; uniform float uLava; uniform vec3 uLavaCenter; uniform float uTime; uniform float uBurn;\n' + NOISE)
+        .replace('#include <common>', '#include <common>\nvarying vec3 vWp; varying float vJungle;\nuniform float uAsh; uniform float uLava; uniform vec3 uLavaCenter; uniform float uTime; uniform float uBurn;\n' + NOISE + '\nfloat canopy(vec2 p){ float w = worley(p); float w2 = worley(p * 2.3 + 5.0); return (1.0 - w * w) * 0.75 + (1.0 - w2 * w2) * 0.25; }\n')
         .replace('#include <color_fragment>', `#include <color_fragment>
           float dn = fbm2(vWp.xz * 0.05) ;
           float dn2 = vnoise(vWp.xz * 0.6);
           diffuseColor.rgb *= 0.78 + 0.42 * dn + 0.12 * dn2;
+          float jk = vJungle * (1.0 - uAsh) * (1.0 - uBurn);
+          float cano = canopy(vWp.xz * 0.075);
+          vec3 tint = mix(vec3(0.75, 0.95, 0.6), vec3(1.15, 1.1, 0.75), vnoise(vWp.xz * 0.012));
+          diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * tint * (0.35 + 0.95 * cano), jk);
           vec3 burnt = vec3(0.24, 0.17, 0.1) * (0.8 + 0.4 * dn);
           diffuseColor.rgb = mix(diffuseColor.rgb, burnt, uBurn * smoothstep(5.0, 30.0, vWp.y));
           float ashMask = uAsh * smoothstep(-2.0, 8.0, vWp.y) * (0.75 + 0.25 * dn);
           diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.44, 0.43, 0.41) * (0.8 + 0.3 * dn2), clamp(ashMask, 0.0, 1.0));
         `)
+        .replace('#include <normal_fragment_begin>', `#include <normal_fragment_begin>
+          {
+            float jk2 = vJungle * (1.0 - uAsh);
+            if (jk2 > 0.01) {
+              vec2 cp = vWp.xz * 0.075; float e = 0.03;
+              float h0 = canopy(cp), hx = canopy(cp + vec2(e, 0.0)), hz = canopy(cp + vec2(0.0, e));
+              vec3 dnw = vec3(-(hx - h0) / e, 0.0, -(hz - h0) / e) * 0.22 * jk2;
+              normal = normalize(normal + (viewMatrix * vec4(dnw, 0.0)).xyz);
+            }
+          }`)
         .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
           if (uLava > 0.0) {
             vec2 rel = vWp.xz - uLavaCenter.xz;
@@ -211,7 +225,7 @@ export class Island {
     const up = new THREE.Vector3(0, 1, 0);
     const trees = [], palms = [];
     let tries = 0;
-    while ((trees.length < 9000 || palms.length < 900) && tries < 400000) {
+    while ((trees.length < 16000 || palms.length < 1100) && tries < 600000) {
       tries++;
       const x = (r() - 0.5) * 7000, z = (r() - 0.5) * 11000;
       const y = islandHeight(x, z, {});
@@ -220,20 +234,20 @@ export class Island {
       const gx = islandHeight(x + e, z, {}) - islandHeight(x - e, z, {});
       const gz = islandHeight(x, z + e, {}) - islandHeight(x, z - e, {});
       const slope = Math.hypot(gx, gz) / (2 * e);
-      if (y < 22 && palms.length < 900 && slope < 0.35) palms.push([x, y, z]);
-      else if (y > 9 && y < 740 && slope < 1.25 && trees.length < 9000) trees.push([x, y, z, slope]);
+      if (y < 22 && palms.length < 1100 && slope < 0.35) palms.push([x, y, z]);
+      else if (y > 9 && y < 740 && slope < 1.25 && trees.length < 16000) trees.push([x, y, z, slope]);
     }
     const tm = new THREE.InstancedMesh(treeGeo, treeMat, trees.length);
     const tcol = new THREE.Color();
     trees.forEach(([x, y, z, sl], i) => {
-      const sc = (9 + r() * 10) * (1 - smoothstep(400, 760, y) * 0.5);
+      const sc = (13 + r() * 13) * (1 - smoothstep(400, 760, y) * 0.5);
       p.set(x, y - 2, z);
       q.setFromAxisAngle(up, r() * Math.PI * 2);
       s.set(sc * (0.8 + r() * 0.4), sc * (0.7 + r() * 0.5), sc * (0.8 + r() * 0.4));
       m.compose(p, q, s);
       tm.setMatrixAt(i, m);
       const v = r();
-      tcol.setRGB(lerp(0.07, 0.2, v) * (1 + sl * 0.2), lerp(0.25, 0.42, v * 0.8 + r() * 0.2), lerp(0.04, 0.09, v));
+      tcol.setRGB(lerp(0.05, 0.16, v) * (1 + sl * 0.2), lerp(0.16, 0.32, v * 0.8 + r() * 0.2), lerp(0.025, 0.07, v));
       tm.setColorAt(i, tcol);
     });
     tm.castShadow = true; tm.receiveShadow = true;

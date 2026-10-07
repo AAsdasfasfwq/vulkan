@@ -22,13 +22,18 @@ export class MagmaSet extends BaseSet {
         void main(){ vec3 p = position; float h = fbm2(p.xz*0.12 + uTime*0.05)*1.4 + sin(p.x*0.3+uTime*0.8)*0.15*(1.0+uPressure*2.0); p.y += h; vH = h; vW = (modelMatrix*vec4(p,1.0)).xyz; gl_Position = projectionMatrix*viewMatrix*vec4(vW,1.0); }`,
       fragmentShader: NOISE + `uniform float uTime; uniform float uHeat; uniform float uCrust; uniform float uPressure; varying vec3 vW; varying float vH;
         void main(){
-          vec2 q = vW.xz * 0.18;
-          float w = worley(q + vec2(uTime*0.03, uTime*0.02));
-          float flow = fbm2(vW.xz*0.08 - uTime*0.04);
-          float crust = smoothstep(0.05, 0.16 + (1.0-uCrust)*0.2, w) * smoothstep(0.1, 0.5, flow + uCrust*0.5);
-          vec3 hot = mix(vec3(0.9,0.2,0.02), vec3(1.0,0.6,0.15), smoothstep(0.12,0.0,w)) * (1.6 + uPressure*1.2) * uHeat;
-          vec3 cr = vec3(0.05,0.03,0.025) * (0.6 + 0.6*vnoise(vW.xz*1.5)) + vec3(0.25,0.05,0.0)*smoothstep(0.3,0.0,w)*0.5;
-          vec3 c = mix(hot, cr + hot*0.04, crust);
+          vec2 q = vW.xz * 0.16 + vec2(uTime*0.03, uTime*0.02);
+          vec2 w2 = worley2(q);
+          float edge = w2.y - w2.x;
+          vec2 w3 = worley2(q * 3.1 + 7.0);
+          float edge2 = w3.y - w3.x;
+          float flow = fbm2(vW.xz*0.06 - uTime*0.04);
+          float open = smoothstep(0.65, 0.95, flow + (1.0 - uCrust) * 0.4);      // patches of open molten lava
+          float crack = smoothstep(0.09 + (1.0 - uCrust) * 0.08, 0.0, edge) + 0.5 * smoothstep(0.05, 0.0, edge2);
+          float hotK = clamp(max(crack, open), 0.0, 1.0);
+          vec3 hot = mix(vec3(0.85,0.16,0.02), vec3(1.0,0.55,0.12), clamp(crack * 0.8 + open * 0.5, 0.0, 1.0)) * (1.4 + uPressure*1.2) * uHeat;
+          vec3 cr = vec3(0.045,0.03,0.025) * (0.6 + 0.7*vnoise(vW.xz*1.5)) + vec3(0.2,0.04,0.0) * smoothstep(0.25, 0.0, edge) * 0.4;
+          vec3 c = mix(cr, hot, hotK);
           float d = length(cameraPosition - vW);
           c = mix(c, vec3(0.12,0.03,0.01), 1.0 - exp(-0.03*d));
           gl_FragColor = vec4(c, 1.0);

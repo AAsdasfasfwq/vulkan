@@ -89,8 +89,24 @@ export function makeFinder(words) {
     }
     return null;
   }
+  // After the shot list is built the finder is "sealed": lazy look-ups made
+  // while rendering (inside draw closures) search from the current shot.
+  let sealed = null;
+  const cache = new Map();
+  const fromTime = (t) => { let i = 0; while (i < toks.length && words[toks[i].wi].vs < t) i++; return i; };
   const need = (phrase) => {
-    const r = search(phrase, cursor);
+    let from = cursor;
+    if (sealed) {
+      const t0 = sealed();
+      const key = phrase + '@' + t0;
+      if (cache.has(key)) return cache.get(key);
+      from = fromTime(t0 - 0.6);
+      const r = search(phrase, from);
+      if (!r) throw new Error('Phrase not found in transcript (after shot start): "' + phrase + '"');
+      cache.set(key, r);
+      return r;
+    }
+    const r = search(phrase, from);
     if (!r) throw new Error('Phrase not found in transcript (after previous anchor): "' + phrase + '"');
     return r;
   };
@@ -101,6 +117,7 @@ export function makeFinder(words) {
     // Start of a phrase after the current cursor (does not move it).
     peek(phrase) { const r = need(phrase); return words[toks[r.first].wi].vs; },
     reset() { cursor = 0; },
+    seal(getShotStart) { sealed = getShotStart; },
   };
 }
 

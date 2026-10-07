@@ -1,5 +1,5 @@
 // ACT II — 100 years before (1:38 – 2:38)
-import { LEAD, K, card, dolly, orbit, onShip, shot, flat, both } from './helpers.js';
+import { LEAD, K, card, dolly, orbit, onShip, shot, flat, both, cup } from './helpers.js';
 import { gpin, pin3, word, tag, stamp, arrow3, counter, INFO } from './ov.js';
 import { islandHeight } from '../world/island.js';
 import { XS } from '../sets/xsection.js';
@@ -16,12 +16,12 @@ export default function act2(A) {
   add(card(A.at('100 years before') - 0.15, '100 YEARS BEFORE', 'THE ERUPTION · 1783'));
   add(shot(A.at('The volcano is quiet') - L, 'strait', dolly([-6200, 12, -1200], [-6000, 14, -1100], [0, 300, 0], [0, 300, 0], 30, 'lin'), { mood: 'dawn', sea: 'calm', steam: { at: 'perboewatan', amount: 0.25, h: 300, alpha: 0.3 }, birds: { c: [-5000, 80, -900], r: 300, speed: 0.06, spread: 60, scale: 2.2 } }, { amb: 'oceanCalm', mus: 'calm', fx: { fadeIn: 0.3 } }));
   const t1680 = A.at('Krakatoa last stirred') - L;
-  add(shot(t1680, 'strait', dolly([-5000, 300, -5200], [-4600, 280, -4900], [250, 800, -2500], [250, 900, -2500], 38, 'lin'), { mood: 'haze', erupt: { at: 'perboewatan', height: 3500, intensity: 0.8, glow: 0.3, dark: 0.22, count: 700 }, sea: 'calm' }, {
+  add(shot(t1680, 'strait', dolly([-3200, 160, -4600], [-2950, 150, -4400], [250, 900, -2500], [250, 1000, -2500], 40, 'lin'), { mood: 'golden', erupt: { at: 'perboewatan', height: 3500, intensity: 0.85, glow: 0.3, dark: 0.22, count: 700 }, sea: 'calm' }, {
     amb: 'rumbleSoft', fx: { sepia: 0.85, grain: 0.07, vignette: 0.6 }, sfx: [['projector', 0], ['boomFar', 0.8]],
     draw: both(word('1680', A.peek('1680') - t1680, { y: H * 0.36, size: 200, color: '#f2e2c4', tracking: 10, mode: 'blur' })),
   }));
-  add(shot(A.at('but that eruption was moderate') - L, 'strait', orbit([250, 1200, -2500], [9000, 8600], [-120, -110], [6, 7], 36), { mood: 'haze', erupt: { at: 'perboewatan', height: 3000, intensity: 0.7, glow: 0.3, dark: 0.24, count: 600 }, sea: 'calm' }, { amb: 'rumbleSoft', fx: { sepia: 0.85, grain: 0.07, vignette: 0.6 }, sfx: [['projector', 0]] }));
-  add(shot(A.at('and the memory quickly faded') - L, 'strait', dolly([-6000, 200, 2000], [-5600, 210, 1700], [0, 400, -1000], [0, 400, -1000], 36, 'lin'), { mood: 'haze', erupt: { at: 'perboewatan', height: 2500, intensity: [0.6, 0.0], glow: 0.2, dark: 0.26, count: 500 }, sea: 'calm' }, { amb: 'rumbleSoft', fx: { sepia: 0.9, grain: 0.08, vignette: 0.65, fadeOut: 1.0, desat: 0.4 }, sfx: [['projector', 0]] }));
+  add(shot(A.at('but that eruption was moderate') - L, 'strait', orbit([250, 900, -2500], [5200, 5000], [-120, -110], [5, 6], 38), { mood: 'golden', erupt: { at: 'perboewatan', height: 3000, intensity: 0.7, glow: 0.3, dark: 0.24, count: 600 }, sea: 'calm' }, { amb: 'rumbleSoft', fx: { sepia: 0.85, grain: 0.07, vignette: 0.6 }, sfx: [['projector', 0]] }));
+  add(shot(A.at('and the memory quickly faded') - L, 'strait', dolly([-4600, 140, 1400], [-4300, 150, 1200], [0, 400, -1200], [0, 400, -1200], 38, 'lin'), { mood: 'golden', erupt: { at: 'perboewatan', height: 2500, intensity: [0.6, 0.0], glow: 0.2, dark: 0.26, count: 500 }, sea: 'calm' }, { amb: 'rumbleSoft', fx: { sepia: 0.9, grain: 0.08, vignette: 0.65, fadeOut: 1.0, desat: 0.4 }, sfx: [['projector', 0]] }));
 
   add(shot(A.at('Deep beneath the Sunda Strait') - L, 'xsection', orbit([0, -16, -12], [120, 96], [-30, -18], [24, 14], 40, 'inOut'), { magma: 0.8, fill: 0.75, plateSpeed: 0.3, dim: 0.1 }, { amb: 'rumble', mus: 'unease', sfx: [['whooshDown', 0]] }));
   add(shot(A.at('tens of miles underground') - L, 'xsection', orbit([10, -20, -8], [70, 62], [-6, -12], [6, 6], 40), { magma: 0.9, fill: 0.75, plateSpeed: 0.3 }, {
@@ -43,7 +43,7 @@ export default function act2(A) {
   // --- tropical paradise -----------------------------------------------------
   add(shot(A.at('On the surface, it is still') - L, 'coast', dolly([-70, 3.5, 30], [-60, 3.2, 22], [20, 6, -40], [24, 7, -40], 40, 'lin'), { layout: 'wild', mood: 'day', sea: 'calm', wind: 1.2 }, { amb: 'beach', mus: 'calm', sfx: [['whoosh', 0], ['birdsong', 0.3]], fx: { grade: 'tropical' } }));
   add(shot(A.at('No one lives on the island') - L, 'strait', dolly(up(-2600, -1500, 220), up(-2100, -900, 260), up(0, 400, 200), up(200, 700, 220), 44, 'lin'), { mood: 'day', wind: 1.2, birds: { c: [-2200, 300, -1100], r: 150, speed: 0.12, spread: 40 } }, { amb: 'jungle' }));
-  add(shot(A.at('but sailors often stop there') - L, 'coast', dolly([-14, 1.7, 16], [-16, 1.7, 13], [-24, 1.5, 7], [-26, 1.4, 6], 40), {
+  add(shot(A.at('but sailors often stop there') - L, 'coast', dolly(cup(-14, 14, 1.7), cup(-16, 11, 1.7), cup(-24, 5, 1.2), cup(-26, 4, 1.1), 40), {
     layout: 'wild', mood: 'golden', sea: 'calm', barque: true, barquePos: [-60, 300],
     people: [{ style: 'sailor', at: [-20, 5], rot: -40, pose: { carry: true }, prop: 'bucket' }, { style: 'sailor2', at: [-27, 4], rot: 30, move: [0.6, 0.5], pose: { walk: 0.8, carry: true }, prop: 'log' }, { style: 'sailor', at: [-22, 2.5], rot: 160, pose: { sweep: 0 } }],
   }, { amb: 'beach', fx: { dof: { focus: 7, range: 4, bokeh: 3 } }, sfx: [['waveLap', 0.2]] }));

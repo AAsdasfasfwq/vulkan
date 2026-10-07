@@ -40,8 +40,10 @@ export function drawMap(k, lt, S, o) {
   const ctx = k.ctx;
   const th = THEMES[o.theme ?? 'night'];
   const u = clamp(lt / S.dur);
-  const cen = Array.isArray(o.center[0]) ? keys(o.center.map((v, i) => [i / (o.center.length - 1), v]), ease.inOut(u), 'lin') : o.center;
-  const sc = Array.isArray(o.scale) ? keys(o.scale.map((v, i) => [i / (o.scale.length - 1), v]), ease.inOut(u), 'lin') : o.scale;
+  const track = (list, e) => (list.length === 1 ? list[0] : keys(list.map((v, i) => [i / (list.length - 1), v]), e, 'lin'));
+  const cen = Array.isArray(o.center[0]) ? track(o.center, ease.inOut(u)) : o.center;
+  const scList = Array.isArray(o.scale) ? o.scale.flat() : [o.scale];
+  const sc = track(scList, ease.inOut(u));
   const proj = geoMercator().center(cen).scale(sc).translate([W / 2, H / 2]).clipExtent([[-10, -10], [W + 10, H + 10]]);
   const path = geoPath(proj, ctx);
   // sea

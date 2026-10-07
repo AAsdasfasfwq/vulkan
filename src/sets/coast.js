@@ -370,6 +370,7 @@ export class CoastSet extends BaseSet {
     this.volcano.visible = !!p.volcano;
     if (!!p.bare !== this.bare) this.colorTerrain(!!p.bare);
     this.trees.visible = !p.bare;
+    this.palms.visible = !p.bare;
     this.ocean.setSea(p.sea ?? 'calm', p.seaScale ?? 1);
     evalCamera(shot, 0, this.camTmp);
     this.ocean.center(this.camTmp.pos.x, this.camTmp.pos.z);

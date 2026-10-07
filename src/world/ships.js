@@ -61,7 +61,7 @@ function hullGeometry({ L, W, D, free, sheer = 0.6, bow = 2.2, stern = 0.5, colo
   for (const p of pts) shape.lineTo(p[0], p[1]);
   for (let i = pts.length - 1; i >= 0; i--) shape.lineTo(pts[i][0], -pts[i][1]);
   const dg = new THREE.ShapeGeometry(shape, 2);
-  dg.rotateX(Math.PI / 2);
+  dg.rotateX(-Math.PI / 2);
   // follow sheer
   const dp = dg.attributes.position;
   for (let k = 0; k < dp.count; k++) { const u = dp.getX(k) / (L / 2); dp.setY(k, deckY(clamp(u, -1, 1)) - 0.08); }
@@ -131,7 +131,7 @@ function triSail(a, b, c, color, belly = 0.6) {
 const MAT = {};
 function mats() {
   if (MAT.hull) return MAT;
-  MAT.hull = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, metalness: 0.05 });
+  MAT.hull = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, metalness: 0.05, side: THREE.DoubleSide });
   MAT.ash = { value: 0 };
   MAT.hull.onBeforeCompile = (sh) => {
     sh.uniforms.uShipAsh = MAT.ash;
@@ -209,13 +209,13 @@ export function makeBarque(opts = {}) {
   // stays between masts
   ropes.push([[13, deckY(0.54) + 33, 0], [1, deckY(0.04) + 20, 0]], [[1, deckY(0.04) + 36, 0], [-12, deckY(-0.5) + 22, 0]]);
   // deck furniture
-  parts.push(box(6, 2.2, 4.2, [0.45, 0.32, 0.2], -4, deckY(-0.16) + 1.0, 0));
-  parts.push(box(4, 1.6, 3.2, [0.48, 0.35, 0.22], 7, deckY(0.3) + 0.8, 0));
+  parts.push(box(4.5, 2.0, 3.4, [0.45, 0.32, 0.2], -4, deckY(-0.16) + 1.0, 0));
+  parts.push(box(3, 1.5, 2.6, [0.48, 0.35, 0.22], 7, deckY(0.3) + 0.75, 0));
   parts.push(box(3.0, 1.4, 6.5, [0.4, 0.28, 0.18], -19, deckY(-0.8) + 0.7, 0));
   parts.push(cyl(0.7, 0.7, 0.2, [0.3, 0.2, 0.1], -20.5, deckY(-0.85) + 2.2, 0, 16, 0, Math.PI / 2));
-  for (let b = 0; b < 6; b++) parts.push(cyl(0.38, 0.38, 1.0, [0.38, 0.25, 0.14], -8 + b * 0.85, deckY(-0.3) + 0.5, 3.2 - (b % 2) * 0.8, 10));
-  // lifeboat
-  parts.push(box(6, 0.9, 1.8, [0.85, 0.85, 0.8], -9, deckY(-0.38) + 2.6, 0));
+  for (let b = 0; b < 6; b++) parts.push(cyl(0.38, 0.38, 1.0, [0.38, 0.25, 0.14], -9 + (b % 3) * 0.85, deckY(-0.35) + 0.5, 3.4 - Math.floor(b / 3) * 0.8, 10));
+  // lifeboat on the deckhouse
+  parts.push(box(4, 0.8, 1.6, [0.85, 0.85, 0.8], -4, deckY(-0.16) + 2.4, 0));
   const hull = new THREE.Mesh(mergeGeometries(parts), M.hull);
   hull.castShadow = true; hull.receiveShadow = true;
   const sailMesh = new THREE.Mesh(mergeGeometries(sails), M.sail);
@@ -246,19 +246,26 @@ export function makeSteamer(opts = {}) {
   const wood = [0.4, 0.28, 0.17];
   const ropes = [];
   const funnelCol = kind === 'warship' ? [0.78, 0.62, 0.35] : kind === 'excursion' ? [0.12, 0.12, 0.12] : [0.15, 0.15, 0.15];
-  const fx = kind === 'excursion' ? 0 : -2;
+  const fx = kind === 'excursion' ? 9 : -2;
   parts.push(cyl(1.6, 1.5, 9, funnelCol, fx, deckY(0) + 6, 0, 16));
   parts.push(cyl(1.62, 1.62, 1.2, kind === 'excursion' ? [0.75, 0.12, 0.08] : [0.1, 0.1, 0.1], fx, deckY(0) + 10, 0, 16));
   // superstructure
-  parts.push(box(16, 2.4, W * 0.55, kind === 'excursion' ? [0.92, 0.9, 0.84] : [0.55, 0.45, 0.32], 2, deckY(0.05) + 1.2, 0));
-  parts.push(box(6, 2.0, W * 0.45, [0.9, 0.9, 0.86], 6, deckY(0.15) + 3.4, 0));
   if (kind === 'excursion') {
-    // awning + paddle boxes
-    parts.push(box(30, 0.15, W * 0.95, [0.86, 0.82, 0.7], -8, deckY(-0.2) + 3.4, 0));
+    parts.push(box(7, 2.4, W * 0.5, [0.92, 0.9, 0.84], 17, deckY(0.5) + 1.2, 0));
+    parts.push(box(4, 1.8, W * 0.4, [0.9, 0.9, 0.86], 17.5, deckY(0.5) + 3.3, 0));
+    // striped awning over the stern + paddle boxes
+    for (let a = 0; a < 6; a++) parts.push(box(3.2, 0.12, W * 0.95, a % 2 ? [0.86, 0.82, 0.7] : [0.75, 0.2, 0.15], -22 + a * 3.2, deckY(-0.6) + 3.6, 0));
     for (const s of [-1, 1]) parts.push(cyl(3.6, 3.6, 2.2, [0.85, 0.83, 0.77], 0, deckY(0) - 0.6, s * (W / 2 + 0.9), 18, Math.PI / 2));
-    for (let p = 0; p < 8; p++) parts.push(cyl(0.08, 0.08, 3.2, [0.3, 0.3, 0.3], -22 + p * 4.2, deckY(-0.2) + 1.7, W * 0.44, 4), cyl(0.08, 0.08, 3.2, [0.3, 0.3, 0.3], -22 + p * 4.2, deckY(-0.2) + 1.7, -W * 0.44, 4));
+    for (let p = 0; p < 6; p++) parts.push(cyl(0.08, 0.08, 3.4, [0.3, 0.3, 0.3], -23 + p * 3.8, deckY(-0.6) + 1.8, W * 0.44, 4), cyl(0.08, 0.08, 3.4, [0.3, 0.3, 0.3], -23 + p * 3.8, deckY(-0.6) + 1.8, -W * 0.44, 4));
+    // deck benches & railings
+    for (let p = 0; p < 5; p++) for (const sz of [-1, 1]) parts.push(box(2.2, 0.45, 0.5, [0.45, 0.3, 0.18], -16 + p * 5, deckY(-0.3) + 0.25, sz * W * 0.36));
+  } else {
+    parts.push(box(16, 2.4, W * 0.55, [0.55, 0.45, 0.32], 2, deckY(0.05) + 1.2, 0));
+    parts.push(box(6, 2.0, W * 0.45, [0.9, 0.9, 0.86], 6, deckY(0.15) + 3.4, 0));
   }
-  const masts = kind === 'excursion' ? [14, -18] : [20, 2, -18];
+  // bulwark rails
+  for (let p = 0; p < 22; p++) { const x = -L / 2 + 3 + p * ((L - 6) / 21); const hw = half(x / (L / 2)); for (const sz of [-1, 1]) parts.push(cyl(0.05, 0.05, 1.0, kind === 'excursion' ? [0.92, 0.9, 0.85] : [0.3, 0.22, 0.14], x, deckY(x / (L / 2)) + 0.5, sz * hw * 0.97, 4)); }
+  const masts = kind === 'excursion' ? [22, -24] : [20, 2, -18];
   masts.forEach((mx, i) => {
     const b = deckY(mx / (L / 2));
     const h = kind === 'excursion' ? 18 : 30 - i * 3;

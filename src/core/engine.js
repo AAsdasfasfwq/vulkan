@@ -8,7 +8,7 @@ import { FPS } from './transcript.js';
 // Grades: [contrast, saturation, lift, gamma, gain, shadowTint, highTint, vignette, grain]
 export const GRADES = {
   film: { contrast: 1.06, saturation: 1.12, lift: [0.0, 0.004, 0.012], gamma: [1, 1, 1], gain: [1.0, 0.99, 0.97], sh: [-0.004, 0.004, 0.016], hi: [0.018, 0.008, -0.01], vignette: 0.38, grain: 0.03 },
-  tropical: { contrast: 1.07, saturation: 1.2, lift: [0, 0.006, 0.012], gamma: [1, 1.01, 1], gain: [1.0, 1.0, 0.98], sh: [-0.006, 0.008, 0.018], hi: [0.02, 0.012, -0.012], vignette: 0.32, grain: 0.028 },
+  tropical: { contrast: 1.08, saturation: 1.12, lift: [0, 0.006, 0.012], gamma: [1, 1.01, 1], gain: [1.0, 1.0, 0.98], sh: [-0.006, 0.008, 0.018], hi: [0.02, 0.012, -0.012], vignette: 0.32, grain: 0.028 },
   warm: { contrast: 1.08, saturation: 1.12, lift: [0.01, 0.004, 0.0], gamma: [1.02, 1, 0.97], gain: [1.03, 0.99, 0.93], sh: [0.0, -0.002, 0.01], hi: [0.025, 0.01, -0.02], vignette: 0.42, grain: 0.034 },
   fire: { contrast: 1.12, saturation: 1.15, lift: [0.012, 0.002, 0.0], gamma: [1.03, 0.98, 0.95], gain: [1.04, 0.96, 0.88], sh: [0.006, -0.004, 0.004], hi: [0.03, 0.006, -0.03], vignette: 0.5, grain: 0.04 },
   night: { contrast: 1.08, saturation: 1.05, lift: [0.0, 0.006, 0.02], gamma: [0.98, 1, 1.04], gain: [0.96, 0.99, 1.04], sh: [-0.006, 0.0, 0.02], hi: [0.01, 0.0, -0.01], vignette: 0.5, grain: 0.04 },

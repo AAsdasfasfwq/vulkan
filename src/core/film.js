@@ -41,6 +41,7 @@ export class Film {
       duration: tr.duration,
     };
     const list = buildShots(A).filter(Boolean);
+    finder.seal(() => (this.cur ? this.cur.t : 0));
     list.sort((a, b) => a.t - b.t);
     for (let i = 0; i < list.length; i++) {
       const s = list[i];

@@ -36,8 +36,8 @@ export class LandSet extends BaseSet {
           // patchwork fields
           vec2 cell = floor(vWp.xz / vec2(140.0, 90.0) + vec2(vnoise(vWp.xz*0.002)*0.6));
           float h = hash12(cell);
-          vec3 wheat = vec3(0.72, 0.58, 0.25), green = vec3(0.24, 0.42, 0.12), plough = vec3(0.32, 0.22, 0.13), grass = vec3(0.3, 0.48, 0.16);
-          vec3 c = h < 0.3 ? wheat : h < 0.55 ? green : h < 0.75 ? plough : grass;
+          vec3 wheat = vec3(0.7, 0.55, 0.2), green = vec3(0.16, 0.36, 0.07), plough = vec3(0.3, 0.2, 0.11), grass = vec3(0.22, 0.42, 0.1);
+          vec3 c = h < 0.2 ? wheat : h < 0.55 ? green : h < 0.68 ? plough : grass;
           float rows = 0.85 + 0.15 * sin(dot(vWp.xz, vec2(cos(h*6.0), sin(h*6.0))) * 1.6);
           c *= rows * (0.85 + 0.3 * fbm2(vWp.xz * 0.02));
           // hedgerows at field borders
@@ -45,7 +45,7 @@ export class LandSet extends BaseSet {
           float hedge = smoothstep(0.015, 0.0, min(min(f.x, 1.0-f.x)*1.0, min(f.y, 1.0-f.y)*1.4));
           c = mix(c, vec3(0.1, 0.2, 0.06), hedge);
           // rail embankment
-          float rb = smoothstep(9.0, 4.0, abs(vWp.z));
+          float rb = smoothstep(4.5, 2.5, abs(vWp.z));
           c = mix(c, vec3(0.35, 0.32, 0.28) * (0.8 + 0.4*vnoise(vWp.xz*0.8)), rb);
           // weather
           c = mix(c, c * vec3(0.55, 0.5, 0.45), uWet);

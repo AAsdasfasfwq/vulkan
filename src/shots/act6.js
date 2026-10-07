@@ -21,11 +21,11 @@ export default function act6(A) {
   const tE = A.at('Early that morning') - L;
   const exAt = A.peek('another explosion') - tE + 0.4;
   add(shot(tE, 'strait', dolly([-11000, 60, 7000], [-10800, 64, 6800], [0, 2500, -600], [0, 3200, -600], 40, 'lin'), {
-    mood: 'dawn', mood2: 'ashDark', moodK: 0.55, erupt: big({ t0: exAt, rise: 1200, height: 22000, umbrella: 0.4 }), island: { ash: 0.8, lava: 1 }, glowLight: 0.5,
-    ring: { t0: exAt, speed: 500, h: 3, w: 100 },
-  }, { amb: 'eruption', mus: 'chaos', sfx: [['bigBoom', exAt]], fx: { flashes: [{ at: exAt, amp: 4, decay: 4 }], shakes: [{ at: exAt + 0.3, amp: 1.8, decay: 1.5, zoom: 0.05 }] } }));
+    mood: 'dawn', mood2: 'blast', moodK: 0.6, erupt: big({ t0: exAt, rise: 1200, height: 22000, umbrella: 0.4 }), island: { ash: 0.8, lava: 1 }, glowLight: 0.5,
+    ring: { t0: exAt, speed: 500, h: 3, w: 100 }, burst: { t0: exAt, R: 3000, speed: 1.2, heat: 1.8, c: [-100, 0, -600] },
+  }, { amb: 'eruption', mus: 'chaos', sfx: [['bigBoom', exAt]], fx: { flashes: [{ at: exAt, amp: 2.5, decay: 6 }], shakes: [{ at: exAt + 0.3, amp: 1.8, decay: 1.5, zoom: 0.05 }] } }));
   add(shot(A.at('Krakatoa is already close') - L, 'strait', dolly([-3200, 500, 2600], [-3000, 520, 2300], [-100, 300, -400], [-100, 360, -400], 42, 'lin'), {
-    mood: 'ashDark', moodOv: { glowAz: -50 }, erupt: big({ t0: -10, height: 18000, surge: 0.6, surgeT0: -3 }), island: { ash: 0.9, lava: 1.5 }, glowLight: 1.2, ashfall: 0.4,
+    mood: 'blast', erupt: big({ t0: -10, height: 18000, surge: 0.6, surgeT0: -3 }), island: { ash: 0.9, lava: 1.0 }, glowLight: 0.8, ashfall: 0.4,
   }, { amb: 'eruption', sfx: [['boom', 0.6], ['crackRock', 1.6]], fx: { shakes: [{ at: 0.6, amp: 1, decay: 2 }] } }));
   add(shot(A.at('Its structure can no longer') - L, 'xsection', orbit([0, -4, 0], [34, 30], [-14, -6], [10, 12], 40), { magma: 0.6, fill: 0.35, cracks: 1, strain: 1, collapse: [0, 0.18], erupt: { height: 34, intensity: 0.9 } }, { amb: 'rumble', sfx: [['crackRock', 0.2], ['rockGrind', 0.8]], fx: { shakes: [{ at: 0.2, amp: 0.8, decay: 1.5 }] } }));
   add(shot(A.at('The enormous dome') - L, 'xsection', orbit([0, -5, 0], [42, 36], [6, 16], [10, 8], 40), { magma: 0.6, fill: 0.35, cracks: 1, strain: 1, collapse: [0.18, 0.75], erupt: { height: 34, intensity: 0.8 } }, {
@@ -58,29 +58,29 @@ export default function act6(A) {
   const t3 = A.at('The third and most powerful') - L;
   const bang = A.peek('strikes') - t3 + 0.3;
   const gapEnd = A.gap('great-explosion') + A.gapDur('great-explosion');
-  add(shot(t3, 'strait', dolly([-30000, 80, 22000], [-29800, 80, 21800], [-100, 3000, -600], [-100, 3200, -600], 30, 'lin'), {
-    mood: 'dawn', mood2: 'ashDark', moodK: 0.45, erupt: big({ t0: -30, height: 16000, umbrella: 0.4 }), island: { ash: 0.9, lava: 1.2 }, glowLight: 0.5,
+  add(shot(t3, 'strait', dolly([-26000, 70, 19000], [-25800, 72, 18850], [-100, 3500, -600], [-100, 3700, -600], 32, 'lin'), {
+    mood: 'blast', erupt: big({ t0: -30, height: 16000, umbrella: 0.4, glow: 1.2 }), island: { ash: 0.9, lava: 1.2 }, glowLight: 0.4,
   }, { name: 'before the blast', amb: 'eruption', subs: true, sfx: [['riserBig', 0.0]] }));
   // the blast itself (cut exactly on "strikes")
   const tB = t3 + bang - 0.05;
-  add(shot(tB, 'strait', dolly([-24000, 300, 18000], [-23000, 500, 17200], [-100, 4000, -600], [-100, 12000, -600], 40, 'lin'), {
-    mood: 'ashDark', moodOv: { glowAz: -50, glowEl: 4 }, erupt: big({ t0: 0.0, rise: 2600, height: 42000, umbrella: 1, surge: 1, surgeT0: 0.2, surgeSpeed: 300, glow: 2.6 }), island: { ash: 1, lava: 2, destroyedAt: 0 },
-    ring: { t0: 0.05, speed: 900, h: 14, w: 200, decay: 20000 }, shock: { t0: 0, speed: 2200, k: 2.2, decay: 0.55, c: [-100, 0, -600] }, glowLight: 2,
-  }, {
+  const tB2 = tB + 2.2;
+  const tB3 = Math.max(tB2 + 1.6, gapEnd - 2.2);
+  const blastP = (rel) => ({
+    mood: 'blast', island: { ash: 1, lava: 2, destroyedAt: Math.max(0, 0.15 - rel) },
+    erupt: big({ t0: -rel, rise: 2600, height: 42000, umbrella: 1, surge: 1, surgeT0: 0.3 - rel, surgeSpeed: 320, glow: 1.6, lightning: rel > 1 ? 1 : 0.3 }),
+    burst: { t0: -rel, R: 7500, speed: 1.0, heat: 2.2, c: [-100, 0, -600] },
+    ring: { t0: 0.05 - rel, speed: 900, h: 14, w: 220, decay: 20000 }, shock: { t0: -rel, speed: 2200, k: 2.4, decay: 0.35, c: [-100, 0, -600] }, glowLight: 1.4,
+  });
+  add(shot(tB, 'strait', dolly([-22000, 90, 16500], [-21300, 140, 16000], [-100, 2500, -600], [-100, 6000, -600], 42, 'lin'), blastP(0), {
     name: 'THE BLAST', amb: 'eruptionMax', mus: 'chaos', subs: false,
     sfx: [['megaBoom', 0.0], ['rumbleLong', 0.4], ['debris', 0.8]],
-    fx: { flashes: [{ at: 0, amp: 14, decay: 2.2 }], flashColor: [1, 0.92, 0.8], shakes: [{ at: 0.05, amp: 4.5, decay: 0.9, zoom: 0.16, freq: 22 }], bloom: 1.2 },
+    fx: { flashes: [{ at: 0, amp: 3.5, decay: 5 }], flashColor: [1, 0.9, 0.75], shakes: [{ at: 0.05, amp: 2.2, decay: 1.4, zoom: 0.1, freq: 22 }], bloom: 1.0 },
   }));
-  const tB2 = tB + 2.2;
-  add(shot(tB2, 'strait', dolly([-9000, 6000, 26000], [-8000, 6400, 25000], [-100, 9000, -600], [-100, 14000, -600], 46, 'lin'), {
-    mood: 'ashDark', moodOv: { glowAz: -10, glowEl: 6 }, erupt: big({ t0: -2.2, rise: 2600, height: 42000, umbrella: 1, surge: 1, surgeT0: -2.0, surgeSpeed: 300, glow: 2.6, lightning: 1 }), island: { ash: 1, destroyed: 1 },
-    ring: { t0: -2.15, speed: 900, h: 14, w: 200, decay: 20000 }, shock: { t0: -2.2, speed: 2200, k: 2.0, decay: 0.55, c: [-100, 0, -600] }, glowLight: 1.6,
-  }, { name: 'blast wide', amb: 'eruptionMax', subs: false, fx: { shakes: [{ at: 0, amp: 1.6, decay: 1.2 }], bloom: 1.1 } }));
-  const tB3 = Math.max(tB2 + 1.6, gapEnd - 2.2);
-  add(shot(tB3, 'strait', dolly([-52000, 25, 38000], [-51990, 25, 37990], [-100, 12000, -600], [-100, 13000, -600], 34, 'lin'), {
-    mood: 'ashDark', moodOv: { glowAz: -55, glowEl: 8 }, erupt: big({ t0: -4.4, rise: 2600, height: 42000, umbrella: 1, glow: 2.6, lightning: 1, surge: 1, surgeT0: -4.2, surgeSpeed: 300 }), island: { destroyed: 1 },
-    ring: { t0: -4.35, speed: 900, h: 12, w: 220, decay: 30000 }, glowLight: 1,
-  }, { name: 'shock arrives', amb: 'eruptionMax', subs: false, sfx: [['shockThump', 1.2], ['windBlast', 1.25]], fx: { shakes: [{ at: 1.25, amp: 3.5, decay: 1.5, zoom: 0.12 }], flashes: [{ at: 1.2, amp: 1.5, decay: 5 }] } }));
+  add(shot(tB2, 'strait', dolly([-11000, 7000, 24000], [-10200, 7200, 23000], [-100, 5000, -600], [-100, 9000, -600], 48, 'lin'), blastP(tB2 - tB), { name: 'blast wide', amb: 'eruptionMax', subs: false, fx: { shakes: [{ at: 0, amp: 1.0, decay: 1.2 }], bloom: 0.95 } }));
+  add(shot(tB3, 'strait', dolly([-7600, 16, 9400], [-7590, 16, 9390], [-100, 4500, -600], [-100, 5200, -600], 44, 'lin'), { ...blastP(tB3 - tB), shock: { t0: -(tB3 - tB), speed: 2200, k: 2.8, decay: 0.12, c: [-100, 0, -600] } }, {
+    name: 'shock arrives', amb: 'eruptionMax', subs: false, sfx: [['shockThump', 0.55], ['windBlast', 0.6], ['debris', 0.7]],
+    fx: { shakes: [{ at: 0.55, amp: 3.2, decay: 1.6, zoom: 0.12 }], flashes: [{ at: 0.5, amp: 0.8, decay: 6 }] },
+  }));
 
   // --- the numbers ----------------------------------------------------------------------
   add(flat(A.at('The energy released') - L, (k, lt, S2) => INFO.bigNumber(k, lt, S2, { bg: 'ember', to: 200, at: A.peek('200 megatons') - A.peek('The energy released'), dur: 1.0, unit: 'MEGATONS OF TNT', small: 'in a fraction of a second', note: 'estimated energy of the final explosion' }), { mus: 'awe', sfx: [['counterTicks', A.peek('200 megatons') - A.peek('The energy released')], ['hit', A.peek('megatons') - A.peek('The energy released')]] }));
@@ -98,10 +98,10 @@ export default function act6(A) {
   }));
   add(flat(A.at('Two-thirds of the island') - L, (k, lt, S2) => twoThirds(k, lt, S2), { sfx: [['whoosh', 0], ['dissolve', 0.6]] }));
   add(shot(A.at('millions of tons of solid rock') - L, 'strait', dolly([-6000, 1500, 5200], [-5200, 1400, 4400], [-100, 500, -600], [-100, 900, -600], 44, 'lin'), {
-    mood: 'ashDark', moodOv: { glowAz: -45 }, erupt: big({ t0: -20, height: 40000, surge: 0.6, surgeT0: -15 }), island: { destroyed: 1 }, glowLight: 1.5, surfSteam: { at: [-100, 0, -600], amount: 1, h: 900, spread: 2500, size: 500 },
+    mood: 'blast', erupt: big({ t0: -20, height: 40000, surge: 0.6, surgeT0: -15 }), island: { destroyed: 1 }, glowLight: 1.0, surfSteam: { at: [-100, 0, -600], amount: 1, h: 900, spread: 2500, size: 500 },
   }, { amb: 'eruptionMax' }));
   add(shot(A.at('becoming searing gas') - L, 'strait', dolly([-3200, 900, 2800], [-2800, 1100, 2400], [-100, 2500, -600], [-100, 4000, -600], 52, 'lin'), {
-    mood: 'ashDark', moodOv: { glowAz: -45 }, erupt: big({ t0: -25, height: 40000, bombs: 1, bombSpeed: 700 }), island: { destroyed: 1 }, glowLight: 1.8, embers: 0.5,
+    mood: 'blast', erupt: big({ t0: -25, height: 40000, bombs: 1, bombSpeed: 700 }), island: { destroyed: 1 }, glowLight: 1.0, embers: 0.5,
   }, { amb: 'eruptionMax', sfx: [['debris', 0], ['whooshBig', 1.2]], fx: { grade: 'fire' } }));
   add(flat(A.at('hurled as high as 50 miles') - L, (k, lt, S2) => INFO.altitude(k, lt, S2, { km: 80, max: 100, at: 0.1, dur: 1.8, umbrella: true, refs: false }), { sfx: [['riser', 0], ['whooshBig', 0.1]], draw2: null }));
 
@@ -110,7 +110,7 @@ export default function act6(A) {
   add(flat(tS, (k, lt, S2) => soundWord(k, lt, S2, A.peek('sound. Krakatoa') - tS), { mus: 'silence', sfx: [['silenceRing', 0.1], ['hit', A.peek('sound. Krakatoa') - tS]] }));
   add(flat(A.at('Krakatoa produces the loudest') - L, (k, lt, S2) => INFO.decibels(k, lt, S2, { at: 0.2 }), { mus: 'awe', sfx: [['blipUp', 0.2], ['blipUp', 0.52], ['blipUp', 0.84], ['blipUp', 1.16], ['blipUp', 1.48], ['blipUp', 1.8], ['hit', 2.12]] }));
   add(shot(A.at('At this intensity') - L, 'strait', dolly([-9000, 30, 7000], [-8900, 30, 6900], [-100, 400, -600], [-100, 400, -600], 40, 'lin'), {
-    mood: 'ashDark', moodOv: { glowAz: -45 }, erupt: big({ t0: -40, height: 40000 }), island: { destroyed: 1 }, glowLight: 1,
+    mood: 'blast', erupt: big({ t0: -40, height: 40000 }), island: { destroyed: 1 }, glowLight: 0.8,
     shock: { t0: -6.5, speed: 1300, k: 2.6, decay: 0.12, c: [-100, 0, -600] }, ring: { t0: -6.5, speed: 1300, h: 6, w: 150, decay: 40000 },
   }, { amb: 'eruptionMax', sfx: [['shockThump', 1.2], ['windBlast', 1.25]], fx: { shakes: [{ at: 1.2, amp: 3.2, decay: 1.6, zoom: 0.12 }] } }));
   add(flat(A.at('On ships within roughly 37') - L, (k, lt, S2) => drawMap(k, lt, S2, {
@@ -136,7 +136,7 @@ export default function act6(A) {
   }, { amb: 'tinnitus', fx: { desat: 0.6, vignette: 0.75, grade: 'fire', dof: { focus: 1.4, range: 0.6, bokeh: 4 } } }));
   const tSw = A.at('The shock wave races') - L;
   add(shot(tSw, 'strait', dolly([-60000, 9000, 40000], [-56000, 9000, 37000], [-100, 0, -600], [-100, 0, -600], 40, 'lin'), {
-    mood: 'ashDark', moodOv: { glowAz: -45 }, erupt: big({ t0: -50, height: 40000 }), island: { destroyed: 1 },
+    mood: 'blast', erupt: big({ t0: -50, height: 40000 }), island: { destroyed: 1 },
     shock: { t0: -1, speed: 1800, k: 2.5, decay: 0.12, c: [-100, 0, -600] }, ring: { t0: -1, speed: 1800, h: 30, w: 400, decay: 60000 },
   }, { amb: 'eruptionMax', sfx: [['whooshBig', 0.3]], draw: word('FASTER THAN SOUND', A.peek('faster than the speed') - tSw, { y: H * 0.18, size: 84, tracking: 10 }) }));
   // --- Batavia ------------------------------------------------------------------------------

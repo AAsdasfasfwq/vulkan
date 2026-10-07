@@ -65,7 +65,7 @@ export function columnEmitter(E) {
         let al = clamp(a / 0.04) * clamp((1 - a) / 0.12) * E.intensity * 0.95;
         if (headK > 0) al *= 0.9;
         const dk = E.dark * (0.75 + 0.5 * s1) * (0.85 + 0.35 * yn);
-        const glow = E.glow * Math.exp(-yn * 7.0) * (0.6 + 0.4 * Math.sin(t * 7 + s0 * 40));
+        const glow = E.glow * Math.exp(-yn * 9.0) * (s2 < 0.45 ? 1.0 : 0.25) * (0.55 + 0.45 * Math.sin(t * 7 + s0 * 40)) * 0.7;
         push(x, y, z, size, dk * E.tint[0], dk * E.tint[1], dk * E.tint[2], al, s0 * 6.28 + t * 0.04 * (s1 - 0.5), Math.floor(s4 * 16), glow, 0);
       }
     },
@@ -114,6 +114,38 @@ export function surgeEmitter(E) {
         const al = E.surge * clamp(dt / 0.6) * (0.65 + 0.35 * d);
         const dk = E.dark * (0.9 + 0.6 * c) * 1.3;
         push(x, h + size * 0.25, z, size, dk * 1.05, dk, dk * 0.92, al, a * 20 + t * 0.05, Math.floor(d * 16), E.glow * 0.5 * (1 - c), 0);
+      }
+    },
+  };
+}
+
+// Explosive burst: a hemispherical fireball / pyroclastic dome expanding from
+// the vent, glowing inside and darkening as it cools. B = { on, c, t0, R, k }
+export function burstEmitter(B) {
+  const N = 1300;
+  const r = rng(321);
+  const seeds = Array.from({ length: N }, () => [r(), r(), r(), r(), r()]);
+  return {
+    fill(t, push) {
+      if (!B.on) return;
+      const dt = t - B.t0;
+      if (dt < 0 || dt > 40) return;
+      const grow = 1 - Math.exp(-dt * (B.speed ?? 0.9));
+      for (let i = 0; i < N; i++) {
+        const [a, b, c, d, e] = seeds[i];
+        // direction biased upward (hemisphere, slightly flattened)
+        const th = a * Math.PI * 2;
+        const el = Math.asin(Math.pow(b, 0.7));
+        const shell = 0.55 + 0.45 * Math.pow(c, 0.5);
+        const R = B.R * grow * shell * (0.85 + 0.3 * e);
+        const x = B.c[0] + Math.cos(th) * Math.cos(el) * R;
+        const z = B.c[2] + Math.sin(th) * Math.cos(el) * R;
+        const y = B.c[1] + Math.sin(el) * R * (B.flat ?? 0.75) + dt * dt * 6 * (1 - el);
+        const size = (B.R * 0.12 + B.R * 0.25 * grow) * (0.5 + 0.9 * d);
+        const heat = Math.exp(-dt * (0.5 + 0.6 * c)) * (1.2 - shell * 0.6);
+        const dk = 0.11 + 0.1 * e;
+        const al = clamp(dt / 0.08) * (B.k ?? 1) * (0.75 + 0.25 * d) * clamp((40 - dt) / 10);
+        push(x, y, z, size, dk, dk * 0.92, dk * 0.85, al, a * 30 + dt * 0.1 * (d - 0.5), Math.floor(e * 16), 0, heat * (B.heat ?? 1.5) * (0.4 + 0.6 * d));
       }
     },
   };
@@ -185,7 +217,7 @@ export function lightningEmitter(E) {
       for (let k = 0; k < 3; k++) {
         const s = slot - k;
         const h = hash1(s * 3.7 + 11);
-        if (h > 0.25 + E.lightning * 0.7) continue;
+        if (h > 0.2 + E.lightning * 0.78) continue;
         const t0 = s * period + hash1(s * 1.3) * period * 0.6;
         const dt = t - t0;
         const len = 0.22 + hash1(s * 5.1) * 0.2;

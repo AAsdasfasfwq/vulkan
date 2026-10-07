@@ -88,7 +88,7 @@ vec4 section(vec2 p) {
   }
   // cone / volcanic edifice layers
   if (y <= ct && y > sf - 0.5 && abs(x) < 12.0) {
-    col = strata(y, x, vec3(0.3, 0.27, 0.25), vec3(0.2, 0.18, 0.17));
+    col = strata(y, x, vec3(0.36, 0.27, 0.2), vec3(0.2, 0.15, 0.12)) * (0.85 + 0.3 * vnoise(p * 0.8));
     if (y > ct - 0.6 && y > 0.0 && uCone > 0.3 && uCity < 0.5) col = mix(col, vec3(0.12, 0.42, 0.08), 0.85); // jungle skin
   }
   // seabed sediment line
@@ -122,16 +122,18 @@ vec4 section(vec2 p) {
     vec3 lava = mix(vec3(0.95, 0.22, 0.02), vec3(1.0, 0.6, 0.12), n * n) * (1.05 + uPressure * 0.9 * (0.5 + 0.5 * sin(uTime * 5.0)));
     lava *= 0.75 + 0.35 * smoothstep(1.0, 0.2, ce);
     if (y < level) { col = lava; glowM = 1.0 + uPressure; }
-    else col = vec3(0.12, 0.08, 0.06); // empty (drained) roof space
+    else col = mix(vec3(0.05, 0.03, 0.025), vec3(0.42, 0.12, 0.03), smoothstep(level + 3.5, level, y)) * (0.8 + 0.3 * vnoise(p * 1.5)); // drained cavity, lit from the magma below
     // crystals
     if (uCrystals > 0.0 && y < level) {
-      vec2 g = p * vec2(1.6, 2.2);
+      vec2 g = p * vec2(1.3, 1.8);
       vec2 id = floor(g);
-      vec2 f = fract(g) - 0.5;
       float h = hash12(id);
-      if (h < uCrystals * 0.5) {
-        float k = max(abs(f.x * 1.4 + f.y * 0.5), abs(f.y * 1.2 - f.x * 0.3));
-        if (k < 0.22 * (0.6 + h)) col = mix(vec3(0.85, 0.9, 0.95), vec3(0.4, 0.45, 0.5), step(0.3, h));
+      vec2 f = fract(g) - 0.5 - (hash22(id + 3.0) - 0.5) * 0.5;
+      float a = h * 6.2832;
+      vec2 r = vec2(cos(a) * f.x - sin(a) * f.y, sin(a) * f.x + cos(a) * f.y);
+      if (h < uCrystals * 0.35) {
+        float k = max(abs(r.x) * 3.2, abs(r.y) * 1.1 + abs(r.x) * 0.8);
+        if (k < 0.35 * (0.7 + h)) col = mix(vec3(0.92, 0.95, 0.98), vec3(0.32, 0.36, 0.4), step(0.2, h)) * (0.8 + 0.4 * (r.x + 0.5));
       }
     }
     // gas bubbles rising
@@ -163,13 +165,14 @@ vec4 section(vec2 p) {
   // roof cracks
   if (uCracks > 0.0 && abs(x) < 10.0 && y > -9.0 && y < max(sf, ct)) {
     float cr = 1.0;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 6; i++) {
       float fi = float(i);
-      float cx = -6.0 + fi * 3.0 + sin(y * 1.3 + fi * 4.0) * 0.8 + sin(y * 4.1 + fi) * 0.25;
-      cr = min(cr, abs(x - cx));
+      float cx = -7.0 + fi * 2.8 + (jag(y, 1.1, fi) - 0.5) * 2.4 + (jag(y, 4.0, fi + 9.0) - 0.5) * 0.6;
+      float w = 0.05 + 0.1 * (1.0 - smoothstep(-8.0, 0.0, y));
+      cr = min(cr, abs(x - cx) / w);
     }
     float reach = mix(-8.0, 2.0, uCracks);
-    float k = smoothstep(0.18, 0.0, cr) * step(y, reach);
+    float k = smoothstep(1.0, 0.2, cr) * step(y, reach) * (0.6 + 0.4 * smoothstep(reach, reach - 2.0, y));
     col = mix(col, vec3(1.0, 0.45, 0.08) * 1.4, k * (1.0 - uWater));
     col = mix(col, vec3(0.2, 0.6, 1.0) * 1.4, k * uWater);
     glowM = max(glowM, k * 1.2);
@@ -383,7 +386,7 @@ export class XSectionSet extends BaseSet {
     const ep = p.erupt;
     this.E.on = !!ep;
     if (ep) {
-      Object.assign(this.E, { c: [0, 9.5 * cone, -2], height: val(ep.height, u, lt, 40), intensity: val(ep.intensity, u, lt, 1), baseW: 1.0, topW: 9, rise: ep.rise ?? 4, t0: ep.t0 !== undefined ? shot.t + ep.t0 : -1e6, dark: ep.dark ?? 0.14, glow: 1.2, wind: [0.15, 0], size: 0.03, bombs: val(ep.bombs, u, lt, 0), bombSpeed: 14, lightning: 0, count: 900, umbrella: val(ep.umbrella, u, lt, 0.3), umbrellaR: 30, tint: [1, 0.93, 0.86] });
+      Object.assign(this.E, { c: [0, 9.5 * cone, -2], height: val(ep.height, u, lt, 30), intensity: val(ep.intensity, u, lt, 1), baseW: 0.6, topW: 5, rise: ep.rise ?? 4, t0: ep.t0 !== undefined ? shot.t + ep.t0 : -1e6, dark: ep.dark ?? 0.14, glow: 1.2, wind: [0.15, 0], size: 0.011, bombs: val(ep.bombs, u, lt, 0), bombSpeed: 14, lightning: 0, count: 900, umbrella: val(ep.umbrella, u, lt, 0.3), umbrellaR: 30, tint: [1, 0.93, 0.86] });
     }
     const PU = this.puffs.uniforms;
     PU.uSunDir.value.set(0.4, 0.8, 0.45).normalize();

@@ -61,10 +61,10 @@ export class MachineSet extends BaseSet {
     for (let i = 0; i < 3; i++) { const gg = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.1, 24), brass); gg.rotation.x = Math.PI / 2; gg.position.set(-10 + i * 1.2, 5.6, -2.8); sc.add(gg); const f = new THREE.Mesh(new THREE.CircleGeometry(0.25, 24), M(0xefe7d6, 0.6)); f.position.set(-10 + i * 1.2, 5.6, -2.74); sc.add(f); }
     // light shaft windows
     for (let i = 0; i < 3; i++) { const w = new THREE.Mesh(new THREE.PlaneGeometry(2, 4), new THREE.MeshBasicMaterial({ color: new THREE.Color(2.2, 1.9, 1.5) })); w.position.set(-8 + i * 7, 11, -7.95); sc.add(w); }
-    this.key = new THREE.DirectionalLight(0xffe2b8, 2.5); this.key.position.set(-4, 14, 8); this.key.castShadow = true; this.key.shadow.mapSize.set(2048, 2048);
+    this.key = new THREE.DirectionalLight(0xffe2b8, 4.2); this.key.position.set(-4, 14, 8); this.key.castShadow = true; this.key.shadow.mapSize.set(2048, 2048);
     const sc2 = this.key.shadow.camera; sc2.left = -15; sc2.right = 15; sc2.top = 15; sc2.bottom = -15; sc2.far = 50;
     sc.add(this.key);
-    this.sun.visible = false; this.hemi.intensity = 0.35; this.hemi.color.set(0x8a7058); this.hemi.groundColor.set(0x1a1010);
+    this.sun.visible = false; this.hemi.intensity = 0.7; this.hemi.color.set(0x8a7058); this.hemi.groundColor.set(0x1a1010);
     sc.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
     this.puffs = new PuffCloud(500);
     this.leak = { on: true, c: [7.9, 4.6, 1.2], h: 4, spread: 0.3, size: 0.5, life: 3, alpha: 0.45, col: [0.9, 0.9, 0.88], n: 140, seed: 3, wind: [0.4, 0.05] };
@@ -72,7 +72,7 @@ export class MachineSet extends BaseSet {
     sc.add(this.puffs.mesh);
   }
   nearFar() { return [0.05, 400]; }
-  fx() { return { grade: 'warm', bloom: 0.85, exposure: 1.1, vignette: 0.5 }; }
+  fx() { return { grade: 'warm', bloom: 0.8, exposure: 1.35, vignette: 0.45 }; }
   update(shot, lt, vt) {
     const a = vt * (shot.p?.speed ?? 2.4);
     this.fly.rotation.z = -a;
@@ -85,7 +85,7 @@ export class MachineSet extends BaseSet {
     this.pistonRod.position.set(crossX + 1.2, 4.2, 1.2);
     this.gov.rotation.y = a * 1.5;
     for (const [g, d, t] of this.gears) g.rotation.z = (d * a * 28) / t;
-    this.fireLight.intensity = 38 + Math.sin(vt * 13) * 6 + Math.sin(vt * 29) * 3;
+    this.fireLight.intensity = 60 + Math.sin(vt * 13) * 8 + Math.sin(vt * 29) * 4;
     const PU = this.puffs.uniforms;
     PU.uSunDir.value.set(-0.3, 0.8, 0.5).normalize(); PU.uSunCol.value.set(1.2, 1.0, 0.8); PU.uAmb.value.set(0.4, 0.32, 0.26); PU.uFogDensity.value = 0.02; PU.uFogColor.value.set(0.1, 0.07, 0.05);
   }

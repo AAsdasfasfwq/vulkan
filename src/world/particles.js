@@ -111,10 +111,14 @@ export class PuffCloud {
           if (d < 0.004) discard;
           vec2 n2 = tx.gb * 2.0 - 1.0;
           vec3 n = normalize(vRight * n2.x + vUp * n2.y + vFwd * sqrt(max(1.0 - dot(n2, n2), 0.05)));
-          float sunL = clamp(dot(n, uSunDir) * 0.6 + 0.45, 0.0, 1.0);
-          // self-shadowing: dense cores are darker
-          float core = mix(1.0, 0.55, tx.r * tx.r);
-          vec3 col = vCol.rgb * (uAmb + uSunCol * sunL * core);
+          float sunL = clamp(dot(n, uSunDir) * 0.8 + 0.25, 0.0, 1.0);
+          // self-shadowing: dense cores and undersides are darker
+          float core = mix(1.0, 0.45, tx.r * tx.r);
+          float under = 0.55 + 0.45 * clamp(n.y * 0.6 + 0.5, 0.0, 1.0);
+          vec3 col = vCol.rgb * (uAmb * under + uSunCol * sunL * core);
+          // silver lining when backlit
+          float back = pow(max(dot(-vFwd, uSunDir), 0.0), 5.0);
+          col += uSunCol * vCol.rgb * back * (1.0 - tx.r) * 1.5;
           // underglow from lava (vExt.z) and emissive heat (vExt.w)
           col += uGlowCol * vExt.z * (0.6 + 0.4 * clamp(-n.y + 0.5, 0.0, 1.0)) * core;
           col += uGlowCol * vExt.w * 2.0;

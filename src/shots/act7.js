@@ -1,5 +1,5 @@
 // ACT VII — One hour after (tsunami) & 24 hours after (9:50 – 10:40)
-import { LEAD, K, card, dolly, orbit, onShip, shot, flat, both } from './helpers.js';
+import { LEAD, K, card, dolly, orbit, onShip, shot, flat, both, cup } from './helpers.js';
 import { gpin, pin3, word, tag, stamp, arrow3, counter, INFO } from './ov.js';
 import { drawMap, drawRadius, drawRoute, placeXY } from '../overlay/maps.js';
 import { XS } from '../sets/xsection.js';
@@ -27,7 +27,7 @@ export default function act7(A) {
   add(shot(A.at('unleash a catastrophic tsunami') - L, 'strait', dolly([-12000, 6000, 12000], [-10500, 5200, 10500], [-100, 0, -600], [-100, 0, -600], 46, 'lin'), {
     mood: 'ashDark', moodOv: { glowAz: -45 }, erupt: after({ intensity: 0.7 }), island: { destroyed: 1 }, ring: { t0: -6, speed: 220, h: 30, w: 260, decay: 60000 },
   }, { amb: 'oceanStorm', sfx: [['tsunamiRoar', 0.2]], draw: word('TSUNAMI', A.peek('tsunami') - A.peek('unleash a catastrophic'), { y: H * 0.2, size: 130, tracking: 26, mode: 'track' }) }));
-  add(shot(A.at('A wall of water roughly') - L, 'coast', dolly([-20, 3.2, -10], [-20, 3.6, -16], [-10, 22, 300], [-10, 30, 260], 44), {
+  add(shot(A.at('A wall of water roughly') - L, 'coast', dolly(cup(-20, -10, 2.0), cup(-20, -16, 2.4), [-10, 22, 300], [-10, 30, 260], 44), {
     layout: 'village', mood: 'storm', moodOv: { fog: 0.0012 }, tsunami: { z0: 640, speed: 26, H: 40, t0: 0 }, wind: 2,
     people: [{ style: 'villager', at: [-14, -2], rot: 10, pose: { lookUp: -0.2 } }, { style: 'villager2', at: [-26, -4], rot: -10, pose: { point: true } }],
   }, { amb: 'tsunamiFar', mus: 'chaos', sfx: [['tsunamiRoar', 0]] }));
@@ -45,10 +45,10 @@ export default function act7(A) {
   add(shot(A.at('Entire towns') - L, 'coast', dolly([-300, 220, 200], [-260, 200, 120], [-60, 0, -200], [-40, 0, -260], 44, 'lin'), {
     layout: 'village', mood: 'storm', moodOv: { fog: 0.0009 }, tsunami: { z0: -150, speed: 22, H: 30, t0: 0, curl: 0.5 }, wind: 2,
   }, { amb: 'tsunami', sfx: [['woodBreak', 0.5]] }));
-  add(shot(A.at('The wave does more') - L, 'coast', dolly([-70, 8, -150], [-70, 7, -160], [-60, 4, -40], [-60, 4, -60], 44, 'lin'), {
+  add(shot(A.at('The wave does more') - L, 'coast', dolly(cup(-70, -150, 7), cup(-70, -160, 6), cup(-60, -40, 3), cup(-60, -60, 3), 44, 'lin'), {
     layout: 'village', mood: 'storm', tsunami: { z0: -60, speed: 12, H: 18, t0: 0, curl: 0.3 }, wind: 2,
   }, { amb: 'flood', sfx: [['floodRush', 0]] }));
-  add(shot(A.at('It tears away buildings') - L, 'coast', dolly([-40, 16, -250], [-30, 14, -262], [-60, 6, -180], [-60, 6, -190], 40, 'lin'), {
+  add(shot(A.at('It tears away buildings') - L, 'coast', dolly(cup(-40, -250, 10), cup(-30, -262, 9), cup(-60, -180, 4), cup(-60, -190, 4), 40, 'lin'), {
     layout: 'village', mood: 'storm', tsunami: { z0: -150, speed: 14, H: 16, t0: 0, curl: 0.2 }, wind: 2,
   }, { amb: 'flood', sfx: [['woodBreak', 0.3], ['treeFall', 1.0]] }));
   add(shot(A.at('stripping the land') - L, 'coast', dolly([-200, 60, 60], [-170, 55, 30], [-40, 4, -200], [-30, 4, -220], 40, 'lin'), { layout: 'none', bare: true, mood: 'haze', moodOv: { fog: 0.0008 }, ashfall: 0.3, wind: 0.4 }, { amb: 'windDesolate', mus: 'grief', fx: { grade: 'ash', desat: 0.3 } }));
@@ -56,7 +56,7 @@ export default function act7(A) {
   add(shot(A.at('In the port town of Anier') - L, 'coast', dolly([20, 12, 120], [30, 11, 100], [100, 8, -40], [110, 10, -50], 40), { layout: 'anjer', mood: 'storm', moodOv: { fog: 0.0008 }, wind: 1.8 }, {
     amb: 'oceanStorm', draw: stamp('ANJER', 'Java · port of the Dutch East Indies', 0.2),
   }));
-  add(shot(A.at('a showpiece of the Dutch') - L, 'coast', dolly([150, 3.5, -10], [160, 3.6, -14], [170, 4, -70], [180, 4, -74], 38), { layout: 'anjer', mood: 'storm', moodOv: { fog: 0.0008 }, wind: 1.8 }, { amb: 'oceanStorm', fx: { dof: { focus: 55, range: 25, bokeh: 2 } } }));
+  add(shot(A.at('a showpiece of the Dutch') - L, 'coast', dolly(cup(150, -10, 1.7), cup(160, -14, 1.8), cup(170, -70, 3), cup(180, -74, 3), 38), { layout: 'anjer', mood: 'storm', moodOv: { fog: 0.0008 }, wind: 1.8 }, { amb: 'oceanStorm', fx: { dof: { focus: 55, range: 25, bokeh: 2 } } }));
   add(shot(A.at('a massive cast-iron lighthouse') - L, 'coast', dolly([-40, 10, 40], [-38, 10, 36], [60, 18, -8], [60, 16, -12], 40, 'lin'), {
     layout: 'anjer', mood: 'storm', moodOv: { fog: 0.001 }, tsunami: { z0: 80, speed: 30, H: 34, t0: 0 }, wind: 2.5,
   }, { amb: 'tsunami', sfx: [['tsunamiRoar', 0], ['metalGroan', 2.4], ['waveCrash', 2.6]], fx: { shakes: [{ at: 2.6, amp: 1.5, decay: 1.4 }] } }));
@@ -70,8 +70,8 @@ export default function act7(A) {
   add(shot(A.at('is swept nearly two miles') - L, 'coast', dolly([120, 40, 40], [80, 36, -40], [20, 30, -40], [10, 20, -140], 44, 'lin'), {
     layout: 'none', berouw: 'wave', berouwX: 20, mood: 'storm', tsunami: { z0: 40, speed: 30, H: 34, t0: 0 }, wind: 2.5,
   }, { amb: 'tsunami', sfx: [['metalGroan', 0.5], ['waveCrash', 1.2]] }));
-  add(shot(A.at('It will remain there') - L, 'coast', dolly([-30, 5, -385], [-36, 5.5, -392], [-60, 6, -420], [-60, 7, -420], 40, 'lin'), { layout: 'none', berouw: 'jungle', mood: 'haze', bare: false, wind: 0.6 }, { amb: 'jungleQuiet', mus: 'grief', sfx: [['birdsong', 1.0]] }));
-  add(shot(A.at('People have no chance') - L, 'coast', dolly([-60, 2.2, -72], [-60, 2.4, -82], [-60, 6, 40], [-60, 10, 40], 40, 'lin'), {
+  add(shot(A.at('It will remain there') - L, 'coast', dolly(cup(-14, -380, 3.5), cup(-22, -388, 4.0), cup(-60, -420, 5), cup(-60, -420, 6), 40, 'lin'), { layout: 'none', berouw: 'jungle', mood: 'haze', bare: false, wind: 0.6 }, { amb: 'jungleQuiet', mus: 'grief', sfx: [['birdsong', 1.0]] }));
+  add(shot(A.at('People have no chance') - L, 'coast', dolly(cup(-60, -72, 1.8), cup(-60, -82, 2.0), [-60, 6, 40], [-60, 10, 40], 40, 'lin'), {
     layout: 'village', mood: 'storm', tsunami: { z0: 120, speed: 22, H: 40, t0: 0 },
     people: [{ style: 'villager', at: [-58, -50], rot: 180, move: [0, -3.4], pose: { walk: 3.5 } }, { style: 'villager2', at: [-64, -45], rot: 185, move: [0, -3.2], pose: { walk: 3.5 } }, { style: 'villager', at: [-54, -42], rot: 175, move: [0, -3.0], pose: { walk: 3.2 } }],
   }, { amb: 'tsunami', fx: { desat: 0.4, vignette: 0.7 }, sfx: [['heartbeat', 0.2]] }));

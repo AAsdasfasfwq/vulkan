@@ -1,5 +1,5 @@
 // ACT III — One year before (2:38 – 3:25)
-import { LEAD, K, card, dolly, orbit, onShip, shot, flat, both } from './helpers.js';
+import { LEAD, K, card, dolly, orbit, onShip, shot, flat, both, cup } from './helpers.js';
 import { gpin, pin3, word, tag, stamp, arrow3, counter, INFO } from './ov.js';
 import { islandHeight } from '../world/island.js';
 import { XS } from '../sets/xsection.js';
@@ -53,11 +53,11 @@ export default function act3(A) {
 
   // --- tremors -----------------------------------------------------------------
   add(shot(A.at('Around the Sunda Strait') - L, 'strait', dolly([-9000, 1800, 9000], [-8600, 1700, 8500], [0, 200, 0], [0, 200, 0], 40, 'lin'), { mood: 'day', steam: { at: 'perboewatan', amount: 0.4, h: 500 } }, { amb: 'ocean' }));
-  add(shot(A.at('the ground begins to tremble') - L, 'coast', dolly([-40, 3.0, 12], [-36, 2.8, 8], [-60, 3.5, -50], [-58, 3.5, -50], 40), {
+  add(shot(A.at('the ground begins to tremble') - L, 'coast', dolly(cup(-40, 10, 2.6), cup(-36, 6, 2.4), cup(-60, -50, 2.5), cup(-58, -50, 2.5), 40), {
     layout: 'village', mood: 'day', sea: 'calm', quake: 1,
     people: [{ style: 'villager', at: [-48, -20], rot: 20, pose: { look: 0.6 } }, { style: 'villager2', at: [-55, -28], rot: -30, pose: { lookUp: -0.3 } }],
   }, { amb: 'village', sfx: [['rumbleQuake', 0.2]], fx: { shakes: [{ at: 0.3, amp: 0.9, decay: 0.6, freq: 22 }, { at: 1.3, amp: 0.7, decay: 0.8, freq: 22 }] } }));
-  add(shot(A.at('Local residents notice') - L, 'coast', dolly([-52, 1.9, -14], [-51, 1.85, -15], [-55, 1.6, -24], [-55, 1.7, -24], 34), {
+  add(shot(A.at('Local residents notice') - L, 'coast', dolly(cup(-52, -14, 1.7), cup(-51, -15, 1.65), cup(-55, -24, 1.4), cup(-55, -24, 1.5), 34), {
     layout: 'village', mood: 'day', sea: 'calm', quake: 0.6,
     people: [{ style: 'villager', at: [-54, -22], rot: 150, pose: { look: -0.5 } }, { style: 'villager2', at: [-57, -24], rot: 120, pose: { lookUp: -0.2, point: true } }, { style: 'villager', at: [-50, -27], rot: 200 }],
   }, { amb: 'village', sfx: [['rumbleQuake', 0.4]], fx: { dof: { focus: 9, range: 4, bokeh: 3 }, shakes: [{ at: 0.6, amp: 0.5, decay: 1.0, freq: 22 }] } }));

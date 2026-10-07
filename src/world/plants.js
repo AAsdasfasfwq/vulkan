@@ -30,7 +30,7 @@ export function addSway(mat, uniforms, strength = 1) {
 }
 
 // Broadleaf rainforest crown: a cluster of lumpy blobs on a short trunk. Unit height ~1.
-export function makeCrownGeometry() {
+export function makeCrownGeometry(detail = 1) {
   const r = rng(5);
   const parts = [];
   const trunk = new THREE.CylinderGeometry(0.035, 0.06, 0.55, 5, 1);
@@ -38,7 +38,7 @@ export function makeCrownGeometry() {
   paint(trunk, [0.22, 0.15, 0.09]);
   parts.push(trunk);
   for (let i = 0; i < 4; i++) {
-    const g = new THREE.IcosahedronGeometry(0.28 + r() * 0.12, 1);
+    const g = new THREE.IcosahedronGeometry(0.28 + r() * 0.12, detail);
     const p = g.attributes.position;
     for (let k = 0; k < p.count; k++) {
       const s = 0.85 + r() * 0.3;

@@ -1,5 +1,5 @@
 // ACT VIII — One month after, one year after, 140 years after, conclusion (10:40 – end)
-import { LEAD, K, card, dolly, orbit, onShip, shot, flat, both } from './helpers.js';
+import { LEAD, K, card, dolly, orbit, onShip, shot, flat, both, cup } from './helpers.js';
 import { gpin, pin3, word, tag, stamp, arrow3, counter, INFO } from './ov.js';
 import { drawMap, drawRadius, drawRoute, placeXY } from '../overlay/maps.js';
 import { XS } from '../sets/xsection.js';
@@ -142,11 +142,11 @@ export default function act8(A, D) {
   add(shot(A.at('triggering a local tsunami') - L, 'strait', dolly([-3000, 400, 1600], [-2800, 380, 1400], [-150, 0, -900], [-150, 0, -900], 42, 'lin'), {
     mood: 'nightGlow', moodOv: { glowAz: 120 }, island: { destroyed: 1, anak: 300 }, erupt: anakPlume({ height: 5000, glow: 1.8 }), glowLight: 0.7, ring: { t0: -0.5, speed: 70, h: 5, w: 60 },
   }, { amb: 'nightEruption', sfx: [['splashBig', 0.1], ['tsunamiRoar', 0.6]] }));
-  add(shot(A.at('The waves hit the shores') - L, 'coast', dolly([-40, 3.4, -50], [-40, 3.6, -56], [-20, 3, 100], [-20, 4, 100], 42, 'lin'), {
+  add(shot(A.at('The waves hit the shores') - L, 'coast', dolly(cup(-40, -50, 2.0), cup(-40, -56, 2.2), [-20, 3, 100], [-20, 4, 100], 42, 'lin'), {
     layout: 'resort', mood: 'night', tsunami: { z0: 260, speed: 24, H: 6, t0: 0, curl: 0.4 }, wind: 1,
     people: [{ style: 'modern', at: [-30, -24], rot: 10 }, { style: 'modern', at: [-26, -22], rot: -30 }, { style: 'lady2', at: [-34, -28], rot: 20 }],
   }, { amb: 'nightBeach', sfx: [['waveCrash', 2.6]] }));
-  add(shot(A.at('without warning') - L, 'coast', dolly([-28, 1.7, -18], [-28, 1.7, -19.5], [-28, 1.8, -30], [-28, 1.8, -30], 34), {
+  add(shot(A.at('without warning') - L, 'coast', dolly(cup(-28, -18, 1.6), cup(-28, -19.5, 1.6), cup(-28, -30, 1.4), cup(-28, -30, 1.4), 34), {
     layout: 'resort', mood: 'night', tsunami: { z0: 110, speed: 24, H: 6, t0: 0, curl: 0.4 },
     people: [{ style: 'modern', at: [-30, -24], rot: 10 }, { style: 'modern', at: [-26, -22], rot: -30 }, { style: 'lady2', at: [-34, -28], rot: 20 }],
   }, { amb: 'nightBeach', sfx: [['tsunamiRoar', 0.3]], fx: { dof: { focus: 6, range: 3, bokeh: 3 } } }));

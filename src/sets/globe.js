@@ -81,7 +81,7 @@ export class GlobeSet extends BaseSet {
           // clouds
           vec3 cp = o * 3.0 + vec3(uTime * 0.004, 0.0, uTime * 0.002);
           float cl = fbm3(cp * 1.6) ;
-          cl = smoothstep(0.52 - uCloud * 0.12, 0.78, cl) * uCloud;
+          cl = smoothstep(0.56 - uCloud * 0.1, 0.86, cl) * min(uCloud * 1.3, 0.85);
           // storms (weather haywire)
           if (uStorm > 0.0) {
             float sw = fbm3(o * 6.0 + vec3(sin(uTime*0.2), 0.0, cos(uTime*0.2)) * 0.5);

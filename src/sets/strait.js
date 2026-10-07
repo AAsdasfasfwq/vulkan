@@ -4,7 +4,7 @@ import { Ocean } from '../world/ocean.js';
 import { Island, PEAKS, makeCoastStrip, islandHeight } from '../world/island.js';
 import { makeCrownGeometry, makePalmGeometry, addSway } from '../world/plants.js';
 import { PuffCloud, StreakCloud } from '../world/particles.js';
-import { makeEruption, columnEmitter, veilEmitter, surgeEmitter, plumeletEmitter, bombEmitter, lightningEmitter, Shockwave } from '../world/eruption.js';
+import { makeEruption, columnEmitter, veilEmitter, surgeEmitter, plumeletEmitter, bombEmitter, lightningEmitter, burstEmitter, Shockwave } from '../world/eruption.js';
 import { makeBarque, makeSteamer, makeContainerShip, makeLongboat, setShipAsh } from '../world/ships.js';
 import { makeFigure, poseFigure, addProp } from '../world/figures.js';
 import { clamp, lerp, rng, fract, smoothstep, ease } from '../core/math.js';
@@ -24,6 +24,7 @@ export class StraitSet extends BaseSet {
     super(engine, film);
     const sc = this.scene;
     this.ocean = new Ocean(this.sky, { extent: 70000, segments: 448 });
+    globalThis.__strait = this;
     sc.add(this.ocean.mesh);
     this.island = new Island();
     sc.add(this.island.mesh);
@@ -36,7 +37,7 @@ export class StraitSet extends BaseSet {
     addSway(treeMat, this.plantU, 0.25);
     const palmMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, side: THREE.DoubleSide });
     addSway(palmMat, this.plantU, 0.6);
-    const [tm, pm] = this.island.buildVegetation(makeCrownGeometry(), makePalmGeometry(), treeMat, palmMat);
+    const [tm, pm] = this.island.buildVegetation(makeCrownGeometry(0), makePalmGeometry(), treeMat, palmMat);
     sc.add(tm, pm);
     // distant coasts: Sumatra (north) and Java (east)
     const sumatra = makeCoastStrip(140000, 22000, 1500, 31, [0.07, 0.16, 0.06]);
@@ -69,7 +70,8 @@ export class StraitSet extends BaseSet {
     this.crSteam = { on: false, c: [...CRATERS.perboewatan], h: 900, spread: 160, size: 110, life: 26, alpha: 0.55, col: [0.8, 0.79, 0.77], n: 140, seed: 5, wind: [0.5, 0.15] };
     this.funnel = { on: false, c: [0, 0, 0], h: 120, spread: 6, size: 9, life: 9, alpha: 0.55, col: [0.08, 0.075, 0.07], n: 90, seed: 9, wind: [-0.9, 0.2] };
     this.surfSteam = { on: false, c: [0, 0, 0], h: 300, spread: 400, size: 120, life: 14, alpha: 0.5, col: [0.92, 0.92, 0.92], n: 160, seed: 21, wind: [0.2, 0.05] };
-    this.puffs.emitters.push(columnEmitter(this.E), veilEmitter(this.E, this.V), surgeEmitter(this.E), plumeletEmitter(this.crSteam), plumeletEmitter(this.funnel), plumeletEmitter(this.surfSteam));
+    this.B = { on: false, c: [0, 0, 0], t0: 0, R: 5000, k: 1 };
+    this.puffs.emitters.push(burstEmitter(this.B), columnEmitter(this.E), veilEmitter(this.E, this.V), surgeEmitter(this.E), plumeletEmitter(this.crSteam), plumeletEmitter(this.funnel), plumeletEmitter(this.surfSteam));
     this.lightning = lightningEmitter(this.E);
     this.sparks.emitters.push(bombEmitter(this.E), this.lightning, this.emberEmitter(), this.rockRainEmitter());
     this.flakes.emitters.push(this.ashfallEmitter(), this.rainEmitter());
@@ -173,6 +175,13 @@ export class StraitSet extends BaseSet {
     this.sky.uniforms.uSkyTime.value = vt;
     this.island.uniforms.uTime.value = vt;
     const s = this.applyMood(shot, u, lt);
+    // the horizon glow always comes from the volcano
+    {
+      const ec = p.erupt ? (typeof p.erupt.at === 'string' ? CRATERS[p.erupt.at] : p.erupt.at || CRATERS.perboewatan) : CRATERS.centre;
+      const dx = ec[0] - this.camTmp.pos.x, dz = ec[2] - this.camTmp.pos.z;
+      const l = Math.hypot(dx, dz) || 1;
+      this.sky.uniforms.uGlowDir.value.set((dx / l) * 0.998, 0.06, (dz / l) * 0.998).normalize();
+    }
     this.ocean.applyMood(s, p.waterFog);
     fx.exposure = (fx.exposure ?? 1) * (p.exposure ?? 1);
     // island state
@@ -213,6 +222,10 @@ export class StraitSet extends BaseSet {
       E.count = ep.count ?? 1600;
       E.tint = ep.tint ?? [1, 0.95, 0.88];
     }
+    // explosive burst dome
+    const bp = p.burst;
+    this.B.on = !!bp;
+    if (bp) Object.assign(this.B, { c: bp.c ?? [E.c[0], 0, E.c[2]], t0: shot.t + (bp.t0 ?? 0), R: bp.R ?? 6000, k: bp.k ?? 1, speed: bp.speed ?? 0.9, heat: bp.heat ?? 1.5, flat: bp.flat ?? 0.75 });
     // veil
     const vp = p.veil;
     this.V.on = !!vp;
@@ -227,16 +240,16 @@ export class StraitSet extends BaseSet {
 
     // glow light near crater
     const gl = val(p.glowLight, u, lt, 0);
-    this.glow.intensity = gl * 4e6;
+    this.glow.intensity = gl * 1.6e6;
     this.glow.position.set(E.c[0], E.c[1] + 300, E.c[2]);
     this.ocean.uniforms.uGlowPos.value.set(E.c[0], E.c[1], E.c[2]);
-    this.ocean.uniforms.uGlowLight.value.set(1.0, 0.25, 0.06).multiplyScalar(gl);
+    this.ocean.uniforms.uGlowLight.value.set(1.0, 0.25, 0.06).multiplyScalar(gl * 0.45);
     // particles lighting
     const PU = this.puffs.uniforms;
     PU.uSunDir.value.copy(this.sky.uniforms.uSunDir.value);
     PU.uSunCol.value.set(...s.light).multiplyScalar(s.lightI * (p.puffSun ?? 0.55));
     PU.uAmb.value.set(...s.hemiSky).multiplyScalar(s.hemiI * 0.55).add(new THREE.Vector3(...s.horizon).multiplyScalar(0.25));
-    PU.uGlowCol.value.set(3.2, 0.9, 0.22).multiplyScalar(p.puffGlow ?? 1);
+    PU.uGlowCol.value.set(2.4, 0.62, 0.14).multiplyScalar(p.puffGlow ?? 1);
     PU.uFogDensity.value = this.scene.fog.density * 0.6;
     PU.uFogColor.value.set(...s.horizon);
     this.sparks.uniforms.uFogDensity.value = this.scene.fog.density * 0.3;

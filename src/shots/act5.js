@@ -1,5 +1,5 @@
 // ACT V — One month before & 24 hours before (4:25 – 6:33)
-import { LEAD, K, card, dolly, orbit, onShip, shot, flat, both } from './helpers.js';
+import { LEAD, K, card, dolly, orbit, onShip, shot, flat, both, cup } from './helpers.js';
 import { gpin, pin3, word, tag, stamp, arrow3, counter, INFO } from './ov.js';
 import { drawMap, drawRadius, placeXY } from '../overlay/maps.js';
 import { islandHeight } from '../world/island.js';
@@ -25,13 +25,13 @@ export default function act5(A) {
     ships: [{ id: 'g1', type: 'barque', pos: [-4300, 6500], heading: 20, speed: 3 }, { id: 'g2', type: 'steamer', pos: [-5200, 6100], heading: 20, speed: 4 }],
   }, { amb: 'oceanGrey', fx: { grade: 'ash' } }));
   const ashShip = { pos: [-6500, 7200], heading: 20, speed: 2 };
-  add(shot(A.at('Ash blankets the decks') - L, 'strait', onShip(ashShip, [-6, 4.8, -2.5], [-3, 4.6, -2.0], [6, 3.4, 0.5], [8, 3.4, 0.5], 40), {
+  add(shot(A.at('Ash blankets the decks') - L, 'strait', onShip(ashShip, [16, 5.4, -3.0], [14.5, 5.2, -2.6], [2, 3.4, 0], [1, 3.4, 0], 40), {
     mood: 'haze', moodOv: { fog: 0.0004 }, erupt: julPlume(), ashfall: 0.8, shipAsh: 1, ships: [{ id: 'ash1', type: 'barque', ...ashShip }],
-    people: [{ style: 'sailor2', ship: 'ash1', at: [2, -1.0], rot: 60, pose: { sweep: 0 }, prop: 'broom' }],
-  }, { amb: 'oceanGrey', fx: { grade: 'ash', dof: { focus: 6, range: 3, bokeh: 2.5 } } }));
+    people: [{ style: 'sailor2', ship: 'ash1', at: [4, -1.6], rot: 60, pose: { sweep: 0 }, prop: 'broom' }],
+  }, { amb: 'oceanGrey', fx: { grade: 'ash', dof: { focus: 11, range: 5, bokeh: 2.5 } } }));
   add(shot(A.at('Sailors have to sweep') - L, 'strait', onShip(ashShip, [3.6, 4.1, 0.6], [3.3, 4.0, 0.2], [1.8, 3.6, -1.0], [1.9, 3.6, -1.0], 36), {
     mood: 'haze', moodOv: { fog: 0.0004 }, erupt: julPlume(), ashfall: 1, shipAsh: 1, ships: [{ id: 'ash1', type: 'barque', ...ashShip }],
-    people: [{ style: 'sailor2', ship: 'ash1', at: [2, -1.0], rot: 60, pose: { sweep: 0 }, prop: 'broom' }, { style: 'sailor', ship: 'ash1', at: [-1.5, 1.2], rot: -30, pose: { sweep: 0 }, prop: 'broom' }],
+    people: [{ style: 'sailor2', ship: 'ash1', at: [2.2, -1.2], rot: 60, pose: { sweep: 0 }, prop: 'broom' }, { style: 'sailor', ship: 'ash1', at: [4.6, 2.2], rot: -30, pose: { sweep: 0 }, prop: 'broom' }],
   }, { amb: 'oceanGrey', sfx: [['sweep', 0.2], ['sweep', 1.3]], fx: { grade: 'ash', dof: { focus: 2, range: 1, bokeh: 3.5 } } }));
   add(shot(A.at('At night, glowing lava') - L, 'strait', dolly([-9000, 30, 5000], [-8700, 34, 4800], [0, 600, -400], [0, 700, -400], 30, 'lin'), {
     mood: 'nightGlow', moodOv: { glowAz: 125, glowEl: 3 }, erupt: julPlume({ glow: 2.2, bombs: 0.5 }), island: { lava: 1.1, ash: 0.5 }, glowLight: 1,
@@ -77,20 +77,20 @@ export default function act5(A) {
   const tFirst = A.at('The first explosion') - L;
   const boomAt = A.peek('explosion') - tFirst + 0.25;
   add(shot(tFirst, 'strait', dolly([-16000, 400, 12000], [-15400, 380, 11500], [0, 3000, 0], [0, 9000, 0], 40, 'lin'), {
-    mood: 'haze', mood2: 'storm', moodK: [0, 0.6], erupt: augPlume({ t0: boomAt, rise: 1600, height: 27000 }), island: { ash: 0.6, lava: 0.6 },
-    ring: { t0: boomAt, speed: 700, h: 6, w: 120, decay: 9000 }, shock: { t0: boomAt, speed: 1200, k: 1.4, decay: 0.8, c: [-100, 0, -600] },
+    mood: 'haze', mood2: 'blast', moodK: (u, lt) => clamp((lt - boomAt) / 2.5, 0, 0.8), erupt: augPlume({ t0: boomAt, rise: 1600, height: 27000 }), island: { ash: 0.6, lava: 0.6 },
+    ring: { t0: boomAt, speed: 700, h: 6, w: 120, decay: 9000 }, shock: { t0: boomAt, speed: 1200, k: 1.6, decay: 0.6, c: [-100, 0, -600] }, burst: { t0: boomAt, R: 4000, speed: 1.1, heat: 1.8, c: [-100, 0, -600] },
   }, {
     name: 'first explosion', amb: 'eruption', mus: 'chaos', subs: false,
     sfx: [['bigBoom', boomAt - 0.05], ['rumbleLong', boomAt + 0.2]],
-    fx: { flashes: [{ at: boomAt, amp: 6, decay: 3 }], flashColor: [1, 0.85, 0.7], shakes: [{ at: boomAt + 0.35, amp: 2.6, decay: 1.1, zoom: 0.08 }] },
+    fx: { flashes: [{ at: boomAt, amp: 2.8, decay: 5 }], flashColor: [1, 0.85, 0.7], shakes: [{ at: boomAt + 0.35, amp: 2.0, decay: 1.2, zoom: 0.07 }] },
   }));
-  add(shot(A.at('Everything before this') - L, 'strait', dolly([-5200, 20, 2400], [-5000, 24, 2300], [0, 6000, -600], [0, 9000, -600], 48, 'lin'), { mood: 'storm', erupt: augPlume({ t0: -4 }), island: { ash: 0.7, lava: 0.8 }, glowLight: 0.6 }, { amb: 'eruption', fx: { shakes: [{ at: 0, amp: 1.2, decay: 1.5 }] } }));
-  add(shot(A.at('Krakatoa erupts with a violence') - L, 'strait', orbit([-100, 2500, -600], [9000, 8000], [-80, -60], [3, 6], 42), { mood: 'storm', moodOv: { fog: 0.00018 }, erupt: augPlume({ t0: -8, bombs: 1.0, surge: 1, surgeT0: -2 }), island: { ash: 0.8, lava: 1 }, glowLight: 0.8 }, {
+  add(shot(A.at('Everything before this') - L, 'strait', dolly([-13000, 40, 9000], [-12700, 46, 8800], [0, 5500, -600], [0, 7000, -600], 46, 'lin'), { mood: 'blast', erupt: augPlume({ t0: -4 }), island: { ash: 0.7, lava: 0.8 }, glowLight: 0.6, burst: { t0: -4.5, R: 4000, speed: 1.1, heat: 1.6, c: [-100, 0, -600] } }, { amb: 'eruption', fx: { shakes: [{ at: 0, amp: 1.2, decay: 1.5 }] } }));
+  add(shot(A.at('Krakatoa erupts with a violence') - L, 'strait', orbit([-100, 2500, -600], [9000, 8000], [-80, -60], [3, 6], 42), { mood: 'blast', erupt: augPlume({ t0: -8, bombs: 1.0, surge: 1, surgeT0: -2 }), island: { ash: 0.8, lava: 1 }, glowLight: 0.6 }, {
     amb: 'eruption', sfx: [['boom', 0.2], ['boom', 1.4]], fx: { shakes: [{ at: 0.2, amp: 1.5, decay: 2 }, { at: 1.4, amp: 1.2, decay: 2 }], grade: 'fire' },
   }));
   add(flat(A.at('A vast column of black ash') - L, (k, lt, S2) => INFO.altitude(k, lt, S2, { km: 27, max: 50, at: 0.2, dur: A.peek('reaching 17 miles') - A.peek('A vast column of black') + 0.3, umbrella: true }), { sfx: [['riser', 0], ['whooshBig', 0.2]] }));
   add(shot(A.at('Day turns to pitch black') - L, 'strait', dolly([-9000, 30, 9000], [-8800, 32, 8800], [0, 3000, 0], [0, 3000, 0], 44, 'lin'), {
-    mood: 'haze', mood2: 'ashDark', moodK: (u) => ease.inOut(u), erupt: augPlume({ t0: -20 }), veil: { amount: [0.3, 1], dark: 0.03, alpha: 0.85 }, island: { ash: 0.8 },
+    mood: 'haze', mood2: 'ashDark', moodK: (u) => ease.inOut(u), erupt: augPlume({ t0: -20 }), veil: { amount: [0.2, 1], dark: 0.03, alpha: 0.55, y0: 7000, y1: 20000 }, island: { ash: 0.8 },
   }, { amb: 'eruption', sfx: [['drone', 0]] }));
   add(flat(A.at('Within roughly 90 miles') - L, (k, lt, S2) => drawMap(k, lt, S2, {
     theme: 'ash', center: [[105.6, -5.9], [105.6, -5.9]], scale: [[9000, 10500]], box: [98, -12, 113, 1], hi: true,
@@ -105,20 +105,20 @@ export default function act5(A) {
     },
   }), { sfx: [['whoosh', 0]] }));
   add(shot(A.at('darkness swallows everything') - L, 'strait', dolly([-7000, 10, 6500], [-6900, 11, 6400], [0, 1500, 0], [0, 1600, 0], 44, 'lin'), {
-    mood: 'ashDark', moodOv: { glowAz: -40 }, erupt: augPlume({ t0: -30, glow: 2.0, lightning: 0.0 }), veil: { amount: 1, dark: 0.02, alpha: 0.9 }, ashfall: 0.8, glowLight: 0.6,
+    mood: 'ashDark', moodOv: { glowAz: -40 }, erupt: augPlume({ t0: -30, glow: 2.0, lightning: 0.0 }), ashfall: 0.8, glowLight: 0.6,
   }, { amb: 'ashStorm' }));
   add(shot(A.at('Only blinding flashes') - L, 'strait', dolly([-6000, 20, 5000], [-5800, 22, 4800], [0, 4000, 0], [0, 4500, 0], 48, 'lin'), {
-    mood: 'ashDark', moodOv: { glowAz: -40 }, erupt: augPlume({ t0: -30, glow: 2.0, lightning: 1.0 }), veil: { amount: 1, dark: 0.02, alpha: 0.85 }, ashfall: 0.6, glowLight: 0.6,
+    mood: 'ashDark', moodOv: { glowAz: -40 }, erupt: augPlume({ t0: -30, glow: 2.0, lightning: 1.0 }), ashfall: 0.6, glowLight: 0.6,
   }, { amb: 'ashStorm', sfx: [['thunder', 0.4], ['thunder', 1.6]] }));
   add(flat(A.at('Billions of ash particles') - L, (k, lt, S2) => charges(k, lt, S2, A.peek('generating enormous electrical') - A.peek('Billions of ash particles')), { sfx: [['crackle', 0.2], ['zap', 1.0], ['zap', 2.6], ['zap', 3.4]] }));
   add(shot(A.at('Lightning tears across') - L, 'strait', dolly([-4500, 200, 3000], [-4300, 220, 2900], [0, 7000, -600], [0, 7500, -600], 54, 'lin'), {
-    mood: 'ashDark', erupt: augPlume({ t0: -40, glow: 2.2, lightning: 1.0 }), veil: { amount: 1, dark: 0.02, alpha: 0.8 }, glowLight: 0.7,
+    mood: 'ashDark', erupt: augPlume({ t0: -40, glow: 2.2, lightning: 1.0 }), glowLight: 0.7,
   }, { amb: 'ashStorm', sfx: [['thunderBig', 0.15], ['thunder', 1.0]], fx: { flashes: [{ at: 0.15, amp: 2.0, decay: 7 }], flashColor: [0.7, 0.75, 1.0] } }));
 
   // --- the Charles Bal ------------------------------------------------------------------
   const cb = { pos: [-10500, 9500], heading: 30, speed: 1.2 };
   add(shot(A.at('The British ship') - L, 'strait', dolly([-10700, 14, 9620], [-10650, 15, 9600], [-10450, 12, 9450], [-10440, 12, 9440], 40, 'lin'), {
-    mood: 'ashDark', moodOv: { glowAz: 135 }, sea: 'rough', erupt: augPlume({ t0: -50 }), veil: { amount: 1, dark: 0.02, alpha: 0.8 }, glowLight: 0.8, ashfall: 0.6, shipAsh: 0.8,
+    mood: 'ashDark', moodOv: { glowAz: 135 }, sea: 'rough', erupt: augPlume({ t0: -50 }), glowLight: 0.6, ashfall: 0.6, shipAsh: 0.8,
     ships: [{ id: 'cb', type: 'barque', ...cb, opts: { flag: 0x1a3a8a } }],
   }, { amb: 'ashStorm', draw: stamp('CHARLES BAL', 'British barque · 26 August 1883', 0.2) }));
   add(flat(A.at('trapped just nine miles') - L, (k, lt, S2) => drawMap(k, lt, S2, {
@@ -134,8 +134,8 @@ export default function act5(A) {
       k.ctx.globalAlpha = 1;
     },
   }), { sfx: [['pop', 0.6]] }));
-  const deckPeople = [{ style: 'sailor', ship: 'cb', at: [4, 1.2], rot: 30, pose: { brace: true } }, { style: 'sailor2', ship: 'cb', at: [1, -1.4], rot: -40, pose: { brace: true } }, { style: 'captain', ship: 'cb', at: [-6, 0.4], rot: 80, pose: { point: true } }];
-  add(shot(A.at('Red-hot pumice') - L, 'strait', onShip(cb, [-9, 5.6, 2.2], [-7, 5.4, 1.8], [6, 4.0, -0.5], [8, 4.2, -0.5], 44), {
+  const deckPeople = [{ style: 'sailor', ship: 'cb', at: [4, 1.6], rot: 30, pose: { brace: true } }, { style: 'sailor2', ship: 'cb', at: [2.4, -1.6], rot: -40, pose: { brace: true } }, { style: 'captain', ship: 'cb', at: [10, 0.8], rot: -100, pose: { point: true } }];
+  add(shot(A.at('Red-hot pumice') - L, 'strait', onShip(cb, [17, 5.6, 2.6], [15.5, 5.4, 2.2], [3, 4.0, -0.5], [2, 4.2, -0.5], 44), {
     mood: 'ashDark', moodOv: { glowAz: 135 }, sea: 'rough', erupt: augPlume({ t0: -55 }), glowLight: 0.8, ashfall: 0.9, rockRain: 1, embers: 1, shipAsh: 0.9,
     ships: [{ id: 'cb', type: 'barque', ...cb, extraRoll: 0.05, opts: { flag: 0x1a3a8a } }], people: deckPeople,
   }, { amb: 'ashStorm', sfx: [['rocksRain', 0], ['thud', 0.6], ['thud', 1.4], ['sizzle', 0.8]], fx: { grade: 'fire', shakes: [{ at: 0.6, amp: 0.6, decay: 3 }, { at: 1.4, amp: 0.6, decay: 3 }] } }));
@@ -147,7 +147,7 @@ export default function act5(A) {
     mood: 'ashDark', moodOv: { glowAz: 135, horizon: [0.12, 0.1, 0.03], fog: 0.004 }, sea: 'rough', erupt: augPlume({ t0: -60 }), glowLight: 0.7, ashfall: 1, embers: 0.5, shipAsh: 1,
     ships: [{ id: 'cb', type: 'barque', ...cb, extraRoll: 0.04 }], people: [{ style: 'sailor2', ship: 'cb', at: [1, -1.4], rot: -40, pose: { cough: true } }],
   }, { amb: 'ashStorm', sfx: [['cough', 0.2], ['cough', 1.2]], fx: { grade: 'ash', dof: { focus: 2.2, range: 1, bokeh: 3.5 } } }));
-  add(shot(A.at('The captain orders') - L, 'strait', onShip(cb, [-3, 5.3, -2.2], [-3.4, 5.2, -2.0], [-6, 4.8, 0.4], [-6, 4.8, 0.4], 36), {
+  add(shot(A.at('The captain orders') - L, 'strait', onShip(cb, [12.8, 5.3, -2.6], [12.2, 5.2, -2.3], [10, 4.7, 0.8], [10, 4.7, 0.8], 36), {
     mood: 'ashDark', moodOv: { glowAz: 135 }, sea: 'rough', erupt: augPlume({ t0: -65 }), glowLight: 0.7, ashfall: 0.8, shipAsh: 1,
     ships: [{ id: 'cb', type: 'barque', ...cb, extraRoll: 0.05 }], people: deckPeople,
   }, { amb: 'ashStorm', sfx: [['shout', 0.3], ['hatchSlam', A.peek('hatches sealed') - A.peek('The captain orders') + 0.3]], fx: { shakes: [{ at: A.peek('hatches sealed') - A.peek('The captain orders') + 0.3, amp: 0.8, decay: 4 }] } }));
@@ -160,7 +160,7 @@ export default function act5(A) {
     ships: [{ id: 'cb', type: 'barque', ...cb, extraRoll: 0.04 }], people: [{ style: 'sailor', ship: 'cb', at: [3.5, 0.5], rot: -100, pose: { brace: true } }, { style: 'sailor2', ship: 'cb', at: [4.2, -0.8], rot: -80, pose: { brace: true, lean: 0.4 } }],
   }, { amb: 'ashStorm', mus: 'grief', fx: { grade: 'ash', dof: { focus: 4, range: 1.5, bokeh: 3 } } }));
   add(flat(A.at('Deep explosions follow every') - L, (k, lt, S2) => INFO.timerRing(k, lt, S2, { period: 1.25 }), { sfx: [['boomLow', 0.05], ['boomLow', 1.3], ['boomLow', 2.55]] }));
-  add(shot(A.at('Dozens of miles away') - L, 'coast', dolly([-30, 2.0, -6], [-28, 2.0, -9], [-40, 2, -40], [-40, 2, -40], 40), {
+  add(shot(A.at('Dozens of miles away') - L, 'coast', dolly(cup(-30, -6, 1.8), cup(-28, -9, 1.8), cup(-40, -40, 1.6), cup(-40, -40, 1.6), 40), {
     layout: 'village', mood: 'ashDark', moodOv: { glowAz: 10 }, wind: [1, 3], ashfall: 0.6, quake: 1,
     people: [{ style: 'villager', at: [-36, -24], rot: 160, pose: { brace: true } }, { style: 'villager2', at: [-40, -26], rot: 200, pose: { ears: true } }],
   }, { amb: 'ashStorm', sfx: [['boomFar', 0.3], ['shockThump', A.peek('strike people') - A.peek('Dozens of miles away')], ['shockThump', A.peek('physical blows') - A.peek('Dozens of miles away')]], fx: { shakes: [{ at: A.peek('strike people') - A.peek('Dozens of miles away'), amp: 1.8, decay: 3, zoom: 0.06 }, { at: A.peek('physical blows') - A.peek('Dozens of miles away'), amp: 2.2, decay: 3, zoom: 0.08 }] } }));
