@@ -34,7 +34,7 @@ export class StraitSet extends BaseSet {
     // vegetation
     this.plantU = { uTime: this.uTime, uWind: this.uWind, uAsh: { value: 0 } };
     const treeMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85 });
-    addSway(treeMat, this.plantU, 0.25);
+    addSway(treeMat, this.plantU, 0.25, true);
     const palmMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, side: THREE.DoubleSide });
     addSway(palmMat, this.plantU, 0.6);
     const [tm, pm] = this.island.buildVegetation(makeCrownGeometry(0), makePalmGeometry(), treeMat, palmMat);

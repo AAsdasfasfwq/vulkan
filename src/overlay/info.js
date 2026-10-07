@@ -59,7 +59,7 @@ export function bigNumber(k, lt, S, o) {
   k.text((o.prefix ?? '') + val + (o.suffix ?? ''), 0, 0, { size: o.size ?? 280, weight: 900, color: o.color ?? col, tracking: -4, glow: o.bg === 'ember' ? 40 : 0, glowColor: 'rgba(255,120,60,0.6)' });
   ctx.restore();
   if (o.unit) k.kinetic(o.unit, W / 2, (o.y ?? H / 2) + 150, lt, { size: 54, weight: 800, color: o.unitColor ?? (o.bg === 'paper' ? PAL.red : PAL.ember), start: (o.at ?? 0.1) + 0.4, stagger: 0.03, tracking: 8 });
-  if (o.small) k.kinetic(o.small, W / 2, (o.y ?? H / 2) - (o.size ?? 280) * 0.62, lt, { size: 40, weight: 400, family: 'serif', italic: true, color: o.bg === 'paper' ? PAL.ink2 : '#e8d8cc', start: 0, stagger: 0.02 });
+  if (o.small) k.kinetic(o.small, W / 2, (o.y ?? H / 2) - (o.size ?? 280) * 0.62, lt, { size: o.smallSize ?? 48, weight: 400, family: 'serif', italic: true, color: o.bg === 'paper' ? PAL.ink2 : '#e8d8cc', start: 0, stagger: 0.02 });
   if (o.note) k.kinetic(o.note, W / 2, (o.y ?? H / 2) + 220, lt, { size: 30, weight: 500, family: 'serif', italic: true, color: o.bg === 'paper' ? PAL.ink2 : '#d8c8bc', start: (o.at ?? 0.1) + 0.9, stagger: 0.012 });
 }
 

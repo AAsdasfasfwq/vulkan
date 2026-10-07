@@ -213,8 +213,28 @@ export function newspaperTexture(head, sub, city, date) {
       c.fillStyle = `rgba(30,26,22,${0.55 + r() * 0.2})`;
       c.fillRect(x, y, 200 * (line % 9 === 8 ? 0.6 : 0.9 + r() * 0.1), 9);
     }
-    c.fillStyle = 'rgba(40,35,30,0.85)'; c.fillRect(520, 520, 440, 300);
-    c.fillStyle = '#d8cdb5'; c.font = font(30, 700, 'serif', true); c.fillText('THE VOLCANO OF KRAKATOA', 740, 860);
+    // engraved illustration of the eruption (hatched, like a 19th-century woodcut)
+    const X = 520, Y = 500, IW = 440, IH = 320;
+    c.fillStyle = '#ece3cf'; c.fillRect(X - 10, Y - 10, IW + 20, IH + 70);
+    c.save(); c.beginPath(); c.rect(X, Y, IW, IH); c.clip();
+    c.fillStyle = '#e4d9c2'; c.fillRect(X, Y, IW, IH);
+    c.strokeStyle = 'rgba(30,26,22,0.55)'; c.lineWidth = 1.6;
+    for (let yy = Y; yy < Y + IH * 0.62; yy += 5) { c.beginPath(); c.moveTo(X, yy); c.lineTo(X + IW, yy + (r() - 0.5) * 2); c.stroke(); }
+    // ash column: stacked billows
+    c.fillStyle = '#2a2420';
+    for (let i = 0; i < 26; i++) { const t = i / 25; const bx = X + IW * 0.5 + Math.sin(i * 1.7) * 18 * t + t * 40, by = Y + IH * 0.6 - t * IH * 0.62, br = 18 + t * 46; c.beginPath(); c.arc(bx, by, br, 0, 6.283); c.fill(); }
+    c.strokeStyle = 'rgba(236,227,207,0.45)'; c.lineWidth = 2;
+    for (let i = 0; i < 26; i += 2) { const t = i / 25; const bx = X + IW * 0.5 + Math.sin(i * 1.7) * 18 * t + t * 40, by = Y + IH * 0.6 - t * IH * 0.62, br = 18 + t * 46; c.beginPath(); c.arc(bx - br * 0.2, by - br * 0.2, br * 0.7, 3.6, 5.2); c.stroke(); }
+    // cone + sea
+    c.fillStyle = '#1e1a16'; c.beginPath(); c.moveTo(X + IW * 0.18, Y + IH * 0.72); c.lineTo(X + IW * 0.47, Y + IH * 0.56); c.lineTo(X + IW * 0.56, Y + IH * 0.56); c.lineTo(X + IW * 0.86, Y + IH * 0.72); c.fill();
+    c.strokeStyle = 'rgba(30,26,22,0.75)'; c.lineWidth = 1.4;
+    for (let yy = Y + IH * 0.72; yy < Y + IH; yy += 4) { c.beginPath(); for (let xx = X; xx <= X + IW; xx += 20) c.lineTo(xx, yy + Math.sin(xx * 0.08 + yy) * 1.5); c.stroke(); }
+    // a small barque on the water
+    c.fillStyle = '#1e1a16'; c.fillRect(X + 60, Y + IH * 0.8, 40, 6); c.fillRect(X + 78, Y + IH * 0.8 - 34, 2, 34);
+    c.beginPath(); c.moveTo(X + 80, Y + IH * 0.8 - 32); c.lineTo(X + 98, Y + IH * 0.8 - 8); c.lineTo(X + 80, Y + IH * 0.8 - 8); c.fill();
+    c.restore();
+    c.strokeStyle = '#1a1714'; c.lineWidth = 3; c.strokeRect(X, Y, IW, IH);
+    c.fillStyle = '#1a1714'; c.font = font(26, 700, 'serif', true); c.fillText('The Eruption of Krakatoa', X + IW / 2, Y + IH + 40);
   });
 }
 

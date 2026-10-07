@@ -102,7 +102,7 @@ export default function act8(A, D) {
   // ======================= 140 YEARS AFTER =======================
   add(card(A.at('140 years after') - 0.15, '140 YEARS AFTER', 'TODAY'));
   const cs = { pos: [-7000, 9000], heading: 25, speed: 7 };
-  add(shot(A.at('Today, giant') - L, 'strait', dolly([-6800, 60, 9300], [-6500, 50, 9100], [-6200, 20, 8600], [-5900, 20, 8500], 40, 'lin'), { mood: 'day', island: { destroyed: 1, anak: 300 }, steam: { at: 'anak', amount: 0.3, h: 300 }, ships: [{ id: 'cs', type: 'container', ...cs, roll: 0.2 }] }, { amb: 'ocean', mus: 'modern', sfx: [['shipHorn', 0.8]] }));
+  add(shot(A.at('Today, giant') - L, 'strait', dolly([-6520, 46, 9520], [-6430, 42, 9430], [-6990, 25, 8990], [-6955, 25, 8975], 38, 'lin'), { mood: 'day', island: { destroyed: 1, anak: 300 }, steam: { at: 'anak', amount: 0.3, h: 300 }, ships: [{ id: 'cs', type: 'container', ...cs, roll: 0.2 }] }, { amb: 'ocean', mus: 'modern', sfx: [['shipHorn', 0.8]] }));
   add(shot(A.at('Passenger jets') - L, 'strait', dolly([-1500, 12, 5600], [-1480, 12, 5560], [-1820, 2600, 3200], [-1340, 2640, 3200], 26, 'lin'), { mood: 'day', island: { destroyed: 1, anak: 300 }, jet: { pos: [-1900, 2700, 3200], speed: 240 } }, { amb: 'ocean', sfx: [['jetPass', 0]] }));
   const tI = A.at('The age of steam') - L;
   add(flat(tI, (k, lt, S2) => INFO.iconsRow(k, lt, S2, {
@@ -120,15 +120,15 @@ export default function act8(A, D) {
   add(shot(A.at("you won't find empty water") - L, 'strait', dolly([-2400, 120, 400], [-2100, 110, 200], [-150, 150, -900], [-150, 160, -900], 40, 'lin'), { mood: 'golden', island: { destroyed: 1, anak: 300 }, steam: { at: 'anak', amount: 0.5, h: 500 } }, { amb: 'ocean' }));
   const t27 = A.at('In 1927') - L;
   add(shot(t27, 'strait', dolly([-1400, 20, -300], [-1300, 22, -380], [-150, 120, -900], [-150, 260, -900], 40, 'lin'), {
-    mood: 'overcast', island: { destroyed: 1, anak: 12 }, erupt: anakPlume({ height: 1600, intensity: 1, dark: 0.07, glow: 0.1, bombs: 0.4, bombSpeed: 120 }), boil: { c: [-150, -900], r: 500, k: 1 }, surfSteam: { at: [-150, 0, -900], amount: 1, h: 500, spread: 300, size: 120 },
+    mood: 'overcast', island: { destroyed: 1, anak: 12 }, erupt: anakPlume({ height: 1600, intensity: 1, dark: 0.07, glow: 0.1, bombs: 0.4, bombSpeed: 120 }), boil: { c: [-150, -900], r: 500, k: 1 }, surfSteam: { at: [-150, 0, -900], amount: 0.8, h: 500, spread: 300, size: 120 },
   }, { amb: 'surtsey', sfx: [['steamBurst', 0.4], ['boomLow', 1.0]], draw: word('1927', 0.15, { y: H * 0.22, size: 160, tracking: 10 }) }));
-  add(shot(A.at('The sea began to boil') - L, 'strait', dolly([-600, 8, -700], [-560, 9, -730], [-150, 4, -900], [-150, 10, -900], 44, 'lin'), { mood: 'overcast', island: { destroyed: 1, anak: 0 }, boil: { c: [-150, -900], r: 400, k: 1 }, surfSteam: { at: [-150, 0, -900], amount: 1, h: 400, spread: 300, size: 90 } }, { amb: 'surtsey', sfx: [['boilingSea', 0]] }));
+  add(shot(A.at('The sea began to boil') - L, 'strait', dolly([-600, 8, -700], [-560, 9, -730], [-150, 4, -900], [-150, 10, -900], 44, 'lin'), { mood: 'overcast', moodOv: { fog: 0.00006 }, island: { destroyed: 1, anak: 0 }, boil: { c: [-150, -900], r: 400, k: 1 }, surfSteam: { at: [-150, 0, -900], amount: 0.55, h: 400, spread: 300, size: 90 } }, { amb: 'surtsey', sfx: [['boilingSea', 0]] }));
   add(shot(A.at('The volcano was returning') - L, 'strait', orbit([-150, 300, -900], [3600, 3300], [-120, -95], [5, 6], 36), { mood: 'overcast', island: { destroyed: 1, anak: 60 }, erupt: anakPlume({ height: 2400, dark: 0.08, wind: [0.3, 0.05] }), boil: { c: [-150, -900], r: 400, k: 0.5 } }, { amb: 'surtsey', sfx: [['boomLow', 0.5]] }));
   const tAk = A.at('Local people named it') - L;
   add(shot(tAk, 'strait', dolly([-2600, 60, 1000], [-2400, 64, 800], [-150, 250, -900], [-150, 300, -900], 36, 'lin'), { mood: 'dusk', island: { destroyed: 1, anak: 200 }, erupt: anakPlume({ glow: 1.2 }), glowLight: 0.3 }, {
     amb: 'eruptionSoft', mus: 'awe', subsOff: A.peek('Anak Krakatau') - tAk - 0.1, draw: both(word('ANAK KRAKATAU', A.peek('Anak Krakatau') - tAk, { y: H * 0.22, size: 110, tracking: 14 }), word('the child of Krakatoa', A.peek('the child of') - tAk, { y: H * 0.22 + 76, size: 46, mode: 'blur', tracking: 2 })),
   }));
-  add(shot(A.at('chamber beneath it never') - L, 'xsection', orbit([0, -9, -2], [50, 40], [-12, 0], [10, 8], 40), { magma: 1, fill: [0.4, 0.8], cone: 0.45, bare: true, erupt: { height: 20, intensity: 0.6 } }, { amb: 'rumble' }));
+  add(shot(A.at('chamber beneath it never') - L, 'xsection', orbit([0, -9, -2], [50, 40], [-12, 0], [10, 8], 40), { magma: 1, fill: [0.4, 0.8], cone: 0.45, bare: true }, { amb: 'rumble' }));
   add(shot(A.at('The grinding tectonic') - L, 'xsection', orbit([0, -14, -6], [80, 70], [20, 28], [12, 10], 40), { magma: 1, fill: 0.8, cone: 0.45, bare: true, plateSpeed: 1.2, hl: 1 }, { amb: 'rumble', sfx: [['rockGrind', 0.2]], draw: arrow3([-36, -3.6, 0.5], [-14, -4.2, 0.5], 0.1, { color: '#7fd0ff' }) }));
   add(flat(A.at('Anak Krakatau grows') - L, (k, lt, S2) => INFO.growth(k, lt, S2, { dur: 2.6 }), { sfx: [['counterTicks', 0.2]] }));
   add(shot(A.at('It is alive') - L, 'strait', dolly([-1500, 40, -200], [-1400, 44, -280], [-150, 300, -900], [-150, 340, -900], 42, 'lin'), {
@@ -138,7 +138,7 @@ export default function act8(A, D) {
   add(shot(t18, 'strait', dolly([-4200, 30, 1800], [-4100, 32, 1700], [-150, 400, -900], [-150, 450, -900], 34, 'lin'), {
     mood: 'nightGlow', moodOv: { glowAz: 120 }, island: { destroyed: 1, anak: 330 }, erupt: anakPlume({ height: 5000, glow: 2.0, bombs: 0.6, lightning: 0.6 }), glowLight: 0.8,
   }, { amb: 'nightEruption', mus: 'tension', draw: both(word('DECEMBER 2018', 0.1, { y: H * 0.2, size: 96, tracking: 12 })) }));
-  add(shot(A.at('During another eruption') - L, 'xsection', orbit([-4, -2, 0], [36, 30], [-20, -10], [10, 10], 40), { magma: 1, fill: 0.8, cone: 0.45, bare: true, slide: [0, 1], erupt: { height: 20, intensity: 0.8 } }, { amb: 'rumble', sfx: [['landslide', A.peek('flank collapsed') - A.peek('During another eruption')]] }));
+  add(shot(A.at('During another eruption') - L, 'xsection', orbit([-4, -2, 0], [36, 30], [-20, -10], [10, 10], 40), { magma: 1, fill: 0.8, cone: 0.45, bare: true, slide: [0, 1], erupt: { height: 12, intensity: 0.3 } }, { amb: 'rumble', sfx: [['landslide', A.peek('flank collapsed') - A.peek('During another eruption')]] }));
   add(shot(A.at('triggering a local tsunami') - L, 'strait', dolly([-3000, 400, 1600], [-2800, 380, 1400], [-150, 0, -900], [-150, 0, -900], 42, 'lin'), {
     mood: 'nightGlow', moodOv: { glowAz: 120 }, island: { destroyed: 1, anak: 300 }, erupt: anakPlume({ height: 5000, glow: 1.8 }), glowLight: 0.7, ring: { t0: -0.5, speed: 70, h: 5, w: 60 },
   }, { amb: 'nightEruption', sfx: [['splashBig', 0.1], ['tsunamiRoar', 0.6]] }));
@@ -161,7 +161,7 @@ export default function act8(A, D) {
   add(shot(A.at('It is an enduring reminder') - L, 'town', dolly([300, 340, 500], [240, 300, 420], [0, 100, -300], [0, 100, -300], 40, 'lin'), { style: 'modern', mood: 'night', windows: 1.2 }, { amb: 'cityModern' }));
   const tSk2 = A.at('with its skyscrapers') - L;
   add(shot(tSk2, 'town', dolly([40, 8, 60], [36, 30, 52], [0, 200, -150], [0, 260, -150], 50, 'lin'), { style: 'modern', mood: 'night', windows: 1.2 }, { amb: 'cityModern' }));
-  add(shot(A.at('satellites') - L, 'globe', dolly([6, 2, 16], [5, 2.5, 14], [0, 0, 0], [0, 0, 0], 40, 'lin'), { ll: [[20, 100], [20, 90]], cloud: 0.45, sats: true, night: 0.6, sunAz: 120 }, { amb: 'space' }));
+  add(shot(A.at('satellites') - L, 'globe', dolly([9, 3, 25], [8, 3.6, 22.5], [0, 0, 0], [0, 0, 0], 40, 'lin'), { ll: [[20, 100], [20, 90]], cloud: 0.45, sats: true, night: 0.6, sunAz: 120 }, { amb: 'space' }));
   add(shot(A.at('and digital networks') - L, 'globe', orbit([0, 0, 0], [26, 24], [20, 0], [6, 4], 40), {
     ll: [[30, 100], [30, 70]], cloud: 0.35, sats: true, cables: 1, cableK: 2.2, dots: ['london', 'newyork', 'tokyo', 'shanghai', 'singapore', 'bombay', 'sydney', 'sanfrancisco'],
     arcs: [{ id: 'n1', from: 'tokyo', to: 'sanfrancisco', start: 0.0, dur: 0.8, col: [0.4, 0.8, 1] }, { id: 'n2', from: 'london', to: 'singapore', start: 0.2, dur: 0.8, col: [0.4, 0.8, 1] }, { id: 'n3', from: 'newyork', to: 'london', start: 0.3, dur: 0.6, col: [0.4, 0.8, 1] }],

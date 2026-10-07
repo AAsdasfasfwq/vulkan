@@ -226,11 +226,14 @@ export class GlobeSet extends BaseSet {
     this.sats = new THREE.Group();
     const satMat = new THREE.MeshStandardMaterial({ color: 0xcfd6de, metalness: 0.7, roughness: 0.3 });
     const panelMat = new THREE.MeshStandardMaterial({ color: 0x1b3d8f, metalness: 0.4, roughness: 0.25, emissive: 0x050a20 });
-    for (let i = 0; i < 14; i++) {
+    const glintMat = new THREE.MeshBasicMaterial({ color: 0xfff1d0 });
+    for (let i = 0; i < 26; i++) {
       const s = new THREE.Group();
       s.add(new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.18), satMat));
       const pnl = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.01, 0.14), panelMat);
       s.add(pnl);
+      const gl = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 6), glintMat); s.add(gl);
+      s.scale.setScalar(2.2);
       s.userData = { inc: r() * Math.PI, ph: r() * 6.28, rad: R * (1.15 + r() * 0.4), sp: 0.05 + r() * 0.05 };
       this.sats.add(s);
     }

@@ -49,7 +49,7 @@ export default function act2(A) {
   }, { amb: 'beach', fx: { dof: { focus: 7, range: 4, bokeh: 3 } }, sfx: [['waveLap', 0.2]] }));
   add(shot(A.at('collect fresh water and wood') - L, 'coast', dolly([-30, 6, 14], [-26, 5, 10], [-22, 1.8, -10], [-22, 1.8, -10], 36), {
     layout: 'wild', mood: 'golden', sea: 'calm', barque: true, barquePos: [-60, 300],
-    people: [{ style: 'sailor', at: [-21, -10], rot: -60, move: [0.7, -0.4], pose: { walk: 0.8, carry: true }, prop: 'bucket' }, { style: 'sailor2', at: [-25, -13], rot: 90, move: [0.9, 0], pose: { walk: 0.9, carry: true }, prop: 'log' }],
+    people: [{ style: 'sailor', at: [-21, -10], rot: 120, move: [0.7, -0.4], pose: { walk: 0.8, carry: true }, prop: 'bucket' }, { style: 'sailor2', at: [-25, -13], rot: 90, move: [0.9, 0], pose: { walk: 0.9, carry: true }, prop: 'log' }],
   }, { amb: 'beach' }));
 
   // --- crystals & gases -------------------------------------------------------

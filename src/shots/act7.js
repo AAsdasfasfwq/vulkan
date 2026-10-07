@@ -76,9 +76,9 @@ export default function act7(A) {
     people: [{ style: 'villager', at: [-58, -50], rot: 180, move: [0, -3.4], pose: { walk: 3.5 } }, { style: 'villager2', at: [-64, -45], rot: 185, move: [0, -3.2], pose: { walk: 3.5 } }, { style: 'villager', at: [-54, -42], rot: 175, move: [0, -3.0], pose: { walk: 3.2 } }],
   }, { amb: 'tsunami', fx: { desat: 0.4, vignette: 0.7 }, sfx: [['heartbeat', 0.2]] }));
   add(flat(A.at('More than 36,000') - L, (k, lt, S2) => INFO.peopleCount(k, lt, S2, { to: 36000, plus: true, dur: 2.6, label: 'LIVES LOST · MOST TO THE TSUNAMI' }), { sfx: [['fillTicks', 0.3], ['lowHit', 2.9]], mus: 'grief' }));
-  add(shot(A.at('Across vast areas') - L, 'coast', dolly([-100, 4, 40], [-96, 4, 34], [-40, 6, -100], [-40, 6, -100], 40, 'lin'), { layout: 'none', bare: true, mood: 'ashDark', moodOv: { glowAz: 0 }, ashfall: 1.0, wind: 0.5 }, { amb: 'windDesolate', fx: { grade: 'ash' } }));
+  add(shot(A.at('Across vast areas') - L, 'coast', dolly(cup(-150, -40, 3.5), cup(-146, -46, 3.4), [-60, 8, -200], [-60, 4, -200], 40, 'lin'), { layout: 'none', bare: true, mood: 'tsunami', moodOv: { exposure: 0.75, sunVisible: 0, fog: 0.0009 }, ashfall: 1.0, wind: 0.5, wreckage: { c: [-90, -130], r: 120 } }, { amb: 'windDesolate', fx: { grade: 'ash' } }));
   const tD = A.at('Daylight will not return') - L;
-  add(flat(tD, (k, lt, S2) => INFO.bigNumber(k, lt, S2, { bg: 'dark', to: 3, at: A.peek('three days') - tD, dur: 0.4, unit: 'DAYS OF DARKNESS', size: 300, small: 'daylight will not return for' }), { sfx: [['lowHit', A.peek('three days') - tD]], fx: { fadeOut: 0.3 } }));
+  add(flat(tD, (k, lt, S2) => INFO.bigNumber(k, lt, S2, { bg: 'dark', to: 3, at: 0.2, dur: Math.max(0.6, A.peek('three days') - tD - 0.1), unit: 'DAYS OF DARKNESS', size: 300, small: 'daylight will not return for', smallSize: 58 }), { sfx: [['lowHit', A.peek('three days') - tD]], fx: { fadeOut: 0.3 } }));
 
   // ======================= 24 HOURS AFTER =======================
   add(card(A.at('24 hours after') - 0.15, '24 HOURS AFTER', 'AUGUST 28, 1883'));
@@ -103,11 +103,11 @@ export default function act7(A) {
   add(shot(A.at('The technology that made') - L, 'land', dolly([-40, 6.5, 16], [-20, 6.8, 15], [0, 7.4, 6], [20, 7.4, 6], 34, 'lin'), { mood: 'dusk', train: false }, { amb: 'wind', sfx: [['wireHum', 0], ['morse', 0.6]] }));
   add(shot(A.at('is now broadcasting') - L, 'globe', orbit([0, 0, 0], [29, 27], [10, -10], [6, 10], 40), { ll: [[10, 80], [20, 40]], cables: 1, cableK: 1.8, cloud: 0.4, dark: 1, darkR: 0.08, night: 0.3 }, { amb: 'space', sfx: [['drone', 0]] }));
   // --- pumice -------------------------------------------------------------------------------
-  add(shot(A.at('The Sunda Strait is blocked') - L, 'strait', dolly([-6000, 600, 6000], [-5600, 560, 5600], [-100, 0, -600], [-100, 0, -600], 40, 'lin'), { mood: 'overcast', sea: 'calm', island: { destroyed: 1 }, pumice: 1, pumiceR: 40000, steam: { at: 'anak', amount: 0.3, h: 400 } }, { amb: 'oceanGrey', mus: 'grief' }));
-  add(shot(A.at('of tons of pumice') - L, 'strait', dolly([-3000, 2.0, 3000], [-2996, 1.8, 2994], [-2990, 0.2, 2985], [-2988, 0.2, 2980], 36, 'lin'), { mood: 'overcast', sea: 'calm', island: { destroyed: 1 }, pumice: 1, pumiceR: 40000 }, { amb: 'oceanGrey', sfx: [['pumiceGrind', 0]], fx: { dof: { focus: 6, range: 4, bokeh: 3 } } }));
+  add(shot(A.at('The Sunda Strait is blocked') - L, 'strait', dolly([-6000, 600, 6000], [-5600, 560, 5600], [-100, 0, -600], [-100, 0, -600], 40, 'lin'), { mood: 'haze', moodOv: { fog: 0.00008, sunEl: 14, sunAz: 120 }, sea: 'calm', island: { destroyed: 1 }, pumice: 1, pumiceR: 40000, steam: { at: 'anak', amount: 0.3, h: 400 } }, { amb: 'oceanGrey', mus: 'grief' }));
+  add(shot(A.at('of tons of pumice') - L, 'strait', dolly([-3000, 2.0, 3000], [-2996, 1.8, 2994], [-2990, 0.2, 2985], [-2988, 0.2, 2980], 36, 'lin'), { mood: 'haze', moodOv: { fog: 0.00008, sunEl: 14, sunAz: 120 }, sea: 'calm', island: { destroyed: 1 }, pumice: 1, pumiceR: 40000 }, { amb: 'oceanGrey', sfx: [['pumiceGrind', 0]], fx: { dof: { focus: 6, range: 4, bokeh: 3 } } }));
   add(flat(A.at('in a solid layer') - L, (k, lt, S2) => pumiceLayer(k, lt, S2), { sfx: [['whoosh', 0], ['pop', 0.8]] }));
   const stuck = { pos: [-5200, 4200], heading: 40, speed: 0.6 };
-  add(shot(A.at('ships will struggle') - L, 'strait', dolly([-5150, 14, 4120], [-5148, 14, 4118], [-5200, 6, 4200], [-5195, 6, 4195], 40, 'lin'), { mood: 'overcast', sea: 'calm', island: { destroyed: 1 }, pumice: 1, pumiceR: 40000, ships: [{ id: 'stk', type: 'steamer', ...stuck, roll: 0.3 }] }, { amb: 'oceanGrey', sfx: [['pumiceGrind', 0], ['engineStrain', 0.4]], fx: { fadeOut: 0.3 } }));
+  add(shot(A.at('ships will struggle') - L, 'strait', dolly([-5150, 14, 4120], [-5148, 14, 4118], [-5200, 6, 4200], [-5195, 6, 4195], 40, 'lin'), { mood: 'haze', moodOv: { fog: 0.00008, sunEl: 14, sunAz: 120 }, sea: 'calm', island: { destroyed: 1 }, pumice: 1, pumiceR: 40000, ships: [{ id: 'stk', type: 'steamer', ...stuck, roll: 0.3 }] }, { amb: 'oceanGrey', sfx: [['pumiceGrind', 0], ['engineStrain', 0.4]], fx: { fadeOut: 0.3 } }));
   return S;
 }
 

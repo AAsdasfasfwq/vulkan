@@ -4,6 +4,7 @@ import { NOISE } from '../world/glsl.js';
 import { PuffCloud, StreakCloud } from '../world/particles.js';
 import { makeEruption, columnEmitter, bombEmitter, lightningEmitter } from '../world/eruption.js';
 import { makeCrownGeometry } from '../world/plants.js';
+import { canvasTex } from '../world/props.js';
 import { clamp, lerp, rng } from '../core/math.js';
 
 // Geological cut-away block through Krakatoa. Front (cut) face at z = 0.
@@ -314,14 +315,30 @@ export class XSectionSet extends BaseSet {
     this.coneGroup.add(tm);
     // city top (finale)
     this.city = new THREE.Group();
-    const bm = new THREE.MeshStandardMaterial({ color: 0x9aa4b0, roughness: 0.4, metalness: 0.3, emissive: 0x111111 });
-    const winMat = new THREE.MeshBasicMaterial({ color: 0xffd28a });
+    const bm = new THREE.MeshStandardMaterial({ color: 0x2c3442, roughness: 0.3, metalness: 0.6 });
+    // lit / dark window grid; UVs are scaled per facade so every window keeps its size
+    const winTex = canvasTex(256, 512, (c, W, H) => {
+      const rr = rng(77);
+      c.fillStyle = '#0b0f16'; c.fillRect(0, 0, W, H);
+      for (let y = 0; y < 32; y++) for (let x = 0; x < 8; x++) {
+        const lit = rr() < 0.55;
+        c.fillStyle = lit ? (rr() < 0.8 ? '#ffd28a' : '#bfe0ff') : '#1a2230';
+        c.globalAlpha = lit ? 0.75 + rr() * 0.25 : 1;
+        c.fillRect(x * 32 + 5, y * 16 + 3, 22, 10);
+      }
+      c.globalAlpha = 1;
+    });
+    winTex.wrapS = winTex.wrapT = THREE.RepeatWrapping;
+    const winMat = new THREE.MeshBasicMaterial({ map: winTex });
     for (let i = 0; i < 70; i++) {
       const w = 1 + r() * 2.2, h = 1.5 + Math.pow(r(), 2) * 14, d = 1 + r() * 2.2;
       const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), bm);
       b.position.set((r() - 0.5) * 70, h / 2, -2 - r() * 32);
       this.city.add(b);
-      const wn = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.8, h * 0.85), winMat);
+      const wg = new THREE.PlaneGeometry(w * 0.86, h * 0.9);
+      const uv = wg.attributes.uv;
+      for (let k = 0; k < uv.count; k++) uv.setXY(k, uv.getX(k) * w * 0.35 + i * 0.37, uv.getY(k) * h * 0.18 + i * 0.13);
+      const wn = new THREE.Mesh(wg, winMat);
       wn.position.set(b.position.x, h / 2, b.position.z + d / 2 + 0.01);
       wn.material = winMat;
       this.city.add(wn);

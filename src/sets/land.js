@@ -98,7 +98,7 @@ export class LandSet extends BaseSet {
     // trees & farmhouses
     this.plantU = { uTime: this.uTime, uWind: this.uWind, uAsh: { value: 0 } };
     const treeMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85 });
-    addSway(treeMat, this.plantU, 0.25);
+    addSway(treeMat, this.plantU, 0.25, true);
     const trees = new THREE.InstancedMesh(makeCrownGeometry(), treeMat, 1600);
     const c = new THREE.Color();
     for (let i = 0; i < 1600; i++) {

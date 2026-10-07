@@ -118,6 +118,24 @@ export class TownSet extends BaseSet {
     const body = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.8, 4.2), red); body.position.y = 1.2; this.wagon.add(body);
     const boiler = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 1.8, 20), brass); boiler.position.set(0, 2.2, -1.1); this.wagon.add(boiler);
     for (const [x, z, rr] of [[-1, 1.4, 0.7], [1, 1.4, 0.7], [-1, -1.4, 0.9], [1, -1.4, 0.9]]) { const w = new THREE.Mesh(new THREE.TorusGeometry(rr, 0.07, 8, 20), new THREE.MeshStandardMaterial({ color: 0x2a1a10 })); w.position.set(x, rr, z); w.rotation.y = Math.PI / 2; this.wagon.add(w); }
+    // driver's bench + a pair of horses in front (+z is the front of the pumper)
+    const seat = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.12, 0.6), new THREE.MeshStandardMaterial({ color: 0x3a2412, roughness: 0.7 })); seat.position.set(0, 1.9, 1.5); this.wagon.add(seat);
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3.2, 6), new THREE.MeshStandardMaterial({ color: 0x3a2412 })); pole.rotation.x = Math.PI / 2; pole.position.set(0, 0.9, 3.6); this.wagon.add(pole);
+    this.horseLegs = [];
+    const hm = new THREE.MeshStandardMaterial({ color: 0x3b2416, roughness: 0.6 }), hm2 = new THREE.MeshStandardMaterial({ color: 0x1c120b, roughness: 0.7 });
+    for (const hx of [-0.55, 0.55]) {
+      const h = new THREE.Group(); h.position.set(hx, 0, 4.4);
+      const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.32, 1.1, 4, 10), hm); torso.rotation.x = Math.PI / 2; torso.position.y = 1.25; h.add(torso);
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.22, 0.8, 8), hm); neck.position.set(0, 1.65, 0.75); neck.rotation.x = 0.7; h.add(neck);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.22, 0.55), hm); head.position.set(0, 1.95, 1.05); head.rotation.x = 0.5; h.add(head);
+      const mane = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.3, 0.7), hm2); mane.position.set(0, 1.85, 0.68); mane.rotation.x = 0.7; h.add(mane);
+      for (const [lx, lz] of [[-0.18, 0.5], [0.18, 0.5], [-0.18, -0.5], [0.18, -0.5]]) {
+        const piv = new THREE.Group(); piv.position.set(lx, 1.05, lz);
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 1.05, 6), hm2); leg.position.y = -0.52; piv.add(leg);
+        h.add(piv); this.horseLegs.push([piv, lz > 0 ? 0 : Math.PI, lx > 0 ? 0.6 : 0]);
+      }
+      this.wagon.add(h);
+    }
     this.wagon.traverse((o) => (o.castShadow = true));
     sc.add(this.wagon);
     // smoke
@@ -205,7 +223,12 @@ export class TownSet extends BaseSet {
     this.ashK = val(p.ashfall, u, lt, 0);
     this.snow = !!p.snow;
     if (this.snow) this.ashK = val(p.snow, u, lt, 0);
-    if (p.wagon) { const w = p.wagon; this.wagon.position.set(w[0], 0, w[1] - (w[2] ?? 0) * lt); this.wagon.rotation.y = w[3] ?? 0; }
+    if (p.wagon) {
+      const w = p.wagon;
+      this.wagon.position.set(w[0], 0, w[1] - (w[2] ?? 0) * lt);
+      this.wagon.rotation.y = (w[3] ?? 0) + Math.PI; // the pumper drives toward -z, horses first
+      for (const [piv, ph, ph2] of this.horseLegs) piv.rotation.x = Math.sin(vt * 9 + ph + ph2) * 0.55 * Math.min(1, (w[2] ?? 0) / 2);
+    }
     const PU = this.puffs.uniforms;
     const s = this.moodState;
     PU.uSunDir.value.copy(this.sky.uniforms.uSunDir.value);

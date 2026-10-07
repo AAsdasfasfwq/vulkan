@@ -1,16 +1,18 @@
+import { NOISE } from './glsl.js';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../core/math.js';
 
 // Adds a wind-sway to instanced plant materials.
-export function addSway(mat, uniforms, strength = 1) {
+export function addSway(mat, uniforms, strength = 1, leafy = false) {
   mat.onBeforeCompile = (sh) => {
     sh.uniforms.uTime = uniforms.uTime;
     sh.uniforms.uWind = uniforms.uWind;
     sh.uniforms.uAsh = uniforms.uAsh;
     sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\nuniform float uTime; uniform float uWind;')
+      .replace('#include <common>', '#include <common>\nuniform float uTime; uniform float uWind; varying vec3 vLp;')
       .replace('#include <begin_vertex>', `#include <begin_vertex>
+        vLp = position;
         #ifdef USE_INSTANCING
           vec3 ip = instanceMatrix[3].xyz;
         #else
@@ -23,11 +25,17 @@ export function addSway(mat, uniforms, strength = 1) {
         transformed.z += sw * 0.6 * hgt * hgt * 0.012;
       `);
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform float uAsh;')
+      .replace('#include <common>', '#include <common>\nuniform float uAsh; varying vec3 vLp;\n' + (leafy ? NOISE : ''))
       .replace('#include <color_fragment>', `#include <color_fragment>
+        ${leafy ? `{ // leaf clumps: light tips, dark gaps between clusters
+          float w = worley(vLp.xz * 5.0 + vec2(vLp.y * 3.0, 1.7));
+          float w2 = worley(vLp.xz * 13.0 + vec2(4.2, vLp.y * 9.0));
+          float cl = (1.0 - w * w) * 0.7 + (1.0 - w2 * w2) * 0.3;
+          diffuseColor.rgb *= mix(0.55, 1.2, cl) * (0.85 + 0.3 * smoothstep(0.0, 1.0, vLp.y));
+        }` : ''}
         diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.4, 0.39, 0.37), uAsh);`);
   };
-  mat.customProgramCacheKey = () => 'sway' + strength.toFixed(3);
+  mat.customProgramCacheKey = () => 'sway' + strength.toFixed(3) + (leafy ? 'L' : '');
 }
 
 // Broadleaf rainforest crown: a cluster of lumpy blobs on a short trunk. Unit height ~1.

@@ -29,7 +29,7 @@ export default function act3(A) {
   }, { amb: 'space', sfx: [['morse', 0.2], ['pop', A.peek('Batavia') - tN]], draw: both(gpin('london', 'LONDON', 0.1, { dir: [-1, -1] }), gpin('batavia', 'BATAVIA', A.peek('Batavia') - tN, { dir: [1, 1] })) }));
   add(shot(A.at('present-day Jakarta') - L, 'town', dolly([3, 9, 64], [2, 6.5, 50], [0, 3.5, -40], [0, 3.2, -40], 40), {
     style: 'batavia', mood: 'golden', moodOv: { sunEl: 14, sunAz: -120 },
-    people: [{ style: 'officer', at: [2.5, 26], rot: 180, move: [0, -1.1], pose: { walk: 1.1 } }, { style: 'lady3', at: [3.6, 27], rot: 180, move: [0, -1.1], pose: { walk: 1.1 } }, { style: 'merchant', at: [-3, 18], rot: 20 }, { style: 'villager', at: [-5, 30], rot: 160, move: [0.2, 1.0], pose: { walk: 1.0, carry: true }, prop: 'basket' }, { style: 'villager2', at: [5.5, 12], rot: -90 }],
+    people: [{ style: 'officer', at: [2.5, 26], rot: 180, move: [0, -1.1], pose: { walk: 1.1 } }, { style: 'lady3', at: [3.6, 27], rot: 180, move: [0, -1.1], pose: { walk: 1.1 } }, { style: 'merchant', at: [-3, 18], rot: 20 }, { style: 'villager', at: [-5, 30], rot: 11, move: [0.2, 1.0], pose: { walk: 1.0, carry: true }, prop: 'basket' }, { style: 'villager2', at: [5.5, 12], rot: -90 }],
   }, {
     amb: 'veranda', sfx: [['morse', 0.0]], draw: stamp('BATAVIA', 'present-day Jakarta', 0.15),
   }));
