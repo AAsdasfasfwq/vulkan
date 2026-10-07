@@ -37,7 +37,7 @@ export default function act5(A) {
     mood: 'nightGlow', moodOv: { glowAz: 125, glowEl: 3 }, erupt: julPlume({ glow: 2.2, bombs: 0.5 }), island: { lava: 1.1, ash: 0.5 }, glowLight: 1,
   }, { amb: 'nightEruption', sfx: [['boomFar', 1.0]] }));
   add(shot(A.at("Krakatoa's summit") - L, 'strait', dolly([-2400, 900, 1400], [-2200, 860, 1200], [-250, 450, -200], [-250, 600, -200], 36, 'lin'), {
-    mood: 'nightGlow', moodOv: { glowAz: 125, glowEl: 3 }, erupt: julPlume({ glow: 1.5, bombs: 0.8, intensity: 0.8 }), island: { lava: 0.8, ash: 0.6 }, glowLight: 0.6, exposure: 0.85,
+    mood: 'nightGlow', moodOv: { glowAz: 125, glowEl: 3 }, erupt: julPlume({ glow: 1.2, bombs: 0.8, intensity: 0.8 }), island: { lava: 0.45, ash: 0.6 }, glowLight: 0.45, exposure: 0.75,
   }, { amb: 'nightEruption', sfx: [['lavaBloop', 0.3]] }));
   add(flat(A.at('But the human mind') - L, (k, lt, S2) => INFO.calendar(k, lt, S2, { days: 58 }), { sfx: [['pageFlips', 0]], mus: 'calm' }));
   add(shot(A.at('Even the extraordinary') - L, 'town', dolly([4, 1.7, 28], [3.6, 1.7, 24], [0, 3, -40], [0, 3.2, -40], 40), {
@@ -65,8 +65,8 @@ export default function act5(A) {
   }), { sfx: [['pop', 0.6], ['pop', 0.9], ['pop', 1.2]] }));
 
   // --- the deadly process beneath -----------------------------------------------------
-  add(shot(A.at('Meanwhile, deep beneath') - L, 'xsection', orbit([0, -8, -4], [90, 60], [-24, -10], [20, 10], 40, 'inOut'), { magma: 1, fill: 0.85, vent: 1, erupt: { height: 18, intensity: 0.35 }, pressure: 0.5 }, { amb: 'rumble', mus: 'dread', sfx: [['whooshDown', 0]] }));
-  add(shot(A.at('The continuous eruptions') - L, 'xsection', orbit([0, -9, 0], [40, 34], [8, 14], [8, 8], 40), { magma: 0.6, fill: [0.85, 0.35], vent: 1, erupt: { height: 30, intensity: 0.8, umbrella: 0.2 } }, { amb: 'rumble', sfx: [['drain', 0.3]], draw: pin3(XS.chamber, 'DRAINING', 0.6, { dir: [1, -1], color: '#ffb27a' }) }));
+  add(shot(A.at('Meanwhile, deep beneath') - L, 'xsection', orbit([0, -8, -4], [90, 60], [-24, -10], [20, 10], 40, 'inOut'), { magma: 1, fill: 0.85, vent: 1, pressure: 0.5 }, { amb: 'rumble', mus: 'dread', sfx: [['whooshDown', 0]] }));
+  add(shot(A.at('The continuous eruptions') - L, 'xsection', orbit([0, -9, 0], [40, 34], [8, 14], [8, 8], 40), { magma: 0.6, fill: [0.85, 0.35], vent: 1, erupt: { height: 14, intensity: 0.3 } }, { amb: 'rumble', sfx: [['drain', 0.3]], draw: pin3(XS.chamber, 'DRAINING', 0.6, { dir: [1, -1], color: '#ffb27a' }) }));
   add(shot(A.at('Without support from below') - L, 'xsection', orbit([0, -7, 0], [30, 26], [-10, -2], [8, 10], 40), { magma: 0.5, fill: 0.35, vent: 0.8, cracks: [0, 0.5], strain: 0.8 }, { amb: 'rumble', sfx: [['creak', 0.2], ['crackRock', 1.0]] }));
   add(shot(A.at('develop tiny cracks') - L, 'xsection', dolly([3, -3.5, 12], [2, -4.5, 9], [0, -6.5, 0], [0, -6.8, 0], 38), { magma: 0.5, fill: 0.35, cracks: [0.5, 0.9], strain: 1 }, { amb: 'rumble', sfx: [['crackRock', 0.2], ['crackRock', 0.9]] }));
   add(shot(A.at('Around the island, seawater') - L, 'xsection', orbit([0, -3, 0], [34, 28], [20, 8], [14, 10], 40), { magma: 0.5, fill: 0.35, cracks: 1, water: [0, 0.45], strain: 0.8 }, { amb: 'underwaterRumble', sfx: [['waterSeep', 0.2]], draw: arrow3([-16, -2, 0.5], [-7, -5.5, 0.5], 0.4, { color: '#7fd0ff' }) }));
@@ -76,8 +76,8 @@ export default function act5(A) {
   add(card(A.at('24 hours before') - 0.15, '24 HOURS BEFORE', 'AUGUST 26, 1883 · 1 PM'));
   const tFirst = A.at('The first explosion') - L;
   const boomAt = A.peek('explosion') - tFirst + 0.25;
-  add(shot(tFirst, 'strait', dolly([-16000, 400, 12000], [-15400, 380, 11500], [0, 3000, 0], [0, 9000, 0], 40, 'lin'), {
-    mood: 'haze', mood2: 'blast', moodK: (u, lt) => clamp((lt - boomAt) / 2.5, 0, 0.8), erupt: augPlume({ t0: boomAt, rise: 1600, height: 27000 }), island: { ash: 0.6, lava: 0.6 },
+  add(shot(tFirst, 'strait', dolly([-12600, 70, 9600], [-12100, 110, 9200], [0, 2200, -300], [0, 7000, -300], 40, 'lin'), {
+    mood: 'haze', mood2: 'blast', moodK: (u, lt) => clamp((lt - boomAt) / 1.2, 0, 1), erupt: augPlume({ t0: boomAt, rise: 1600, height: 27000 }), island: { ash: 0.6, lava: 0.6 },
     ring: { t0: boomAt, speed: 700, h: 6, w: 120, decay: 9000 }, shock: { t0: boomAt, speed: 1200, k: 1.6, decay: 0.6, c: [-100, 0, -600] }, burst: { t0: boomAt, R: 4000, speed: 1.1, heat: 1.8, c: [-100, 0, -600] },
   }, {
     name: 'first explosion', amb: 'eruption', mus: 'chaos', subs: false,

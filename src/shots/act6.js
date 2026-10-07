@@ -27,8 +27,8 @@ export default function act6(A) {
   add(shot(A.at('Krakatoa is already close') - L, 'strait', dolly([-3200, 500, 2600], [-3000, 520, 2300], [-100, 300, -400], [-100, 360, -400], 42, 'lin'), {
     mood: 'blast', erupt: big({ t0: -10, height: 18000, surge: 0.6, surgeT0: -3 }), island: { ash: 0.9, lava: 1.0 }, glowLight: 0.8, ashfall: 0.4,
   }, { amb: 'eruption', sfx: [['boom', 0.6], ['crackRock', 1.6]], fx: { shakes: [{ at: 0.6, amp: 1, decay: 2 }] } }));
-  add(shot(A.at('Its structure can no longer') - L, 'xsection', orbit([0, -4, 0], [34, 30], [-14, -6], [10, 12], 40), { magma: 0.6, fill: 0.35, cracks: 1, strain: 1, collapse: [0, 0.18], erupt: { height: 34, intensity: 0.9 } }, { amb: 'rumble', sfx: [['crackRock', 0.2], ['rockGrind', 0.8]], fx: { shakes: [{ at: 0.2, amp: 0.8, decay: 1.5 }] } }));
-  add(shot(A.at('The enormous dome') - L, 'xsection', orbit([0, -5, 0], [42, 36], [6, 16], [10, 8], 40), { magma: 0.6, fill: 0.35, cracks: 1, strain: 1, collapse: [0.18, 0.75], erupt: { height: 34, intensity: 0.8 } }, {
+  add(shot(A.at('Its structure can no longer') - L, 'xsection', orbit([0, -4, 0], [34, 30], [-14, -6], [10, 12], 40), { magma: 0.6, fill: 0.35, cracks: 1, strain: 1, collapse: [0, 0.18], erupt: { height: 16, intensity: 0.3 } }, { amb: 'rumble', sfx: [['crackRock', 0.2], ['rockGrind', 0.8]], fx: { shakes: [{ at: 0.2, amp: 0.8, decay: 1.5 }] } }));
+  add(shot(A.at('The enormous dome') - L, 'xsection', orbit([0, -5, 0], [42, 36], [6, 16], [10, 8], 40), { magma: 0.6, fill: 0.35, cracks: 1, strain: 1, collapse: [0.18, 0.75] }, {
     amb: 'rumble', sfx: [['collapse', 0.4], ['rockGrind', 0.2]], fx: { shakes: [{ at: 0.6, amp: 1.4, decay: 1.2 }] }, draw: pin3(XS.roof, 'THE DOME CAVES IN', 0.8, { dir: [1, -1], color: '#ffb27a' }),
   }));
   add(shot(A.at('Millions of tons of seawater') - L, 'magma', dolly([18, 10, 28], [14, 8, 22], [0, 12, -10], [0, 8, -10], 46), { water: [0.2, 1], crust: 0.3, pressure: 0.5, bubbles: 0.5 }, { amb: 'lava', sfx: [['waterRush', 0], ['hissBig', 0.8]] }));
@@ -68,22 +68,24 @@ export default function act6(A) {
   const blastP = (rel) => ({
     mood: 'blast', island: { ash: 1, lava: 2, destroyedAt: Math.max(0, 0.15 - rel) },
     erupt: big({ t0: -rel, rise: 2600, height: 42000, umbrella: 1, surge: 1, surgeT0: 0.3 - rel, surgeSpeed: 320, glow: 1.6, lightning: rel > 1 ? 1 : 0.3 }),
-    burst: { t0: -rel, R: 7500, speed: 1.0, heat: 2.2, c: [-100, 0, -600] },
-    ring: { t0: 0.05 - rel, speed: 900, h: 14, w: 220, decay: 20000 }, shock: { t0: -rel, speed: 2200, k: 2.4, decay: 0.35, c: [-100, 0, -600] }, glowLight: 1.4,
+    burst: { t0: -rel, R: 7500, speed: 1.0, heat: 2.5, c: [-100, 0, -600] },
+    ring: { t0: 0.05 - rel, speed: 900, h: 14, w: 220, decay: 20000 }, shock: { t0: -rel, speed: 2400, k: 0.8, decay: 0.9, c: [-100, 0, -600] }, glowLight: 1.4,
   });
   add(shot(tB, 'strait', dolly([-16500, 60, 12500], [-15800, 120, 12000], [-100, 2200, -600], [-100, 5200, -600], 42, 'lin'), blastP(0), {
     name: 'THE BLAST', amb: 'eruptionMax', mus: 'chaos', subs: false,
     sfx: [['megaBoom', 0.0], ['rumbleLong', 0.4], ['debris', 0.8]],
-    fx: { flashes: [{ at: 0, amp: 3.2, decay: 8 }], flashColor: [1, 0.9, 0.75], shakes: [{ at: 0.05, amp: 2.2, decay: 1.4, zoom: 0.1, freq: 22 }], bloom: 0.9 },
+    fx: { flashes: [{ at: 0, amp: 3.2, decay: 8 }], flashColor: [1, 0.9, 0.75], shakes: [{ at: 0.05, amp: 2.2, decay: 1.4, zoom: 0.1, freq: 22 }] },
   }));
-  add(shot(tB2, 'strait', dolly([-11000, 7000, 24000], [-10200, 7200, 23000], [-100, 5000, -600], [-100, 9000, -600], 48, 'lin'), blastP(tB2 - tB), { name: 'blast wide', amb: 'eruptionMax', subs: false, fx: { shakes: [{ at: 0, amp: 1.0, decay: 1.2 }], bloom: 0.95 } }));
-  add(shot(tB3, 'strait', dolly([-7600, 16, 9400], [-7590, 16, 9390], [-100, 4500, -600], [-100, 5200, -600], 44, 'lin'), { ...blastP(tB3 - tB), shock: { t0: -(tB3 - tB), speed: 2200, k: 2.8, decay: 0.12, c: [-100, 0, -600] } }, {
+  add(shot(tB2, 'strait', dolly([-13000, 1300, 21500], [-12100, 1450, 20600], [-100, 4200, -600], [-100, 7600, -600], 50, 'lin'), blastP(tB2 - tB), { name: 'blast wide', amb: 'eruptionMax', subs: false, fx: { shakes: [{ at: 0, amp: 1.0, decay: 1.2 }] } }));
+  // the shock front reaches the camera exactly on the thump (0.55 s into the shot)
+  const camC = [-13300, 18, 16950], dC = Math.hypot(camC[0] + 100, camC[2] + 600);
+  add(shot(tB3, 'strait', dolly(camC, [camC[0] + 10, 16, camC[2] - 10], [-100, 2300, -600], [-100, 2900, -600], 46, 'lin'), { ...blastP(tB3 - tB), shock: { t0: -(tB3 - tB), speed: dC / (tB3 - tB + 0.55), k: 1.6, decay: 0.1, c: [-100, 0, -600], spray: 1 }, embers: (u, lt) => (lt > 0.5 ? 0.9 : 0), ashfall: (u, lt) => (lt > 0.5 ? 0.7 : 0) }, {
     name: 'shock arrives', amb: 'eruptionMax', subs: false, sfx: [['shockThump', 0.55], ['windBlast', 0.6], ['debris', 0.7]],
     fx: { shakes: [{ at: 0.55, amp: 3.2, decay: 1.6, zoom: 0.12 }], flashes: [{ at: 0.5, amp: 0.8, decay: 6 }] },
   }));
 
   // --- the numbers ----------------------------------------------------------------------
-  add(flat(A.at('The energy released') - L, (k, lt, S2) => INFO.bigNumber(k, lt, S2, { bg: 'ember', to: 200, at: A.peek('200 megatons') - A.peek('The energy released'), dur: 1.0, unit: 'MEGATONS OF TNT', small: 'in a fraction of a second', note: 'estimated energy of the final explosion' }), { mus: 'awe', sfx: [['counterTicks', A.peek('200 megatons') - A.peek('The energy released')], ['hit', A.peek('megatons') - A.peek('The energy released')]] }));
+  add(flat(A.at('The energy released') - L, (k, lt, S2) => INFO.bigNumber(k, lt, S2, { bg: 'ember', to: 200, at: 0.15, dur: A.peek('200 megatons') - A.peek('The energy released') + 0.25, unit: 'MEGATONS OF TNT', small: 'in a fraction of a second', note: 'estimated energy of the final explosion' }), { mus: 'awe', sfx: [['counterTicks', 0.15], ['hit', A.peek('megatons') - A.peek('The energy released')]] }));
   add(flat(A.at('That is 10,000 times') - L, (k, lt, S2) => INFO.dotGrid(k, lt, S2, { at: 0.3, dur: 2.6 }), { sfx: [['fillTicks', 0.3]] }));
   add(flat(A.at('Four times the power') - L, (k, lt, S2) => INFO.bars(k, lt, S2, {
     title: 'EXPLOSIVE YIELD', items: [
@@ -126,14 +128,14 @@ export default function act6(A) {
     },
   }), { sfx: [['whoosh', 0]] }));
   const ear = { pos: [-38000, 30000], heading: 40, speed: 0.5 };
-  add(shot(A.at("sailors' eardrums") - L, 'strait', onShip(ear, [-1.0, 4.9, 1.8], [-0.7, 4.85, 1.5], [2, 4.6, 0], [2, 4.6, 0], 34), {
-    mood: 'ashDark', moodOv: { glowAz: 135 }, sea: 'rough', ships: [{ id: 'ear', type: 'barque', ...ear }], ashfall: 0.5, shipAsh: 0.6,
-    people: [{ style: 'sailor', ship: 'ear', at: [2, 0.2], rot: -100, pose: { ears: true } }, { style: 'sailor2', ship: 'ear', at: [3.4, -1.2], rot: -70, pose: { ears: true } }],
-  }, { amb: 'tinnitus', sfx: [['earRing', 0]], fx: { zoomBlur: 0.03, desat: 0.4, dof: { focus: 3, range: 1.4, bokeh: 3.5 } } }));
-  add(shot(A.at('Many bleed') - L, 'strait', onShip(ear, [0.6, 4.75, 0.6], [0.8, 4.7, 0.5], [2, 4.6, 0.1], [2, 4.6, 0.1], 28), {
-    mood: 'ashDark', moodOv: { glowAz: 135 }, sea: 'rough', ships: [{ id: 'ear', type: 'barque', ...ear }], ashfall: 0.5, shipAsh: 0.6,
-    people: [{ style: 'sailor', ship: 'ear', at: [2, 0.2], rot: -100, pose: { ears: true } }],
-  }, { amb: 'tinnitus', fx: { desat: 0.6, vignette: 0.75, grade: 'fire', dof: { focus: 1.4, range: 0.6, bokeh: 4 } } }));
+  add(shot(A.at("sailors' eardrums") - L, 'strait', onShip(ear, [1.5, 4.95, 1.2], [1.75, 4.9, 1.35], [3.6, 4.6, 2.4], [3.6, 4.65, 2.4], 34), {
+    mood: 'blast', sea: 'rough', ships: [{ id: 'ear', type: 'barque', ...ear }], ashfall: 0.5, shipAsh: 0.6,
+    people: [{ style: 'sailor', ship: 'ear', at: [3.6, 2.4], rot: -120, pose: { ears: true } }, { style: 'sailor2', ship: 'ear', at: [4.9, 0.6], rot: -95, pose: { ears: true } }],
+  }, { amb: 'tinnitus', sfx: [['earRing', 0]], fx: { zoomBlur: 0.03, desat: 0.3, dof: { focus: 2.4, range: 1.2, bokeh: 3.5 } } }));
+  add(shot(A.at('Many bleed') - L, 'strait', onShip(ear, [2.55, 4.75, 1.8], [2.65, 4.73, 1.9], [3.6, 4.72, 2.4], [3.6, 4.72, 2.4], 28), {
+    mood: 'blast', sea: 'rough', ships: [{ id: 'ear', type: 'barque', ...ear }], ashfall: 0.5, shipAsh: 0.6,
+    people: [{ style: 'sailor', ship: 'ear', at: [3.6, 2.4], rot: -120, pose: { ears: true } }, { style: 'sailor2', ship: 'ear', at: [4.9, 0.6], rot: -95, pose: { ears: true } }],
+  }, { amb: 'tinnitus', fx: { desat: 0.5, vignette: 0.75, grade: 'fire', dof: { focus: 1.1, range: 0.5, bokeh: 4 } } }));
   const tSw = A.at('The shock wave races') - L;
   add(shot(tSw, 'strait', dolly([-60000, 9000, 40000], [-56000, 9000, 37000], [-100, 0, -600], [-100, 0, -600], 40, 'lin'), {
     mood: 'blast', erupt: big({ t0: -50, height: 40000 }), island: { destroyed: 1 },
@@ -252,7 +254,7 @@ function soundWord(k, lt, S, aSound) {
   }
   ctx.stroke();
   ctx.globalAlpha = 1 - a;
-  k.text('the most destructive force is…', W / 2, H / 2 + 20, { size: 44, weight: 400, family: 'serif', italic: true, color: '#d8d0c8' });
+  k.text('the most destructive force is…', W / 2, H / 2 + 20, { size: 60, weight: 400, family: 'serif', italic: true, color: '#e2d8cc' });
   ctx.globalAlpha = a;
   ctx.save(); ctx.translate(W / 2, H / 2 + 70); const sc = 1 + 0.15 * (1 - a); ctx.scale(sc, sc);
   k.text('SOUND', 0, 0, { size: 230, weight: 900, color: '#fff', tracking: 20, glow: 40, glowColor: 'rgba(255,120,60,0.6)' });

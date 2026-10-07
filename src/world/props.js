@@ -230,7 +230,7 @@ export function makeSeismograph() {
   const g = new THREE.Group();
   const wood = M(0x5a3520, 0.45), brass = M(0xc0954a, 0.25, 0.95);
   const base = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.15, 1.2), wood); base.position.y = 0.075; g.add(base);
-  const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 1.6, 48, 1), new THREE.MeshStandardMaterial({ roughness: 0.8, map: null }));
+  const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 1.6, 48, 1), new THREE.MeshStandardMaterial({ color: 0xb9b2a4, roughness: 0.8, map: null }));
   drum.rotation.z = Math.PI / 2; drum.position.set(0.3, 0.65, 0); g.add(drum);
   const paperTex = canvasTex(2048, 512, () => {});
   drum.material.map = paperTex;

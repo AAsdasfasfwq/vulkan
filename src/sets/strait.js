@@ -4,7 +4,7 @@ import { Ocean } from '../world/ocean.js';
 import { Island, PEAKS, makeCoastStrip, islandHeight } from '../world/island.js';
 import { makeCrownGeometry, makePalmGeometry, addSway } from '../world/plants.js';
 import { PuffCloud, StreakCloud } from '../world/particles.js';
-import { makeEruption, columnEmitter, veilEmitter, surgeEmitter, plumeletEmitter, bombEmitter, lightningEmitter, burstEmitter, Shockwave } from '../world/eruption.js';
+import { makeEruption, columnEmitter, veilEmitter, surgeEmitter, plumeletEmitter, bombEmitter, lightningEmitter, burstEmitter, shockSprayEmitter, Shockwave } from '../world/eruption.js';
 import { makeBarque, makeSteamer, makeContainerShip, makeLongboat, setShipAsh } from '../world/ships.js';
 import { makeFigure, poseFigure, addProp } from '../world/figures.js';
 import { clamp, lerp, rng, fract, smoothstep, ease } from '../core/math.js';
@@ -61,7 +61,7 @@ export class StraitSet extends BaseSet {
       this.islets.push(m);
     }
     // particles
-    this.puffs = new PuffCloud(5200);
+    this.puffs = new PuffCloud(7000);
     this.sparks = new StreakCloud(7000, { additive: true });
     this.flakes = new StreakCloud(5000, { additive: false });
     sc.add(this.puffs.mesh, this.sparks.mesh, this.flakes.mesh);
@@ -71,7 +71,8 @@ export class StraitSet extends BaseSet {
     this.funnel = { on: false, c: [0, 0, 0], h: 120, spread: 6, size: 9, life: 9, alpha: 0.55, col: [0.08, 0.075, 0.07], n: 90, seed: 9, wind: [-0.9, 0.2] };
     this.surfSteam = { on: false, c: [0, 0, 0], h: 300, spread: 400, size: 120, life: 14, alpha: 0.5, col: [0.92, 0.92, 0.92], n: 160, seed: 21, wind: [0.2, 0.05] };
     this.B = { on: false, c: [0, 0, 0], t0: 0, R: 5000, k: 1 };
-    this.puffs.emitters.push(burstEmitter(this.B), columnEmitter(this.E), veilEmitter(this.E, this.V), surgeEmitter(this.E), plumeletEmitter(this.crSteam), plumeletEmitter(this.funnel), plumeletEmitter(this.surfSteam));
+    this.SH = { on: false, c: [0, 0, 0], R: 0, k: 0 };
+    this.puffs.emitters.push(shockSprayEmitter(this.SH), burstEmitter(this.B), columnEmitter(this.E), veilEmitter(this.E, this.V), surgeEmitter(this.E), plumeletEmitter(this.crSteam), plumeletEmitter(this.funnel), plumeletEmitter(this.surfSteam));
     this.lightning = lightningEmitter(this.E);
     this.sparks.emitters.push(bombEmitter(this.E), this.lightning, this.emberEmitter(), this.rockRainEmitter());
     this.flakes.emitters.push(this.ashfallEmitter(), this.rainEmitter());
@@ -189,7 +190,12 @@ export class StraitSet extends BaseSet {
     if (I.destroyedAt !== undefined) this.island.setState({ destroyed: lt >= I.destroyedAt ? 1 : 0, anak: I.anak ?? 0, craterP: I.craterP ?? 0.6 });
     this.island.uniforms.uAsh.value = val(I.ash, u, lt, 0);
     this.island.uniforms.uLava.value = val(I.lava, u, lt, 0);
-    if (p.erupt) { const c0 = typeof p.erupt.at === 'string' ? CRATERS[p.erupt.at] : p.erupt.at || CRATERS.perboewatan; this.island.uniforms.uLavaCenter.value.set(c0[0], 0, c0[2]); }
+    {
+      // always set (frames must not depend on which shot was rendered before)
+      const src = p.erupt?.at ?? p.lavaAt ?? p.steam?.at ?? 'perboewatan';
+      const c0 = typeof src === 'string' ? CRATERS[src] : src;
+      this.island.uniforms.uLavaCenter.value.set(c0[0], 0, c0[2]);
+    }
     this.island.uniforms.uBurn.value = val(I.burn, u, lt, 0);
     this.plantU.uAsh.value = val(I.ash, u, lt, 0) * 0.85;
     this.uWind.value = val(p.wind, u, lt, 1);
@@ -221,6 +227,9 @@ export class StraitSet extends BaseSet {
       E.surgeSpeed = ep.surgeSpeed ?? 110;
       E.count = ep.count ?? 1600;
       E.tint = ep.tint ?? [1, 0.95, 0.88];
+    } else {
+      const src = p.lavaAt ?? p.steam?.at ?? 'perboewatan';
+      E.c = typeof src === 'string' ? CRATERS[src] : src;
     }
     // explosive burst dome
     const bp = p.burst;
@@ -280,8 +289,10 @@ export class StraitSet extends BaseSet {
       const dt = lt - (sh.t0 ?? 0);
       const R = Math.max(0, dt) * (sh.speed ?? 900);
       const k = dt < 0 ? 0 : (sh.k ?? 1.2) * Math.exp(-dt * (sh.decay ?? 0.45)) * clamp(dt / 0.08);
-      this.shock.set(sh.c ?? [E.c[0], 0, E.c[2]], R, k);
-    } else this.shock.set([0, 0, 0], 0, 0);
+      const c = sh.c ?? [E.c[0], 0, E.c[2]];
+      this._shock = [c, R, k]; // applied in afterCamera with the real camera position
+      Object.assign(this.SH, { on: !!sh.spray && dt > 0, c, R, k: clamp(val(sh.spray, u, lt, 0) * Math.min(k, 1)) });
+    } else { this._shock = null; this.SH.on = false; }
 
     setShipAsh(val(p.shipAsh, u, lt, 0));
     // ships
@@ -343,6 +354,9 @@ export class StraitSet extends BaseSet {
   afterCamera(shot, lt, vt, cam, fx) {
     const p = shot.p || {};
     this.camPos = cam.position;
+    if (this._shock) this.shock.set(this._shock[0], this._shock[1], this._shock[2], undefined, cam.position);
+    if (this.SH.on) this.SH.dCam = Math.hypot(cam.position.x - this.SH.c[0], cam.position.z - this.SH.c[2]);
+    else this.shock.set([0, 0, 0], 0, 0);
     this.puffs.update(vt, cam.position);
     this.sparks.update(vt);
     this.flakes.update(vt);

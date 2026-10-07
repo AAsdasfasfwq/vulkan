@@ -143,10 +143,13 @@ export function burstEmitter(B) {
         const z = B.c[2] + Math.sin(th) * Math.cos(el) * R;
         const y = B.c[1] + Math.sin(el) * R * (B.flat ?? 0.75) + dt * dt * 6 * (1 - el);
         const size = (B.R * 0.12 + B.R * 0.25 * grow) * (0.5 + 0.9 * d);
-        const heat = Math.exp(-dt * (0.28 + 0.4 * c)) * Math.max(1.5 - shell * 1.25, 0.05) * (0.6 + 0.4 * Math.exp(-dt * 0.15));
-        const dk = 0.06 + 0.08 * e;
+        // the whole fireball starts incandescent; the outer, upper skin cools into black ash
+        // first while the base and the core keep burning through the gaps
+        const cool = 0.3 + 1.1 * shell * shell * (0.35 + 0.65 * Math.sin(el)) + 0.25 * c;
+        const heat = Math.exp(-dt * cool) * (0.55 + 0.45 * d) * (1.25 - 0.35 * shell);
+        const dk = 0.05 + 0.07 * e;
         const al = clamp(dt / 0.08) * (B.k ?? 1) * (0.75 + 0.25 * d) * clamp((40 - dt) / 10);
-        push(x, y, z, size, dk, dk * 0.92, dk * 0.85, al, a * 30 + dt * 0.1 * (d - 0.5), Math.floor(e * 16), 0, heat * (B.heat ?? 1.5) * (0.4 + 0.6 * d));
+        push(x, y, z, size, dk, dk * 0.92, dk * 0.85, al, a * 30 + dt * 0.1 * (d - 0.5), Math.floor(e * 16), 0.45 * (1 - Math.sin(el)) * Math.exp(-dt * 0.08), heat * (B.heat ?? 1.5) * (0.4 + 0.6 * d));
       }
     },
   };
@@ -251,6 +254,28 @@ export function lightningEmitter(E) {
   };
 }
 
+// Spray and dust thrown up along the shock front where it races across the sea.
+export function shockSprayEmitter(SH) {
+  const N = 900;
+  const r = rng(555);
+  const seeds = Array.from({ length: N }, () => [r(), r(), r(), r(), r()]);
+  return {
+    fill(t, push) {
+      if (!SH.on || SH.k <= 0.01 || SH.R < 50) return;
+      for (let i = 0; i < N; i++) {
+        const [a, b, c, d, e] = seeds[i];
+        const th = a * Math.PI * 2;
+        const rr = SH.R * (1 - 0.06 * c) + (b - 0.5) * 120;
+        const x = SH.c[0] + Math.cos(th) * rr, z = SH.c[2] + Math.sin(th) * rr;
+        const y = 10 + c * c * 140 + d * 25;
+        const size = (90 + 220 * d) * (0.7 + 0.6 * c);
+        const g = 0.62 + 0.25 * e;
+        push(x, y, z, size, g, g * 0.97, g * 0.93, 0.42 * SH.k * (1 - 0.75 * c) * smoothstep(250, 1400, Math.abs(SH.R - (SH.dCam ?? 1e9))), a * 40 + t * 0.3, Math.floor(e * 16), 0, 0);
+      }
+    },
+  };
+}
+
 // Shockwave condensation dome (Wilson cloud) + bright ring.
 export class Shockwave {
   constructor() {
@@ -264,7 +289,7 @@ export class Shockwave {
         void main(){
           float f = 1.0 - abs(dot(vN, vV));
           float n = fbm3(vP * 4.5 + vec3(0.0, uT * 0.25, 0.0));
-          float rim = pow(f, 2.4) * (0.25 + 1.2 * smoothstep(0.38, 0.78, n));
+          float rim = pow(f, 1.7) * (0.12 + 1.1 * smoothstep(0.42, 0.8, n));
           float haze = 0.1 * smoothstep(0.35, 0.85, n);
           float a = (rim + haze) * uK * smoothstep(0.0, 0.08, vY);
           gl_FragColor = vec4(uCol * a, a * 0.7); }`,
@@ -275,7 +300,13 @@ export class Shockwave {
     this.mesh.renderOrder = 30;
     this.mesh.visible = false;
   }
-  set(center, radius, k, col = [1, 0.97, 0.92]) {
+  set(center, radius, k, col = [1, 0.97, 0.92], cam = null) {
+    // fade while the shell sweeps over the camera (no full-screen rim artefacts)
+    if (cam && radius > 1) {
+      const dx = cam.x - center[0], dy = (cam.y - center[1]) / 0.55, dz = cam.z - center[2];
+      const d = Math.sqrt(dx * dx + dy * dy + dz * dz) / radius;
+      k *= smoothstep(0.04, 0.22, Math.abs(d - 1));
+    }
     this.mesh.visible = k > 0.001 && radius > 1;
     this.mesh.position.set(center[0], center[1], center[2]);
     this.mesh.scale.set(radius, radius * 0.55, radius);

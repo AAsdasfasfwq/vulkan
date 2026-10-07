@@ -213,21 +213,21 @@ export class CoastSet extends BaseSet {
   }
 
   makeWave() {
-    const NX = 260, NS = 120;
+    const NX = 380, NS = 130;
     const g = new THREE.PlaneGeometry(1, 1, NX, NS);
     const uv = g.attributes.uv;
     this.waveU = {
-      uZc: { value: 1e5 }, uH: { value: 40 }, uTime: this.uTime, uCurl: { value: 1 }, uWidth: { value: 3200 },
+      uZc: { value: 1e5 }, uH: { value: 40 }, uTime: this.uTime, uCurl: { value: 1 }, uWidth: { value: 5200 }, uX0: { value: 0 },
       uSunDir: this.sky.uniforms.uSunDir, uSunColor: this.sky.uniforms.uSunColor, uHorizon: this.sky.uniforms.uHorizon, uZenith: this.sky.uniforms.uZenith,
       uFogDensity: { value: 0.0001 }, uFogColor: { value: new THREE.Color() }, uDark: { value: 0 },
     };
     const mat = new THREE.ShaderMaterial({
       uniforms: this.waveU,
       vertexShader: NOISE + /* glsl */ `
-        uniform float uZc; uniform float uH; uniform float uTime; uniform float uCurl; uniform float uWidth;
+        uniform float uZc; uniform float uH; uniform float uTime; uniform float uCurl; uniform float uWidth; uniform float uX0;
         varying vec3 vW; varying float vS; varying float vY; varying vec3 vN;
         vec3 P(vec2 q) {
-          float x = (q.x - 0.5) * uWidth;
+          float x = uX0 + (q.x - 0.5) * uWidth; // follows the camera so the wall never ends in frame
           float s = mix(-1400.0, 160.0, q.y); // distance in front of crest
           float hx = uH * (0.82 + 0.3 * vnoise(vec2(x * 0.004, uTime * 0.05)) + 0.12 * sin(x * 0.011 + uTime * 0.5));
           float y;
@@ -258,12 +258,12 @@ export class CoastSet extends BaseSet {
           if (!gl_FrontFacing) N = -N;
           vec3 V = normalize(cameraPosition - vW);
           float F = 0.03 + 0.97 * pow(1.0 - max(dot(N, V), 0.0), 5.0);
-          vec3 deep = vec3(0.012, 0.05, 0.055);
-          vec3 turbid = vec3(0.09, 0.12, 0.09);
-          vec3 body = mix(deep, turbid, smoothstep(-50.0, 0.0, vS));
-          // translucency near the thin crest
-          float thin = smoothstep(0.55, 0.95, vY) * smoothstep(40.0, 0.0, abs(vS));
-          body += vec3(0.05, 0.3, 0.26) * thin * (0.4 + 0.6 * max(dot(-V, uSunDir), 0.0)) * 1.4;
+          vec3 deep = vec3(0.006, 0.03, 0.036);
+          vec3 turbid = vec3(0.07, 0.075, 0.05); // sediment-laden water at the foot of the wave
+          vec3 body = mix(deep, turbid, smoothstep(-50.0, 0.0, vS) * (1.0 - smoothstep(0.2, 0.6, vY)));
+          // translucency near the thin crest (light shining through the lip)
+          float thin = smoothstep(0.5, 0.95, vY) * smoothstep(45.0, 0.0, abs(vS));
+          body += vec3(0.05, 0.36, 0.3) * thin * (0.5 + 0.7 * max(dot(-V, uSunDir), 0.0)) * 1.5;
           vec3 sky = mix(uHorizon, uZenith, clamp(reflect(-V, N).y, 0.0, 1.0));
           vec3 col = mix(body * (0.3 + 0.7 * max(dot(N, uSunDir), 0.0) + 0.3), sky * 0.8, F);
           // whitewater / foam
@@ -271,10 +271,10 @@ export class CoastSet extends BaseSet {
           float n2 = vnoise(vec2(vW.x * 0.2, vS * 0.25 - uTime * 2.0));
           float crestBand = smoothstep(0.78, 0.98, vY) * smoothstep(30.0, 0.0, abs(vS + 4.0));
           float face = smoothstep(0.0, 25.0, vS) * smoothstep(0.15, 0.6, vY);
-          float foam = smoothstep(0.55, 0.8, n) * (crestBand * 1.6 + face * 0.5);
+          float foam = smoothstep(0.55, 0.8, n) * (crestBand * 1.6 + face * 0.32);
           foam = max(foam, smoothstep(0.62, 0.85, n2) * smoothstep(-160.0, -20.0, vS) * smoothstep(-2.0, -25.0, vS) * 0.55);
           foam += crestBand * smoothstep(0.35, 0.6, n2) * 0.6;
-          vec3 foamCol = (uHorizon * 0.7 + uSunColor * 0.06 + vec3(0.12)) ;
+          vec3 foamCol = max(uHorizon * 0.9 + uSunColor * 0.05, vec3(0.42, 0.45, 0.45));
           col = mix(col, foamCol, clamp(foam, 0.0, 1.0) * 0.9);
           col *= 1.0 - uDark;
           float d = length(cameraPosition - vW);
@@ -308,7 +308,7 @@ export class CoastSet extends BaseSet {
         for (let i = 0; i < N; i++) {
           const [a, b, c, d] = seeds[i];
           const ph = fract(t * 0.35 + b);
-          const x = (a - 0.5) * 2400;
+          const x = (this.waveU.uX0.value ?? 0) + (a - 0.5) * 2400;
           const z = this.W.zc + 5 + ph * 60 - H * 0.2;
           const y = H * (0.85 + 0.15 * Math.sin(x * 0.011)) + ph * H * 0.7;
           const size = (6 + H * 0.5) * (0.5 + ph * 1.8) * (0.6 + d * 0.8);
@@ -326,7 +326,7 @@ export class CoastSet extends BaseSet {
     const r = rng(9);
     this.debrisSeeds = Array.from({ length: N }, () => [r(), r(), r(), r(), r(), r()]);
     const c = new THREE.Color();
-    for (let i = 0; i < N; i++) { const v = r(); c.setRGB(0.35 + v * 0.3, 0.27 + v * 0.15, 0.17 + v * 0.08); im.setColorAt(i, c); }
+    for (let i = 0; i < N; i++) { const v = r(); c.setRGB(0.42 + v * 0.3, 0.34 + v * 0.18, 0.24 + v * 0.12); im.setColorAt(i, c); }
     im.castShadow = true;
     im.visible = false;
     return im;
@@ -413,11 +413,27 @@ export class CoastSet extends BaseSet {
       this.waveU.uZc.value = this.W.zc;
       this.waveU.uH.value = this.W.H;
       this.waveU.uCurl.value = ts.curl ?? 1;
+      this.waveU.uX0.value = Math.round(this.camTmp ? this.camTmp.pos.x / 50 : 0) * 50;
       this.waveU.uFogDensity.value = this.scene.fog.density;
       this.waveU.uFogColor.value.copy(this.scene.fog.color);
       this.terrainU.uWet.value = 1;
       this.terrainU.uWetZ.value = this.W.zc - 10;
       this.wreck(vt);
+    } else if (p.wreckage) {
+      // aftermath: soaked mud flats littered with wreckage
+      this.terrainU.uWet.value = 0.55;
+      this.terrainU.uWetZ.value = -1e9;
+      this.debris.visible = true;
+      const W = p.wreckage, m = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), ps = new THREE.Vector3();
+      this.debrisSeeds.forEach(([a, b, c, d, e, f], i) => {
+        const x = W.c[0] + (a - 0.5) * 2 * W.r, z = W.c[1] + (b - 0.5) * 2 * W.r;
+        q.setFromEuler(new THREE.Euler((c - 0.5) * 0.5, d * 6.28, (e - 0.5) * 0.4));
+        const L = 2 + f * 9;
+        ps.set(x, coastHeight(x, z) + 0.2, z);
+        sc.set(L, 0.35 + c * 0.6, 0.5 + d * 1.4);
+        this.debris.setMatrixAt(i, m.compose(ps, q, sc));
+      });
+      this.debris.instanceMatrix.needsUpdate = true;
     } else {
       this.terrainU.uWet.value = 0;
     }

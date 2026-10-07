@@ -139,7 +139,11 @@ export class Island {
             float near = 1.0 - smoothstep(60.0, 700.0 * min(uLava, 1.5), d);
             float crat = 1.0 - smoothstep(0.0, 260.0, d);
             float flick = 0.75 + 0.25 * vnoise(vec2(uTime * 3.0, d * 0.01));
-            vec3 lava = vec3(4.0, 0.9, 0.12) * (ch * near * near + crat * 1.5) * flick * min(uLava, 1.0);
+            // crater floor: dark crust broken by glowing cracks, white-hot vent in the middle
+            vec2 wv = worley2(vWp.xz * 0.028 + vec2(0.0, uTime * 0.015));
+            float crack = 1.0 - smoothstep(0.02, 0.1, wv.y - wv.x);
+            float core = 1.0 - smoothstep(0.0, 70.0, d);
+            vec3 lava = vec3(4.0, 0.9, 0.12) * (ch * near * near + crat * (0.1 + 1.4 * crack) + core * 1.3) * flick * min(uLava, 1.0);
             totalEmissiveRadiance += lava;
           }
         `);
